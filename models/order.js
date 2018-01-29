@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 
-var OrderSchema = new Schema(
+let OrderSchema = new Schema(
   {
     Tags: {type: String,  max: 100},
     Description: {type: String, required: true, max: 100},
