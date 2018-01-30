@@ -1,4 +1,5 @@
 let mongoose = require('mongoose');
+let moment = require('moment');
 
 let Schema = mongoose.Schema;
 
@@ -8,9 +9,8 @@ let OrderSchema = new Schema(
     Description: {type: String, required: true, max: 100},
     DateOrder: {type: Date,required: true,},
     Value: {type: Number,required: true,},
-	IsJourney:{type: Boolean},
-	ParentTag:{type: Schema.ObjectId, ref: 'Tag', required: true},
-	
+	  IsJourney:{type: Boolean},
+	  ParentTag:{type: Schema.ObjectId, ref: 'Tag', required: true},	
   }
 );
 
@@ -27,6 +27,12 @@ OrderSchema
 .get(function () {
   return '/catalog/order/' + this._id;
 });
+
+OrderSchema
+.virtual('DateOrder_formatted')
+.get(function(){
+  return moment(this.DateOrder).format("DD MMMM YYYY");
+})
 
 //Export model
 module.exports = mongoose.model('Order', OrderSchema);
