@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+  h1 Order: #{order.Description}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+      p Value:  #{order.Value}
+      p Date: #{order.DateOrder_formatted}
+      p ParentTag: #{order.ParentTag}
+      p Tags: #{order.Tags}
+      #container.col
+      if order.IsJourney
+        p IsJourney: True
+      else
+        p IsJourney: False

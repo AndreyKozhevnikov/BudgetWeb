@@ -1,5 +1,6 @@
 let Tag = require('../models/tag.js');
-
+let Order=require('../models/order.js');
+let async=require('async');
 
 // Display list of all tags.
 exports.tag_list = function(req, res) {
@@ -12,8 +13,30 @@ exports.tag_list = function(req, res) {
 };
 
 // Display detail page for a specific tag.
-exports.tag_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag detail: ' + req.params.id);
+exports.tag_detail = function(req, res,next) {
+  async.parallel({
+    tag:function(callback){
+      Tag.findById(req.params.id)
+      .exec(callback);
+    },
+    tag_orders:function(callback){
+      Order.find({'ParentTag':req.params.id})
+      .exec(callback);
+    },
+  }, function(err,results){
+    if (err) {
+      return next(err);
+    }
+    if (results.tag==null){
+      let merr=new Error('Tag not m found');
+      merr.status=404;
+      return next(merr);
+    }
+    res.render("tag_detail",{title:'Tag detail',tag:results.tag, tag_orders:results.tag_orders});
+  }
+
+  );
+      
 };
 
 // Display tag create form on GET.

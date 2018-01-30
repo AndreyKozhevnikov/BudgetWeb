@@ -2,7 +2,7 @@ let Order = require('../models/order.js');
 
 
 // Display list of all orders.
-exports.order_list = function(req, res) {
+exports.order_list = function(req, res,next) {
    Order.find({}, 'DateOrder Value Description ParentTag Tags IsJourney')
    .populate('ParentTag')
      .exec(function (err, list_tags) {
@@ -13,8 +13,15 @@ exports.order_list = function(req, res) {
 };
 
 // Display detail page for a specific order.
-exports.order_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: order detail: ' + req.params.id);
+exports.order_detail = function(req, res,next) {
+   Order.findById(req.params.id)
+   .exec((err,result)=>{
+    if (result==null){
+      res.send('not found(');
+    }else{
+      res.render('order_detail', { title: 'Order', order:  result}); 
+    }
+   })
 };
 
 // Display order create form on GET.

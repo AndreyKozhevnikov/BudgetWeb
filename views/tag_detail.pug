@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1 Tag: #{tag.Name}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Orders
+    
+    dl
+    each order in tag_orders
+      dt 
+        a(href=order.url) #{order.Description}
+      dd #{order.Value}
+
+    else
+      p This tag has no orders
