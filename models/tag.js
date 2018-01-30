@@ -15,12 +15,12 @@ let TagSchema = new Schema(
   // return this.family_name + ', ' + this.first_name;
 // });
 
-// Virtual for author's URL
-// OrderSchema
-// .virtual('url')
-// .get(function () {
-  // return '/catalog/order/' + this._id;
-// });
+//Virtual for author's URL
+TagSchema
+.virtual('url')
+.get(function () {
+  return '/catalog/tag/' + this._id;
+});
 
 //Export model
 module.exports = mongoose.model('Tag', TagSchema);

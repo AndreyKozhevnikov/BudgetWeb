@@ -2,14 +2,16 @@ let express = require('express');
 let router = express.Router();
 
 // Require controller modules.
-let tag_controller = require('../controllers/tagController');
-let order_controller = require('../controllers/orderController');
+let tag_controller = require('../controllers/tagController.js');
+let order_controller = require('../controllers/orderController.js');
+let home_controller=require('../controllers/homeController.js');
 
 
 /// Tag ROUTES ///
 
 // GET catalog home page.
-router.get('/', order_controller.index);
+
+router.get('/', home_controller.index);
 
 // GET request for creating a Tag. NOTE This must come before routes that display Tag (uses id).
 router.get('/tag/create', tag_controller.tag_create_get);

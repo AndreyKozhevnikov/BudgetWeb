@@ -2,7 +2,7 @@ let express = require('express');
 let router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/test2', function(req, res, next) {
   let today = new Date();
   let h = today.getHours();
   let m = today.getMinutes();
@@ -13,8 +13,12 @@ router.get('/', function(req, res, next) {
   let tms=h + ":" + m + ":" + s;
   res.render('index', { title: 'Express',time:tms });
 });
-router.get('/ct', function(req, res, next) {
+router.get('/', function(req, res, next) {
+	console.log('ttt33');
   res.redirect('/catalog');
+});
+router.get('/test', function(req, res, next) {
+  res.render('test');
 });
 function checkTime(i) {
   if (i < 10) {

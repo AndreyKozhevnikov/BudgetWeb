@@ -2,5 +2,16 @@ extends layout
 
 block content
   h1= title
-  p Welcome to (mm) #{title}
+  p Welcome to #[em BudgetWeb].
   p time #{time}
+
+  h1 Dynamic content
+
+  if error
+    p Error getting dynamic content.
+  else
+    p The base has the following record counts:
+
+    ul
+      li #[strong Tags:] !{data.tag_count}
+      li #[strong Orders:] !{data.order_count}

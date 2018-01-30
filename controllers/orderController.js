@@ -1,11 +1,15 @@
 let Order = require('../models/order.js');
 
-exports.index = function(req, res) {
-    res.send('NOT IMPLEMENTED: Site Home Page');
-};
+
 // Display list of all orders.
 exports.order_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: order list');
+   Order.find({}, 'DateOrder Value Description ParentTag Tags IsJourney')
+   .populate('ParentTag')
+     .exec(function (err, list_tags) {
+      if (err) { return next(err); }
+      //Successful, so render
+      res.render('order_list', { title: 'Order List', order_list: list_tags });
+    });
 };
 
 // Display detail page for a specific order.

@@ -41,19 +41,20 @@ function tagCreate(cb){
       return
     }  
   
-   console.log('New tag: ' + tag);
+   console.log('Second tag: ' + tag);
   tags.push(tag);
   cb(null, tag);
   });
 }
 
 function orderCreate(cb) {
-  orderDetail = {Description:'test description' , Value: 45 }
+  orderDetail = {Description:'second order' , Value: 45 }
  
  
   var order = new Order(orderDetail);
   order.ParentTag=tags[0];
   order.DateOrder=Date.now();
+  order.IsJourney=true;
   order.save(function (err) {
   if (err) {
 	  console.log('myerr'+err);

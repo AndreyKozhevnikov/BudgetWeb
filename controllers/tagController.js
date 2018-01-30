@@ -3,7 +3,12 @@ let Tag = require('../models/tag.js');
 
 // Display list of all tags.
 exports.tag_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag list');
+     Tag.find({}, 'Name')
+     .exec(function (err, list_tags) {
+      if (err) { return next(err); }
+      //Successful, so render
+      res.render('tag_list', { title: 'Tag List', tag_list: list_tags });
+    });
 };
 
 // Display detail page for a specific tag.

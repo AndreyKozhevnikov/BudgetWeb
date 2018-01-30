@@ -22,11 +22,11 @@ let OrderSchema = new Schema(
 // });
 
 // Virtual for author's URL
-// OrderSchema
-// .virtual('url')
-// .get(function () {
-  // return '/catalog/order/' + this._id;
-// });
+OrderSchema
+.virtual('url')
+.get(function () {
+  return '/catalog/order/' + this._id;
+});
 
 //Export model
 module.exports = mongoose.model('Order', OrderSchema);
