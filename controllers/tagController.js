@@ -1,6 +1,8 @@
 let Tag = require('../models/tag.js');
 let Order=require('../models/order.js');
 let async=require('async');
+const { body,validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 // Display list of all tags.
 exports.tag_list = function(req, res) {
@@ -41,13 +43,67 @@ exports.tag_detail = function(req, res,next) {
 
 // Display tag create form on GET.
 exports.tag_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag create GET');
+      res.render('tag_form', { title: 'Create Tag' });
 };
 
 // Handle tag create on POST.
-exports.tag_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag create POST');
-};
+exports.tag_create_post = [
+   
+    // Validate that the name field is not empty.
+
+    body('NameFromForm', 'Tag name required').isLength({ min: 1 }).trim(),
+    
+    // Sanitize (trim and escape) the name field.
+    sanitizeBody('NameFromForm').trim().escape(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create a genre object with escaped and trimmed data.
+        
+        var tag = new Tag(
+          { Name: req.body.NameFromForm }
+        );
+ 
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render the form again with sanitized values/error messages.
+            res.render('tag_form', { title: 'Create tag', tagFromForm: tag, errors: errors.array()});
+                console.log('er'+'212' +tag);
+        return;
+        }
+        else {
+          
+            // Data from form is valid.
+            // Check if Tag with same name already exists.
+            console.dir(req.body);
+            console.log(req.body.NameFromForm);
+            Tag.findOne({ 'Name': req.body.NameFromForm })
+                .exec( function(err, found_tag) {
+                     if (err) { return next(err); }
+
+                     if (found_tag) {
+                         // Tag exists, redirect to its detail page.
+                         res.redirect(found_tag.url);
+                         console.log('redir')
+                     }
+                     else {
+
+                         tag.save(function (err) {
+                           if (err) { return next(err); }
+                           // Genre saved. Redirect to genre detail page.
+                           res.redirect(tag.url);
+                         });
+
+                     }
+
+                 });
+        }
+    }
+];
 
 // Display tag delete form on GET.
 exports.tag_delete_get = function(req, res) {
