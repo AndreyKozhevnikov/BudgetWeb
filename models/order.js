@@ -5,12 +5,13 @@ let Schema = mongoose.Schema;
 
 let OrderSchema = new Schema(
   {
-    Tags: {type: String,  max: 100},
-    Description: {type: String, required: true, max: 100},
+
     DateOrder: {type: Date,required: true,},
-    Value: {type: Number,required: true,},
+    Value: {type: Number,required: true,},    
+    Description: {type: String, required: true, max: 100},
+    ParentTag:{type: Schema.ObjectId, ref: 'Tag', required: true},  
 	  IsJourney:{type: Boolean},
-	  ParentTag:{type: Schema.ObjectId, ref: 'Tag', required: true},	
+    Tags: {type: String,  max: 100},
   }
 );
 
@@ -33,6 +34,11 @@ OrderSchema
 .get(function(){
   return moment(this.DateOrder).format("DD MMMM YYYY");
 })
+OrderSchema
+.virtual('DateOrder_pugFormat')
+.get(function () {
+  return moment(this.DateOrder).format('YYYY-MM-DD');
+});
 
 //Export model
 module.exports = mongoose.model('Order', OrderSchema);

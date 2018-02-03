@@ -71,9 +71,9 @@ exports.tag_create_post = [
 
         if (!errors.isEmpty()) {
             // There are errors. Render the form again with sanitized values/error messages.
-            res.render('tag_form', { title: 'Create tag', tagFromForm: tag, errors: errors.array()});
-                console.log('er'+'212' +tag);
-        return;
+          res.render('tag_form', { title: 'Create tag', tagFromForm: tag, errors: errors.array()});
+          console.log('er'+'212' +tag);
+          return;
         }
         else {
           

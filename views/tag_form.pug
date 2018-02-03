@@ -5,8 +5,8 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='name123') Tag:
-      input#name123.form-control(type='text', placeholder='Fantasy, Poetry etc.' name='NameFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.Name))
+      label(for='input1') Tag:
+      input#input1.form-control(type='text', placeholder='Enter a new tag name' name='NameFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.Name))
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

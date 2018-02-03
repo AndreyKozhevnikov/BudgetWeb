@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  form(method='POST' action='')
+    div.form-group
+
+      label(for='dtDateOrder') Date order:
+      input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? '' : fOrder.DateOrder_pugFormat))
+
+      label(for='txValue') Value:
+      input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))
+
+      label(for='txDescr') Description:
+      input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
+
+      label(for='cmbParentTag') Parent tag:
+      select#cmbParentTag.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
+        for tag in tag_list
+          if fOrder
+            option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name}
+          else
+            option(value=tag._id) #{tag.Name} 
+
+      label(for='txTags') Tags:
+      input#txTags.form-control(type='text', placeholder='Tags' name='fTags' value=(undefined===fOrder ? '' : fOrder.Tags))
+
+      label(for='chIsJourney') IsJourney:
+      input#chIsJourney.form-control(type='checkbox',  name='fIsJourney' checked= (undefined===fOrder ? false :fOrder.IsJourney))
+               
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
