@@ -1,22 +1,29 @@
 extends layout
-
+block mystyles
+   style(type="text/css").
+      table,tr,td,th{
+        border: 1px solid black;}
 block content
+
+
   h1= title
   
-  ul
-  each order in order_list
-    li 
-      a(href=order.url) #{order.Description}  
-      | (#{order._id})
-      p #{order.Value}
-      p #{order.DateOrder_formatted}
-      p #{order.ParentTag}
-      p #{order.Tags}
-      #container.col
-      if order.IsJourney
-        p IsJourney
-      
-      
-
-  else
-    li There are no orders.
+  div
+    table(style="width:100%")
+      thead
+        tr 
+          th DateOrder 
+          th Value
+          th Description
+          th ParentTag
+          th IsJourney
+          th Tags
+      tbody
+        each order in order_list
+          tr
+            td #{order.DateOrder_formatted}
+            td #{order.Value}
+            td #{order.Description}
+            td #{order.ParentTag.Name}
+            td #{order.IsJourney}
+            td #{order.Tags}
