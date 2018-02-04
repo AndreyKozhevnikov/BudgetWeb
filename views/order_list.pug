@@ -3,6 +3,9 @@ block mystyles
    style(type="text/css").
       table,tr,td,th{
         border: 1px solid black;}
+      td,th{
+        text-align:center
+      }
 block content
 
 
@@ -23,7 +26,9 @@ block content
           tr
             td #{order.DateOrder_formatted}
             td #{order.Value}
-            td #{order.Description}
+            //td #{order.Description}
+            td 
+              a(href=order.url) #{order.Description}
             td #{order.ParentTag.Name}
             td #{order.IsJourney}
             td #{order.Tags}

@@ -39,7 +39,7 @@ exports.order_create_get = function(req, res,next) {
 exports.order_create_post = [
 //validate fields
   body('fDate', 'Invalid date of order').optional({ checkFalsy: true }).isISO8601(),
-  body('fTags', 'Description required').isLength({ min: 1 }).trim(),  
+  //body('fTags', 'Description required').isLength({ min: 1 }).trim(),  
   // Sanitize fields.
   sanitizeBody('fDate').toDate(),
   sanitizeBody('fValue').trim().escape(),
