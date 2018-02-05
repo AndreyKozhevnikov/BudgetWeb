@@ -6,10 +6,10 @@ const { sanitizeBody } = require('express-validator/filter');
 exports.order_list = function(req, res,next) {
    Order.find({}, 'DateOrder Value Description ParentTag Tags IsJourney')
    .populate('ParentTag')
-     .exec(function (err, list_tags) {
+     .exec(function (err, list_orders) {
       if (err) { return next(err); }
       //Successful, so render
-      res.render('order_list', { title: 'Order List', order_list: list_tags });
+      res.render('order_list', { title: 'Order List', order_list: list_orders });
     });
 };
 
@@ -98,3 +98,14 @@ exports.order_update_get = function(req, res) {
 exports.order_update_post = function(req, res) {
     res.send('NOT IMPLEMENTED: order update POST');
 };
+exports.orders_export=function(req,res,next){
+ Order.find({}, null)
+   .populate('ParentTag')
+     .exec(function (err, list_orders) {
+      if (err) { return next(err); }
+      //Successful, so render
+      //res.render('order_list', { title: 'Order List', order_list: list_tags });
+      res.json(list_orders);
+     //res.json({ user: 'tobi' });
+    });
+}

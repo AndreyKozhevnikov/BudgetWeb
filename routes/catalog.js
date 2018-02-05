@@ -63,6 +63,7 @@ router.get('/order/:id', order_controller.order_detail);
 // GET request for list of all Orders.
 router.get('/orders', order_controller.order_list);
 
-
+//export orders to csv
+router.get('/orders/export',order_controller.orders_export)
 
 module.exports = router;
