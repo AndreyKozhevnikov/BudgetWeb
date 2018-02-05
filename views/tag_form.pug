@@ -5,8 +5,11 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='input1') Tag:
+      label(for='input1') Name:
       input#input1.form-control(type='text', placeholder='Enter a new tag name' name='NameFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.Name))
+
+      label(for='input1') LocalId:
+      input#input1.form-control(type='text',  name='LocalIdFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.LocalId))      
     button.btn.btn-primary(type='submit') Submit
 
   if errors 

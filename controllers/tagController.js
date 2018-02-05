@@ -55,6 +55,7 @@ exports.tag_create_post = [
     
     // Sanitize (trim and escape) the name field.
     sanitizeBody('NameFromForm').trim().escape(),
+    sanitizeBody('LocalIdFromForm').trim().escape(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {
@@ -65,7 +66,9 @@ exports.tag_create_post = [
         // Create a genre object with escaped and trimmed data.
         
         var tag = new Tag(
-          { Name: req.body.NameFromForm }
+          { Name: req.body.NameFromForm,
+            LocalId:req.body.LocalIdFromForm
+           }
         );
  
 
@@ -95,7 +98,7 @@ exports.tag_create_post = [
                          tag.save(function (err) {
                            if (err) { return next(err); }
                            // Genre saved. Redirect to genre detail page.
-                           res.redirect(tag.url);
+                           res.redirect('/catalog/tag/create');
                          });
 
                      }

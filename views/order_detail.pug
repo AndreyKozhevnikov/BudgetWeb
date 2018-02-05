@@ -10,8 +10,9 @@ block content
       p Date: #{order.DateOrder_formatted}
       p ParentTag: #{order.ParentTag}
       p Tags: #{order.Tags}
-      #container.col
+
       if order.IsJourney
         p IsJourney: True
       else
         p IsJourney: False
+      p LocalId: #{order.LocalId}
