@@ -75,15 +75,14 @@ exports.tag_create_post = [
         if (!errors.isEmpty()) {
             // There are errors. Render the form again with sanitized values/error messages.
           res.render('tag_form', { title: 'Create tag', tagFromForm: tag, errors: errors.array()});
-          console.log('er'+'212' +tag);
+
           return;
         }
         else {
           
             // Data from form is valid.
             // Check if Tag with same name already exists.
-            console.dir(req.body);
-            console.log(req.body.NameFromForm);
+
             Tag.findOne({ 'Name': req.body.NameFromForm })
                 .exec( function(err, found_tag) {
                      if (err) { return next(err); }
@@ -91,7 +90,7 @@ exports.tag_create_post = [
                      if (found_tag) {
                          // Tag exists, redirect to its detail page.
                          res.redirect(found_tag.url);
-                         console.log('redir')
+
                      }
                      else {
 

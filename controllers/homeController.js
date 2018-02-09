@@ -18,7 +18,7 @@ exports.index = function(req, res) {
 	        Order.count(callback);
 	    },
 	}, function(err,results){
-		console.log('test'+err);
+		
 	    let today = new Date();
         let h = today.getHours();
         let m = today.getMinutes();

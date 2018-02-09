@@ -14,7 +14,7 @@ router.get('/test2', function(req, res, next) {
   res.render('index', { title: 'Express',time:tms });
 });
 router.get('/', function(req, res, next) {
-	console.log('ttt33');
+
   res.redirect('/catalog');
 });
 router.get('/test', function(req, res, next) {
