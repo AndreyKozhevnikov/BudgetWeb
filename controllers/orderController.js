@@ -32,6 +32,9 @@ exports.order_create_get = function(req, res,next) {
   Tag.find({},null)
   .exec(function(err,tags){
     if (err){return next(err);}
+    tags.sort(function(a,b){
+      return a.OrderNumber-b.OrderNumber;
+    });
     res.render('order_form', { title: 'Create Order',tag_list:tags });
   })
 

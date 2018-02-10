@@ -6,10 +6,13 @@ const { sanitizeBody } = require('express-validator/filter');
 
 // Display list of all tags.
 exports.tag_list = function(req, res) {
-     Tag.find({}, 'Name')
-     .exec(function (err, list_tags) {
-      if (err) { return next(err); }
+ Tag.find({}, 'Name')
+ .exec(function (err, list_tags) {
+  if (err) { return next(err); }
       //Successful, so render
+      list_tags.sort(function(a,b){
+        return a.OrderNumber-b.OrderNumber;
+      })
       res.render('tag_list', { title: 'Tag List', tag_list: list_tags });
     });
 };
@@ -38,17 +41,17 @@ exports.tag_detail = function(req, res,next) {
   }
 
   );
-      
+
 };
 
 // Display tag create form on GET.
 exports.tag_create_get = function(req, res) {
-      res.render('tag_form', { title: 'Create Tag' });
+  res.render('tag_form', { title: 'Create Tag' });
 };
 
 // Handle tag create on POST.
 exports.tag_create_post = [
-   
+
     // Validate that the name field is not empty.
 
     body('NameFromForm', 'Tag name required').isLength({ min: 1 }).trim(),
@@ -56,7 +59,7 @@ exports.tag_create_post = [
     // Sanitize (trim and escape) the name field.
     sanitizeBody('NameFromForm').trim().escape(),
     sanitizeBody('LocalIdFromForm').trim().escape(),
-
+    sanitizeBody('OrderNumberdFromForm').trim().escape(),
     // Process request after validation and sanitization.
     (req, res, next) => {
 
@@ -66,33 +69,35 @@ exports.tag_create_post = [
         // Create a genre object with escaped and trimmed data.
         
         var tag = new Tag(
-          { Name: req.body.NameFromForm,
-            LocalId:req.body.LocalIdFromForm
-           }
+        { 
+          Name: req.body.NameFromForm,
+          LocalId:req.body.LocalIdFromForm,
+          OrderNumber:req.body.OrderNumberdFromForm
+        }
         );
- 
+
 
         if (!errors.isEmpty()) {
             // There are errors. Render the form again with sanitized values/error messages.
-          res.render('tag_form', { title: 'Create tag', tagFromForm: tag, errors: errors.array()});
+            res.render('tag_form', { title: 'Create tag', tagFromForm: tag, errors: errors.array()});
 
-          return;
-        }
-        else {
-          
+            return;
+          }
+          else {
+
             // Data from form is valid.
             // Check if Tag with same name already exists.
 
             Tag.findOne({ 'Name': req.body.NameFromForm })
-                .exec( function(err, found_tag) {
-                     if (err) { return next(err); }
+            .exec( function(err, found_tag) {
+             if (err) { return next(err); }
 
-                     if (found_tag) {
+             if (found_tag) {
                          // Tag exists, redirect to its detail page.
                          res.redirect(found_tag.url);
 
-                     }
-                     else {
+                       }
+                       else {
 
                          tag.save(function (err) {
                            if (err) { return next(err); }
@@ -100,29 +105,29 @@ exports.tag_create_post = [
                            res.redirect('/catalog/tag/create');
                          });
 
-                     }
+                       }
 
-                 });
+                     });
+          }
         }
-    }
-];
+        ];
 
 // Display tag delete form on GET.
 exports.tag_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag delete GET');
+  res.send('NOT IMPLEMENTED: tag delete GET');
 };
 
 // Handle tag delete on POST.
 exports.tag_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag delete POST');
+  res.send('NOT IMPLEMENTED: tag delete POST');
 };
 
 // Display tag update form on GET.
 exports.tag_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag update GET');
+  res.send('NOT IMPLEMENTED: tag update GET');
 };
 
 // Handle tag update on POST.
 exports.tag_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: tag update POST');
+  res.send('NOT IMPLEMENTED: tag update POST');
 };

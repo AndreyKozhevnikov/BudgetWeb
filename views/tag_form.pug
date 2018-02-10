@@ -9,7 +9,9 @@ block content
       input#input1.form-control(type='text', placeholder='Enter a new tag name' name='NameFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.Name))
 
       label(for='input1') LocalId:
-      input#input1.form-control(type='text',  name='LocalIdFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.LocalId))      
+      input#input1.form-control(type='text',  name='LocalIdFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.LocalId))
+      label(for='input2') OrderNumber:
+      input#input2.form-control(type='text',  name='OrderNumberFromForm' value=(undefined===tagFromForm ? '' : tagFromForm.OrderNumberFromForm))          
     button.btn.btn-primary(type='submit') Submit
 
   if errors 
