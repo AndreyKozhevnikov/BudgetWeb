@@ -30,7 +30,6 @@ block content
       input#chIsJourney.form-control(type='checkbox',  name='fIsJourney' checked= (undefined===fOrder ? false :fOrder.IsJourney))
                
     button.btn.btn-primary(type='submit') Submit
-  p #{moment().format('MM/DD/YYYY')}
   if errors 
     ul
       for error in errors

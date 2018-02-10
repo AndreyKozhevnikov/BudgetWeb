@@ -8,7 +8,7 @@ let OrderSchema = new Schema(
 
     DateOrder: {type: Date,required: true,},
     Value: {type: Number,required: true,},    
-    Description: {type: String, required: true, max: 100},
+    Description: {type: String,  max: 100},
     ParentTag:{type: Schema.ObjectId, ref: 'Tag', required: true},  
 	  IsJourney:{type: Boolean},
     Tags: {type: String,  max: 100},
