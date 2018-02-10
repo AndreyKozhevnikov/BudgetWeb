@@ -17,20 +17,19 @@ html(lang='en')
           block sidebar
             ul(class='sidebar-nav')
               li 
-                a(href='/catalog') Home
+                a(class='mainLink' href='/catalog') Home
               li 
-                a(href='/catalog/tags') All tags
+                a(class='mainLink' href='/catalog/tags') All tags
               li 
-                a(href='/catalog/orders') All orders
+                a(class='mainLink' href='/catalog/orders') All orders
               li 
                 hr
               li 
-                a(href='/catalog/tag/create') Create new tag
+                a(class='mainLink' href='/catalog/tag/create') Create new tag
               li 
-                a(href='/catalog/order/create') Create new order
+                a(class='mainLink' href='/catalog/order/create') Create new order
               li
-                a(href='/catalog/orders/export') Export orders
-
-                
+                a(class='mainLink' href='/catalog/orders/export') Export orders
+           
         div(class='col-sm-10')
           block content
