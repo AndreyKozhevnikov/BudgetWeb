@@ -17,6 +17,7 @@ exports.order_list = function(req, res,next) {
 // Display detail page for a specific order.
 exports.order_detail = function(req, res,next) {
  Order.findById(req.params.id)
+ .populate('ParentTag')
  .exec((err,result)=>{
   if (result==null){
     res.send('not found(');
