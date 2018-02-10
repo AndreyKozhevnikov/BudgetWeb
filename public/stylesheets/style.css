@@ -8,16 +8,18 @@
 text-decoration:none;
 border:1px solid #4285f4;
 background:#4285f4;
-width:150;
-
 display: inline-block;
 line-height: 50px;
 padding: 0 12px;
 font-size: 18px;
-border-radius: 2px;
+border-radius: 12px;
 cursor: default;
 color: #fff;
 position: relative;
 text-align: center;
-
+margin: 3px
+}
+.mainLink:hover
+{
+text-decoration: none;
 }
