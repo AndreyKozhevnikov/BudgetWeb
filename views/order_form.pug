@@ -7,7 +7,7 @@ block content
     div.form-group
 
       label(for='dtDateOrder') Date order:
-      input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? '' : fOrder.DateOrder_pugFormat))
+      input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment().format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
 
       label(for='txValue') Value:
       input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))
@@ -30,7 +30,7 @@ block content
       input#chIsJourney.form-control(type='checkbox',  name='fIsJourney' checked= (undefined===fOrder ? false :fOrder.IsJourney))
                
     button.btn.btn-primary(type='submit') Submit
-
+  p #{moment().format('MM/DD/YYYY')}
   if errors 
     ul
       for error in errors

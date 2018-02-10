@@ -11,7 +11,7 @@ var catalog = require('./routes/catalog.js');
 let wiki = require('./routes/wiki.js');
 
 let app = express();
-
+app.locals.moment = require('moment');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
