@@ -51,7 +51,6 @@ body('fDate', 'Invalid date of order').optional({ checkFalsy: true }).isISO8601(
   sanitizeBody('fDescription').trim().escape(),
   sanitizeBody('fTags').trim().escape(),
   (req,res,next)=>{
-    console.dir(req.body);
     let order=new Order({
       DateOrder:req.body.fDate,
       Value:req.body.fValue,
@@ -66,7 +65,6 @@ body('fDate', 'Invalid date of order').optional({ checkFalsy: true }).isISO8601(
     Tag.find({},null)
     .exec(function(err,tags){
       if (err){return next(err);}
-      console.dir(order);
       res.render('order_form', { title: 'Create Order (err)', fOrder: order, errors: errors.array(),tag_list:tags });
       return;
     })
@@ -121,7 +119,6 @@ exports.order_update_post = [
   sanitizeBody('fDescription').trim().escape(),
   sanitizeBody('fTags').trim().escape(),
   (req,res,next)=>{
-    console.log('tetss5') ;
     let order=new Order({
       DateOrder:req.body.fDate,
       Value:req.body.fValue,
@@ -133,14 +130,13 @@ exports.order_update_post = [
 
     });  
 
-    console.dir(order)   ;
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/errors messages.
     Tag.find({},null)
     .exec(function(err,tags){
       if (err){return next(err);}
-      console.dir(order);
       res.render('order_form', { title: 'Create Order (err)', fOrder: order, errors: errors.array(),tag_list:tags });
       return;
     })

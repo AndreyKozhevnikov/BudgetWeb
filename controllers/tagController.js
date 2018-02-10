@@ -6,7 +6,7 @@ const { sanitizeBody } = require('express-validator/filter');
 
 // Display list of all tags.
 exports.tag_list = function(req, res) {
- Tag.find({}, 'Name')
+ Tag.find()
  .exec(function (err, list_tags) {
   if (err) { return next(err); }
       //Successful, so render
@@ -123,11 +123,44 @@ exports.tag_delete_post = function(req, res) {
 };
 
 // Display tag update form on GET.
-exports.tag_update_get = function(req, res) {
-  res.send('NOT IMPLEMENTED: tag update GET');
+exports.tag_update_get = function(req, res,next) {
+
+  Tag.findById(req.params.id).exec(function(err,result){
+    if (err) {next(err);}
+    res.render('tag_form',{title:'Update Order',tagFromForm:result});   
+  });
+
 };
 
 // Handle tag update on POST.
-exports.tag_update_post = function(req, res) {
-  res.send('NOT IMPLEMENTED: tag update POST');
-};
+exports.tag_update_post = [
+sanitizeBody('LocalIdFromForm').trim().escape(),
+sanitizeBody('OrderNumberFromForm').trim().escape(),
+sanitizeBody('NameFromForm').trim().escape(),
+(req,res,next)=>{
+  console.dir(req.body);
+ let tag = new Tag(
+ { 
+  Name: req.body.NameFromForm,
+  LocalId:req.body.LocalIdFromForm,
+  OrderNumber:req.body.OrderNumberFromForm,
+  _id:req.params.id 
+});  
+ console.dir(tag);
+
+ const errors = validationResult(req);
+ if (!errors.isEmpty()) {
+    // There are errors. Render form again with sanitized values/errors messages.
+    res.render('tag_form',{title:'Update Order',tagFromForm:tag}); 
+  }
+  else {
+      // Data from form is valid.    
+
+      Tag.findByIdAndUpdate(req.params.id,tag,[],function(err,theTag){
+        if (err){return next(err);}
+        console.log(theTag);
+        res.redirect(theTag.url);
+      });
+    }
+  }
+  ]
