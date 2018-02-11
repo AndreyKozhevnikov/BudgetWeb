@@ -118,6 +118,7 @@ exports.order_update_post = [
   sanitizeBody('fValue').trim().escape(),
   sanitizeBody('fDescription').trim().escape(),
   sanitizeBody('fTags').trim().escape(),
+  sanitizeBody('fLocalId').trim().escape(),
   (req,res,next)=>{
     let order=new Order({
       DateOrder:req.body.fDate,
@@ -126,6 +127,7 @@ exports.order_update_post = [
       ParentTag:req.body.fParentTag,
       IsJourney: Boolean (req.body.fIsJourney),
       Tags:req.body.fTags,
+      LocalId:req.body.fLocalId,
       _id:req.params.id
 
     });  
