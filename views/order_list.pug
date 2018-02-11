@@ -25,7 +25,8 @@ block content
       tbody
         each order in order_list
           tr
-            td #{order.DateOrder_formatted}
+            td 
+              a(href=order.url) #{order.DateOrder_formatted}
             td #{order.Value}
             //td #{order.Description}
             td 
