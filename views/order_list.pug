@@ -19,6 +19,7 @@ block content
           th Value
           th Description
           th ParentTag
+          th LocalId
           th IsJourney
           th Tags
       tbody
@@ -30,5 +31,6 @@ block content
             td 
               a(href=order.url) #{order.Description}
             td #{order.ParentTag.Name}
+            td #{order.LocalId}
             td #{order.IsJourney}
             td #{order.Tags}
