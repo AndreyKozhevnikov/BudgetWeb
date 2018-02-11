@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 console.log('This script populates some test books, authors, genres and bookinstances to your database. Specified database as argument - e.g.: populatedb mongodb://your_username:your_password@your_dabase_url');
-
+//test change master
 //Get arguments passed on command line
 var userArgs = process.argv.slice(2);
 if (!userArgs[0].startsWith('mongodb://')) {
