@@ -153,7 +153,9 @@ exports.order_update_post = [
 
   ];
   exports.orders_export=function(req,res,next){
-   Order.find({}, null)
+   Order.find({
+    LocalId:  null 
+  })
    .populate('ParentTag')
    .exec(function (err, list_orders) {
     if (err) { return next(err); }
