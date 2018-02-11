@@ -164,3 +164,19 @@ exports.order_update_post = [
      //res.json({ user: 'tobi' });
    });
  }
+ exports.update_localid=function(req,res,next){
+  let id=req.body.id;
+  let localId=req.body.localid;
+  Order.findById(id,function(err,theTag){
+    if (err){next(err);}
+    console.log(id);
+    console.dir(theTag);
+    theTag.LocalId=localId;
+    theTag.save(function(err,savedTag){
+      if (err){next(err);}
+      res.send('update is Successful');
+    });
+  });
+
+ // res.send('NOT IMPLEMENTED: order update_localid');
+}

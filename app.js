@@ -7,7 +7,7 @@ let bodyParser = require('body-parser');
 
 let index = require('./routes/index.js');
 let users = require('./routes/users.js');
-var catalog = require('./routes/catalog.js');
+let catalog = require('./routes/catalog.js');
 let wiki = require('./routes/wiki.js');
 
 let app = express();

@@ -60,6 +60,9 @@ router.post('/order/:id/update', order_controller.order_update_post);
 // GET request for one Order.
 router.get('/order/:id', order_controller.order_detail);
 
+//Post update localid of order
+router.post('/update/order',order_controller.update_localid)
+
 // GET request for list of all Orders.
 router.get('/orders', order_controller.order_list);
 
