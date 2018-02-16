@@ -14,6 +14,7 @@ let app = express();
 app.locals.moment = require('moment');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
+//test
 app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
