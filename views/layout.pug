@@ -11,25 +11,19 @@ html(lang='en')
     block mystyles
 
   body
-    div(class='container-fluid')
-      div(class='row')
-        div(class='col-sm-2')
-          block sidebar
-            ul(class='sidebar-nav')
-              li 
-                a(class='mainLink' href='/catalog') Home
-              li 
-                a(class='mainLink' href='/catalog/tags') All tags
-              li 
-                a(class='mainLink' href='/catalog/orders') All orders
-              li 
-                hr
-              li 
-                a(class='mainLink' href='/catalog/tag/create') Create new tag
-              li 
-                a(class='mainLink' href='/catalog/order/create') Create new order
-              li
-                a(class='mainLink' href='/catalog/orders/export') Export orders
-           
-        div(class='col-sm-10')
-          block content
+    div
+      table
+        tr
+          td
+            a(class='mainLink' href='/catalog/order/create') Create new order
+          td
+            a(class='mainLink' href='/catalog/orders') All orders
+    div(class='col-sm-10')
+      block content
+
+//a(class='mainLink' href='/catalog') Home
+//a(class='mainLink' href='/catalog/tags') All tags
+//a(class='mainLink' href='/catalog/orders') All orders
+//a(class='mainLink' href='/catalog/tag/create') Create new tag
+//a(class='mainLink' href='/catalog/order/create') Create new order
+//a(class='mainLink' href='/catalog/orders/export') Export orders

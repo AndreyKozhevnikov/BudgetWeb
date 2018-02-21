@@ -5,15 +5,10 @@ block content
   h1 #{title}
   form(method='POST' action='')
     div.form-group
-
+      button(class='btnDisableAfterClick' width=300px height=60px).btn.btn-primary(type='submit') Submit
+      br
       label(for='dtDateOrder') Date order:
       input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment().format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
-
-      label(for='txValue') Value:
-      input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))
-
-      label(for='txDescr') Description:
-      input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
 
       label(for='cmbParentTag') Parent tag:
       select#cmbParentTag.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
@@ -22,6 +17,14 @@ block content
             option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name}
           else
             option(value=tag._id) #{tag.Name} 
+
+      label(for='txValue') Value:
+      input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))
+
+      label(for='txDescr') Description:
+      input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
+
+
 
       label(for='txTags') Tags:
       input#txTags.form-control(type='text', placeholder='Tags' name='fTags' value=(undefined===fOrder ? '' : fOrder.Tags))
@@ -32,7 +35,7 @@ block content
       label(for='txLocId') LocalId:
       input#chIsJourney.form-control(type='text',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))
                
-    button(class='btnDisableAfterClick').btn.btn-primary(type='submit') Submit
+
   if errors 
     ul
       for error in errors
