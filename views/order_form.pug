@@ -1,8 +1,8 @@
 extends layout
-
+block mystyles
+  script(src='/javascripts/disablebutton.js')
 block content
   h1 #{title}
-
   form(method='POST' action='')
     div.form-group
 
@@ -32,7 +32,7 @@ block content
       label(for='txLocId') LocalId:
       input#chIsJourney.form-control(type='text',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))
                
-    button.btn.btn-primary(type='submit') Submit
+    button(class='btnDisableAfterClick').btn.btn-primary(type='submit') Submit
   if errors 
     ul
       for error in errors
