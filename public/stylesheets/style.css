@@ -23,3 +23,8 @@ margin: 3px
 {
 text-decoration: none;
 }
+.btnDisableAfterClick
+{
+	width: 300px;
+	height: 60px;
+}

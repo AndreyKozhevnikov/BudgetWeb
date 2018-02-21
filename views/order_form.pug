@@ -5,7 +5,7 @@ block content
   h1 #{title}
   form(method='POST' action='')
     div.form-group
-      button(class='btnDisableAfterClick' width=300px height=60px).btn.btn-primary(type='submit') Submit
+      button(class='btnDisableAfterClick').btn.btn-primary(type='submit') Submit
       br
       label(for='dtDateOrder') Date order:
       input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment().format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
