@@ -89,8 +89,12 @@ exports.order_delete_get = function(req, res) {
 };
 
 // Handle order delete on POST.
-exports.order_delete_post = function(req, res) {
-  res.send('NOT IMPLEMENTED: order delete POST');
+exports.order_delete_post = function(req, res,next) {
+  let mId=req.params.id;
+  Order.update({ _id: mId }, { $set: { IsDeleted: true }}, function(err){
+    if (err){next(err);}
+    res.redirect('/catalog/orders');
+  });
 };
 
 // Display order update form on GET.

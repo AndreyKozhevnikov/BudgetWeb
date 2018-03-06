@@ -18,3 +18,6 @@ block content
       p LocalId: #{order.LocalId}
       p
         a(href=order.url+'/update') Update Order
+      form(action=order.url+'/delete', method='POST' onsubmit="return confirm('Are you sure?');")
+        input(type='submit', value='Delete')
+      //    a(href=order.url+'/delete') Delete Order

@@ -12,7 +12,8 @@ let OrderSchema = new Schema(
     ParentTag:{type: Schema.ObjectId, ref: 'Tag', required: true},  
 	  IsJourney:{type: Boolean},
     Tags: {type: String,  max: 100},
-    LocalId:{type: Number}
+    LocalId:{type: Number},
+    IsDeleted:{type:Boolean}
   }
 );
 
