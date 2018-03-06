@@ -5,7 +5,7 @@ const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 // Display list of all orders.
 exports.order_list = function(req, res,next) {
- Order.find()
+  Order.find({IsDeleted:{$exists:false}})
  .populate('ParentTag')
  .sort([['DateOrder',-1]])
  .exec(function (err, list_orders) {
