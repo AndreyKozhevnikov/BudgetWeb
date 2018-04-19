@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "async": "^2.6.0",
+    "bcrypt": "^1.0.2",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",
+    "express-session": "^1.15.6",
     "express-validator": "^4.3.0",
     "moment": "^2.20.1",
     "mongoose": "^5.0.1",

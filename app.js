@@ -4,11 +4,13 @@ let favicon = require('serve-favicon');
 let logger = require('morgan');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
+let session = require('express-session')
 
 let index = require('./routes/index.js');
 let users = require('./routes/users.js');
 let catalog = require('./routes/catalog.js');
 let wiki = require('./routes/wiki.js');
+let requestLogin=require('./routes/requestLogin');
 
 let app = express();
 app.locals.moment = require('moment');
@@ -25,6 +27,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
+app.use(session({
+  secret: 'work hard',
+  resave: true,
+  saveUninitialized: false
+}));
+app.use('/',requestLogin);
 app.use('/', index);
 app.use('/users', users);
 app.use('/wiki', wiki);
