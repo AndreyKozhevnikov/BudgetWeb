@@ -23,8 +23,12 @@ margin: 3px
 {
 text-decoration: none;
 }
-.btnDisableAfterClick
+#btnDisableAfterClick
 {
 	width: 300px;
 	height: 60px;
+}
+#btnSetYesterday
+{
+	height: 34px;
 }

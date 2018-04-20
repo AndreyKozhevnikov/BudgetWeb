@@ -8,7 +8,12 @@ block content
      
       
       label(for='dtDateOrder') Date order:
-      input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment().format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
+      table
+        tr
+          td
+            input(id='dtDateOrder').form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment().format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
+          td
+            button#btnSetYesterday.btn-primary(type='button') Yesterday
 
       label(for='cmbParentTag') Parent tag:
       select#cmbParentTag.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
@@ -24,7 +29,7 @@ block content
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
 
-      button(class='btnDisableAfterClick').btn.btn-primary(type='submit') Submit
+      button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
       br
       label(for='txTags') Tags:
       input#txTags.form-control(type='text', placeholder='Tags' name='fTags' value=(undefined===fOrder ? '' : fOrder.Tags))
