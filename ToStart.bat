@@ -1,2 +1,3 @@
 cd c:\Dropbox\JS\BudgetWeb\
-SET DEBUG=BudgetWeb:* & npm run devstart
+SET CANCREATEUSER=TRUE
+SET DEBUG=BudgetWeb:*& npm run devstart
