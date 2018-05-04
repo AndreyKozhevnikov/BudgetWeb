@@ -73,7 +73,7 @@ function requiresLogin(req, res, next) {
     }else{
       return next();
     }
-  }else  if (req.cookies.cookiename&&(req.url=='/catalog/orders/export'||req.url=='/catalog/update/order'  ){
+  }else  if (req.cookies.cookiename&&(req.url=='/catalog/orders/export'||req.url=='/catalog/update/order')){
    let values = req.cookies.cookiename.split('-');
    let username=values[0];
    let pass=values[1];
