@@ -36,7 +36,7 @@ router.get('/login',function(req,res,next){
   res.render('userview');
 });
 
-function authenticate(name, pass, req,res,next,succesAuthentificate){
+function authenticate(name, pass, req,res,next,succesAuthentificate,id){
   User.authenticate(name,pass,function(error,user){
     if (error||!user){
       let err =new Error('wrong name or pass');
@@ -44,9 +44,10 @@ function authenticate(name, pass, req,res,next,succesAuthentificate){
       return next(err);
     }else{
       req.session.userId=user._id;
+      res.cookie('bwebuserid',user._id,{maxAge:1000*60*60*24*7}); //max age = 7 days
       succesAuthentificate();
     }
-  });
+  },id);
 }
 
 router.post('/login',function(req,res,next){
@@ -81,10 +82,16 @@ function requiresLogin(req, res, next) {
     return next();
   });
 
+ }else if (req.cookies.bwebuserid){
+
+  let st=req.cookies.bwebuserid;
+   authenticate(null,null,req,res,next,function(){
+    return next();
+  }, st);
  }
  else {
   targetURI=req.url;
-  res.redirect('/login');
+  res.redirect('/login');  
 }
 };
 module.exports = router;
