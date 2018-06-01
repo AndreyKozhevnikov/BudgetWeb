@@ -34,7 +34,7 @@ OrderSchema
 OrderSchema
 .virtual('DateOrder_formatted')
 .get(function(){
-  return moment(this.DateOrder).format("DD MMMM YYYY");
+  return moment(this.DateOrder).format("DD MMMM YYYY ddd");
 })
 OrderSchema
 .virtual('DateOrder_pugFormat')
