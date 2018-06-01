@@ -1,5 +1,6 @@
 let Order = require('../models/order.js');
 let Tag=require('../models/tag.js');
+let ListTags;
 let async=require('async');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -33,6 +34,7 @@ exports.order_create_get = function(req, res,next) {
   Tag.find({},null)
   .exec(function(err,tags){
     if (err){return next(err);}
+    ListTags=tags;
     tags.sort(function(a,b){
       return a.OrderNumber-b.OrderNumber;
     });
@@ -59,7 +61,11 @@ body('fDate', 'Invalid date of order').optional({ checkFalsy: true }).isISO8601(
       ParentTag:req.body.fParentTag,
       IsJourney: Boolean (req.body.fIsJourney),
       Tags:req.body.fTags
-    });     
+    });   
+    if (!order.Description)  {
+      let tagDescr=ListTags.find(item=> JSON.stringify(item._id) === JSON.stringify(order.ParentTag));
+      order.Description=tagDescr.Name;
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/errors messages.
