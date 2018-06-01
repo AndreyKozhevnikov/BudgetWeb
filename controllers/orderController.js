@@ -7,7 +7,7 @@ const { sanitizeBody } = require('express-validator/filter');
 exports.order_list = function(req, res,next) {
   Order.find({IsDeleted:{$exists:false}})
  .populate('ParentTag')
- .sort([['DateOrder',-1]])
+ .sort({'DateOrder':-1, '_id':-1})
  .exec(function (err, list_orders) {
   if (err) { return next(err); }
       //Successful, so render
