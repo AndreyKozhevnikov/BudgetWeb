@@ -23,13 +23,18 @@ function processKeyDown(evt){
 function setYesterday(){
 	let dtInput=document.getElementById('dtDateOrder');
 	let stValue=dtInput.valueAsDate;
-	let year=stValue.getFullYear();
-	let month=''+(stValue.getMonth()+1);
-	if (month.length<2)
-		month='0'+month;
-	let day=''+(stValue.getDate()-1);
-	if (day.length<2)
-		day='0'+day;
-	let nValueSt=[year,month,day].join('-');
-	dtInput.value=nValueSt;
+    stValue.setDate(stValue.getDate()-1);
+	dtInput.value=formatDate(stValue)
+}
+
+function formatDate(date) {
+    let d = new Date(date),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
 }
