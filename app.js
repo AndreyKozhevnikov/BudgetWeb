@@ -41,7 +41,8 @@ app.use('/catalog', catalog);
 //Set up mongoose connection
 let mongoose = require('mongoose');
 //let mongoDB = 'mongodb://budgetweb_user:budgetpass@ds117178.mlab.com:17178/budgetwebdb';
-let mongoDB = process.env.MONGODB_URI ||'mongodb://budget_user:666666@ds125388.mlab.com:25388/budgetweb_debug';
+//let mongoDB = process.env.MONGODB_URI ||'mongodb://budget_user:666666@ds125388.mlab.com:25388/budgetweb_debug';
+let mongoDB = process.env.MONGODB_URI ||'mongodb://TestUser:TestPassword@testbudgetweb-shard-00-00-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-01-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-02-ppkcc.mongodb.net:27017/test?ssl=true&replicaSet=TestBudgetWeb-shard-0&authSource=admin&retryWrites=true';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
