@@ -72,7 +72,7 @@ exports.tag_create_post = [
         { 
           Name: req.body.NameFromForm,
           LocalId:req.body.LocalIdFromForm,
-          OrderNumber:req.body.OrderNumberdFromForm
+          OrderNumber:req.body.OrderNumberFromForm
         }
         );
 
