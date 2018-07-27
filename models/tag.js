@@ -5,8 +5,8 @@ let Schema = mongoose.Schema;
 let TagSchema = new Schema(
   {
     Name: {type: String, required: true, max: 100},
-    LocalId:{type: Number,required:true},
-    OrderNumber:{type:Number}
+    LocalId: {type: Number, required: true},
+    OrderNumber: {type: Number}
   }
 );
 
@@ -14,15 +14,15 @@ let TagSchema = new Schema(
 // OrderSchema
 // .virtual('name')
 // .get(function () {
-  // return this.family_name + ', ' + this.first_name;
+// return this.family_name + ', ' + this.first_name;
 // });
 
 //Virtual for author's URL
 TagSchema
-.virtual('url')
-.get(function () {
-  return '/catalog/tag/' + this._id;
-});
+  .virtual('url')
+  .get(function() {
+    return '/catalog/tag/' + this._id;
+  });
 
 //Export model
 module.exports = mongoose.model('Tag', TagSchema);

@@ -10,8 +10,8 @@ router.get('/test2', function(req, res, next) {
   // add a zero in front of numbers<10
   m = checkTime(m);
   s = checkTime(s);
-  let tms=h + ":" + m + ":" + s;
-  res.render('index', { title: 'Express',time:tms });
+  let tms = h + ":" + m + ":" + s;
+  res.render('index', {title: 'Express', time: tms});
 });
 router.get('/', function(req, res, next) {
 

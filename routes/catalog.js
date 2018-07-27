@@ -4,7 +4,7 @@ let router = express.Router();
 // Require controller modules.
 let tag_controller = require('../controllers/tagController.js');
 let order_controller = require('../controllers/orderController.js');
-let home_controller=require('../controllers/homeController.js');
+let home_controller = require('../controllers/homeController.js');
 
 
 /// Tag ROUTES ///
@@ -61,12 +61,12 @@ router.post('/order/:id/update', order_controller.order_update_post);
 router.get('/order/:id', order_controller.order_detail);
 
 //Post update localid of order
-router.post('/update/order',order_controller.update_localid)
+router.post('/update/order', order_controller.update_localid)
 
 // GET request for list of all Orders.
 router.get('/orders', order_controller.order_list);
 
 //export orders to csv
-router.get('/orders/export',order_controller.orders_export)
+router.get('/orders/export', order_controller.orders_export)
 
 module.exports = router;

@@ -10,7 +10,7 @@ let index = require('./routes/index.js');
 let users = require('./routes/users.js');
 let catalog = require('./routes/catalog.js');
 let wiki = require('./routes/wiki.js');
-let requestLogin=require('./routes/requestLogin');
+let requestLogin = require('./routes/requestLogin');
 
 let app = express();
 app.locals.moment = require('moment');
@@ -23,7 +23,7 @@ app.set('view engine', 'pug');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
@@ -32,7 +32,7 @@ app.use(session({
   resave: true,
   saveUninitialized: false
 }));
-app.use('/',requestLogin);
+app.use('/', requestLogin);
 app.use('/', index);
 app.use('/users', users);
 app.use('/wiki', wiki);
@@ -42,7 +42,7 @@ app.use('/catalog', catalog);
 let mongoose = require('mongoose');
 //let mongoDB = 'mongodb://budgetweb_user:budgetpass@ds117178.mlab.com:17178/budgetwebdb';
 //let mongoDB = process.env.MONGODB_URI ||'mongodb://budget_user:666666@ds125388.mlab.com:25388/budgetweb_debug';
-let mongoDB = process.env.MONGODB_URI ||'mongodb://TestUser:TestPassword@testbudgetweb-shard-00-00-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-01-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-02-ppkcc.mongodb.net:27017/test?ssl=true&replicaSet=TestBudgetWeb-shard-0&authSource=admin&retryWrites=true';
+let mongoDB = process.env.MONGODB_URI || 'mongodb://TestUser:TestPassword@testbudgetweb-shard-00-00-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-01-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-02-ppkcc.mongodb.net:27017/test?ssl=true&replicaSet=TestBudgetWeb-shard-0&authSource=admin&retryWrites=true';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
