@@ -1,1 +1,10 @@
-{"extends": "strongloop"}
+{
+    "env":{
+        "node": true,
+        "es6": true
+    },
+    "extends": "strongloop",
+    "rules":{
+        "max-len":[2,80,4,{"ignoreStrings":true,"ignoreComments":true}]
+    }
+}

@@ -1,3 +1,4 @@
+'use strict';
 let mongoose = require('mongoose');
 let bcrypt = require('bcrypt');
 
@@ -6,21 +7,23 @@ let UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
-    trim: true
+    trim: true,
   },
   password: {
     type: String,
     required: true,
-  }
+  },
 });
 UserSchema.pre('save', function(next) {
   let user = this;
   bcrypt.hash(user.password, 10, function(err, hash) {
-    if (err) {return next(err);}
+    if (err) {
+      return next(err);
+    }
     user.password = hash;
     next();
-  })
-})
+  });
+});
 UserSchema.statics.authenticate = function(username, password, callback, id) {
   console.log(username, password, callback.toString());
   console.log('useraoth' + id);
@@ -32,7 +35,7 @@ UserSchema.statics.authenticate = function(username, password, callback, id) {
       console.log('user' + user);
 
       if (err) {
-        return callback(err)
+        return callback(err);
       } else if (!user) {
         let err = new Error('User not found.');
         err.status = 401;
@@ -49,7 +52,7 @@ UserSchema.statics.authenticate = function(username, password, callback, id) {
         }
       });
     });
-}
+};
 
 let User = mongoose.model('User', UserSchema);
 
