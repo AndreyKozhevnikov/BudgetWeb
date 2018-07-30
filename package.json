@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www",
-    "test": "mocha"
+    "test": "mocha",
+    "pretest": "eslint --ignore-path .gitignore ."
   },
   "dependencies": {
     "async": "^2.6.0",
@@ -26,6 +27,8 @@
     "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
+    "eslint": "^5.2.0",
+    "eslint-config-strongloop": "^2.1.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3"
   }
