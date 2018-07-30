@@ -6,7 +6,7 @@ const {body, validationResult} = require('express-validator/check');
 const {sanitizeBody} = require('express-validator/filter');
 
 // Display list of all tags.
-exports.tag_list = function(req, res) {
+exports.tag_list = function(req, res, next) {
   Tag.find().exec(function(err, list_tags) {
     if (err) {
       return next(err);

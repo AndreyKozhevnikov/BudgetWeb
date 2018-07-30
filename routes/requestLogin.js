@@ -75,8 +75,8 @@ router.get('*', function(req, res, next) {
 function requiresLogin(req, res, next) {
   if (req.session && req.session.userId) {
     if (this.targetURI) {
-      res.redirect(targetURI);
-      targetURI = null;
+      res.redirect(this.targetURI);
+      this.targetURI = null;
     } else {
       return next();
     }
@@ -104,7 +104,7 @@ function requiresLogin(req, res, next) {
       st
     );
   } else {
-    targetURI = req.url;
+    this.targetURI = req.url;
     res.redirect('/login');
   }
 }

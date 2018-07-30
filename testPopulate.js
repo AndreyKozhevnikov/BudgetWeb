@@ -24,7 +24,7 @@ var mongoose = require('mongoose');
 var mongoDB = userArgs[0];
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
-var db = mongoose.connection;
+// var db = mongoose.connection;
 mongoose.connection.on(
   'error',
   console.error.bind(console, 'MongoDB connection error:')
@@ -37,7 +37,7 @@ var tags = [];
 // var bookinstances = []
 
 function tagCreate(cb) {
-  tagDetail = {Name: 'testtagname'};
+  let tagDetail = {Name: 'testtagname'};
   var tag = new Tag(tagDetail);
   // tag.Name='test tag';
   tag.save(function(err) {
@@ -54,7 +54,7 @@ function tagCreate(cb) {
 }
 
 function orderCreate(cb) {
-  orderDetail = {Description: 'second order', Value: 45};
+  let orderDetail = {Description: 'second order', Value: 45};
 
   var order = new Order(orderDetail);
   order.ParentTag = tags[0];

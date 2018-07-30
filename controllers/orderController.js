@@ -24,6 +24,9 @@ exports.order_detail = function(req, res, next) {
   Order.findById(req.params.id)
     .populate('ParentTag')
     .exec((err, result) => {
+      if (err){
+        console.log(err);
+      }
       if (result == null) {
         res.send('not found(');
       } else {
