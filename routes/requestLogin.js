@@ -2,7 +2,7 @@
 let express = require('express');
 let router = express.Router();
 let User = require('../models/user.js');
-
+let targetURI;
 function canCreateUser() {
   return process.env.CANCREATEUSER == 'TRUE';
 }
@@ -74,9 +74,9 @@ router.get('*', function(req, res, next) {
 
 function requiresLogin(req, res, next) {
   if (req.session && req.session.userId) {
-    if (this.targetURI) {
-      res.redirect(this.targetURI);
-      this.targetURI = null;
+    if (targetURI) {
+      res.redirect(targetURI);
+      targetURI = null;
     } else {
       return next();
     }
@@ -104,7 +104,7 @@ function requiresLogin(req, res, next) {
       st
     );
   } else {
-    this.targetURI = req.url;
+    targetURI = req.url;
     res.redirect('/login');
   }
 }
