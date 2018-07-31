@@ -1,11 +1,10 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+let wiki_controller = require('../controllers/wikiController.js');
 
 // Home page route.
-router.get('/', function(req, res) {
-  res.send('Wiki home page');
-});
+router.get('/', wiki_controller.index);
 
 // About page route.
 router.get('/about', function(req, res) {

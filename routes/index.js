@@ -12,7 +12,7 @@ router.get('/test2', function(req, res, next) {
   m = checkTime(m);
   s = checkTime(s);
   let tms = h + ':' + m + ':' + s;
-  res.render('index', {title: 'Express', time: tms});
+  res.render('index', {title: 'Express', time: tms, data: 'test'});
 });
 router.get('/', function(req, res, next) {
   res.redirect('/catalog');
@@ -20,6 +20,7 @@ router.get('/', function(req, res, next) {
 router.get('/test', function(req, res, next) {
   res.render('test');
 });
+
 function checkTime(i) {
   if (i < 10) {
     i = '0' + i;
