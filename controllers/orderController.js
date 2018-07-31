@@ -75,6 +75,7 @@ exports.order_create_post = [
       ParentTag: req.body.fParentTag,
       IsJourney: Boolean(req.body.fIsJourney),
       Tags: req.body.fTags,
+      LocalId: req.body.fLocalId,
     });
     if (!order.Description) {
       let tagDescr = ListTags.find(
