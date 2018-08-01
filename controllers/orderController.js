@@ -1,6 +1,7 @@
 'use strict';
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
+let stream = require('stream');
 let ListTags;
 let async = require('async');
 const {body, validationResult} = require('express-validator/check');
@@ -227,7 +228,23 @@ exports.orders_export = function(req, res, next) {
       // res.render('order_list', { title: 'Order List', order_list: list_tags });
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.json(list_orders);
-      // res.json({ user: 'tobi' });
+    });
+};
+exports.orders_backup = function(req, res, next) {
+  Order.find()
+    .populate('ParentTag')
+    .exec(function(err, list_orders) {
+      if (err) {
+        return next(err);
+      }
+      // res.json(list_orders);
+      console.log(list_orders);
+      var fileContents = Buffer.from(JSON.stringify(list_orders));
+      var readStream = new stream.PassThrough();
+      readStream.end(fileContents);
+      res.set('Content-disposition', 'attachment; filename=' + 'fileNametest.txt');
+      res.set('Content-Type', 'text/plain');
+      readStream.pipe(res);
     });
 };
 exports.update_localid = function(req, res, next) {

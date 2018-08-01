@@ -66,7 +66,9 @@ router.post('/update/order', order_controller.update_localid);
 // GET request for list of all Orders.
 router.get('/orders', order_controller.order_list);
 
-// export orders to csv
+// export orders with empty localid to csv
 router.get('/orders/export', order_controller.orders_export);
 
+// backup all orders
+router.get('/orders/backup', order_controller.orders_backup);
 module.exports = router;
