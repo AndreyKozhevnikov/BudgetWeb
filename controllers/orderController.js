@@ -242,11 +242,21 @@ exports.orders_backup = function(req, res, next) {
       var fileContents = Buffer.from(JSON.stringify(list_orders));
       var readStream = new stream.PassThrough();
       readStream.end(fileContents);
-      res.set('Content-disposition', 'attachment; filename=' + 'fileNametest.txt');
+      let backupFileName = 'BWbackup-' + formatDate(new Date()) + '.txt';
+      res.set('Content-disposition', 'attachment; filename=' + backupFileName);
       res.set('Content-Type', 'text/plain');
       readStream.pipe(res);
     });
 };
+function formatDate(date) {
+  let d = new Date(date);
+  let month = '' + (d.getMonth() + 1);
+  let day = '' + d.getDate();
+  let year = d.getFullYear();
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+  return [year, month, day].join('-');
+}
 exports.update_localid = function(req, res, next) {
   let id = req.body.id;
   let localId = req.body.localid;
