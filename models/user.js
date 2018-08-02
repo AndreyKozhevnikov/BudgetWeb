@@ -25,15 +25,9 @@ UserSchema.pre('save', function(next) {
   });
 });
 UserSchema.statics.authenticate = function(username, password, callback, id) {
-  console.log(username, password, callback.toString());
-  console.log('useraoth' + id);
-
   User.findOne({$or: [{username: username}, {_id: id}]})
     // User.findOne({_id:id})
     .exec(function(err, user) {
-      console.log('err' + err);
-      console.log('user' + user);
-
       if (err) {
         return callback(err);
       } else if (!user) {
@@ -46,7 +40,7 @@ UserSchema.statics.authenticate = function(username, password, callback, id) {
       }
       bcrypt.compare(password, user.password, function(err, result) {
         if (err){
-          console.log(err);
+          // console.log(err);
         }
         if (result === true) {
           return callback(null, user);
