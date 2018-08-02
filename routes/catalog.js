@@ -71,4 +71,12 @@ router.get('/orders/export', order_controller.orders_export);
 
 // backup all orders
 router.get('/orders/backup', order_controller.orders_backup);
+
+// delete orders and tags
+router.get('/deleteall', deleteAll);
+
+function deleteAll(req, res, next){
+  order_controller.deleteOrders(req, res, next);
+  tag_controller.deleteTags(res, res, next);
+}
 module.exports = router;

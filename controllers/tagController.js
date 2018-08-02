@@ -171,9 +171,18 @@ exports.tag_update_post = [
         if (err) {
           return next(err);
         }
-        console.log(theTag);
         res.redirect(theTag.url);
       });
     }
   },
 ];
+
+exports.deleteTags = function(req, res, next){
+  Tag.remove({}, function(err){
+    if (err){
+      next(err);
+    } else {
+      res.end('success');
+    }
+  });
+};

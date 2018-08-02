@@ -26,7 +26,7 @@ exports.order_detail = function(req, res, next) {
     .populate('ParentTag')
     .exec((err, result) => {
       if (err){
-        console.log(err);
+        next(err);
       }
       if (result == null) {
         res.send('not found(');
@@ -238,7 +238,6 @@ exports.orders_backup = function(req, res, next) {
         return next(err);
       }
       // res.json(list_orders);
-      console.log(list_orders);
       var fileContents = Buffer.from(JSON.stringify(list_orders));
       var readStream = new stream.PassThrough();
       readStream.end(fileContents);
@@ -248,6 +247,7 @@ exports.orders_backup = function(req, res, next) {
       readStream.pipe(res);
     });
 };
+
 function formatDate(date) {
   let d = new Date(date);
   let month = '' + (d.getMonth() + 1);
@@ -257,6 +257,7 @@ function formatDate(date) {
   if (day.length < 2) day = '0' + day;
   return [year, month, day].join('-');
 }
+
 exports.update_localid = function(req, res, next) {
   let id = req.body.id;
   let localId = req.body.localid;
@@ -264,8 +265,6 @@ exports.update_localid = function(req, res, next) {
     if (err) {
       next(err);
     }
-    console.log(id);
-    console.dir(theTag);
     theTag.LocalId = localId;
     theTag.save(function(err, savedTag) {
       if (err) {
@@ -274,6 +273,14 @@ exports.update_localid = function(req, res, next) {
       res.send('update is Successful');
     });
   });
+};
 
-  // res.send('NOT IMPLEMENTED: order update_localid');
+exports.deleteOrders = function(req, res, next){
+  Order.remove({}, function(err){
+    if (err){
+      next(err);
+    } else {
+      res.end('success');
+    }
+  });
 };
