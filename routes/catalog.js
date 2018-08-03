@@ -6,7 +6,8 @@ let router = express.Router();
 let tag_controller = require('../controllers/tagController.js');
 let order_controller = require('../controllers/orderController.js');
 let home_controller = require('../controllers/homeController.js');
-
+let formidable = require('formidable');
+let fs = require('fs');
 // / Tag ROUTES ///
 
 // GET catalog home page.
@@ -70,13 +71,44 @@ router.get('/orders', order_controller.order_list);
 router.get('/orders/export', order_controller.orders_export);
 
 // backup all orders
-router.get('/orders/backup', order_controller.orders_backup);
+router.get('/backup', order_controller.orders_backup);
 
 // delete orders and tags
 router.get('/deleteall', deleteAll);
 
-function deleteAll(req, res, next){
+function deleteAll(req, res, next) {
   order_controller.deleteOrders(req, res, next);
   tag_controller.deleteTags(res, res, next);
 }
+
+router.get('/restore', function(req, res, next) {
+  res.redirect('/wiki');
+});
+
+router.post('/restore', function(req, res, next) {
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(err, fields, files) {
+    if (err) {
+      next(err);
+    };
+    console.dir(files.file.path);
+    fs.readFile(files.file.path, function(err, data) {
+      if (err) {
+        next(err);
+      }
+      console.log('data');
+      console.log(data.toString());
+      let testjsong = JSON.parse(data);
+      console.log(testjsong);
+    });
+    // var oldpath = files.filetoupload.path;
+    // var newpath = 'C:/Users/Your Name/' + files.filetoupload.name;
+    // fs.rename(oldpath, newpath, function(err) {
+    //   if (err) throw err;
+    //   res.write('File uploaded and moved!');
+    //   res.end();
+    // });
+  });
+});
+
 module.exports = router;
