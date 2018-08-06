@@ -101,10 +101,18 @@ router.post('/restore', function(req, res, next) {
       let testjsong = JSON.parse(data);
       console.log(testjsong);
       // console.assert(false);
-      let tmpOrder = testjsong[0];
-      let tmpTag = tmpOrder.ParentTag;
-      let storedTag = tag_controller.createTagFromBackup(tmpTag);
-      order_controller.createOrderFromBackup(tmpOrder, storedTag);
+      let storedTags = {};
+
+      for (let i = 0; i < testjsong.length; i++) {
+        let tmpOrder = testjsong[i];
+        let tmpTag = tmpOrder.ParentTag;
+        let storedTag = storedTags[tmpTag.Name];
+        if (storedTag == undefined) {
+          storedTag = tag_controller.createTagFromBackup(tmpTag);
+          storedTags[storedTag.Name] = storedTag;
+        }
+        order_controller.createOrderFromBackup(tmpOrder, storedTag);
+      }
     });
   });
 });
