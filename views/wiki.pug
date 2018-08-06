@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  p 
+    a(class='mainLink' href='/catalog/backup') Backup
+  p 
+    form#uploadForm(action="/catalog/restore" enctype="multipart/form-data" method="post")
+      input(type="file" name="file")
+      a(class='mainLink' onclick='parentNode.submit();') Restore
+  p 
+    a(class='mainLink' href='/catalog/deleteall') DeleteOrdersAndTags
+  p 
+    a(class='mainLink' href='/catalog/orders') All orders
+  input(type='file')
+  //a(class='mainLink' href='/catalog/tag/create') Create new tag
+  //a(class='mainLink' href='/catalog/order/create') Create new order
+  //a(class='mainLink' href='/catalog/orders/export') Export orders
+  

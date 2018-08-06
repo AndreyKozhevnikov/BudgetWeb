@@ -12,7 +12,10 @@
             "env": {
                 "CANCREATEUSER":"True"    
             },
-            
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
