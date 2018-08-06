@@ -151,14 +151,12 @@ exports.tag_update_post = [
     .trim()
     .escape(),
   (req, res, next) => {
-    console.dir(req.body);
     let tag = new Tag({
       Name: req.body.NameFromForm,
       LocalId: req.body.LocalIdFromForm,
       OrderNumber: req.body.OrderNumberFromForm,
       _id: req.params.id,
     });
-    console.dir(tag);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

@@ -101,7 +101,7 @@ router.post('/restore', function(req, res, next) {
       let testjsong = JSON.parse(data);
       console.log(testjsong);
       // console.assert(false);
-      let tmpTag=testjsong[0].ParentTag;
+      let tmpTag = testjsong[0].ParentTag;
       tag_controller.createTagFromBackup(tmpTag);
     });
   });
