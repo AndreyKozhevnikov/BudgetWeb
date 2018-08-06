@@ -192,4 +192,5 @@ exports.createTagFromBackup = function(tagFromBackup){
       console.dir(err);
     }
   });
+  return tag;
 };

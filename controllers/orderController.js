@@ -25,7 +25,7 @@ exports.order_detail = function(req, res, next) {
   Order.findById(req.params.id)
     .populate('ParentTag')
     .exec((err, result) => {
-      if (err){
+      if (err) {
         next(err);
       }
       if (result == null) {
@@ -275,12 +275,22 @@ exports.update_localid = function(req, res, next) {
   });
 };
 
-exports.deleteOrders = function(req, res, next){
-  Order.remove({}, function(err){
-    if (err){
+exports.deleteOrders = function(req, res, next) {
+  Order.remove({}, function(err) {
+    if (err) {
       next(err);
     } else {
       res.end('success');
+    }
+  });
+};
+
+exports.createOrderFromBackup = function(tmpOrder, storedTag) {
+  let order = new Order(tmpOrder);
+  order.ParentTag = storedTag;
+  order.save(function(err, savedTag) {
+    if (err) {
+      console.dir(err);
     }
   });
 };
