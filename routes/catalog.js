@@ -77,8 +77,8 @@ router.get('/backup', order_controller.orders_backup);
 router.get('/deleteall', deleteAll);
 
 function deleteAll(req, res, next) {
-  order_controller.deleteOrders(req, res, next);
-  tag_controller.deleteTags(res, res, next);
+  // order_controller.deleteOrders(req, res, next);
+  // tag_controller.deleteTags(res, res, next);
 }
 
 router.get('/restore', function(req, res, next) {
