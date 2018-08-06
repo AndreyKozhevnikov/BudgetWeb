@@ -100,14 +100,10 @@ router.post('/restore', function(req, res, next) {
       console.log(data.toString());
       let testjsong = JSON.parse(data);
       console.log(testjsong);
+      // console.assert(false);
+      let tmpTag=testjsong[0].ParentTag;
+      tag_controller.createTagFromBackup(tmpTag);
     });
-    // var oldpath = files.filetoupload.path;
-    // var newpath = 'C:/Users/Your Name/' + files.filetoupload.name;
-    // fs.rename(oldpath, newpath, function(err) {
-    //   if (err) throw err;
-    //   res.write('File uploaded and moved!');
-    //   res.end();
-    // });
   });
 });
 

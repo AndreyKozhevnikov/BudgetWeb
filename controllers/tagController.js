@@ -186,3 +186,12 @@ exports.deleteTags = function(req, res, next){
     }
   });
 };
+
+exports.createTagFromBackup = function(tagFromBackup){
+  let tag = new Tag(tagFromBackup);
+  tag.save(function(err) {
+    if (err){
+      console.dir(err);
+    }
+  });
+};
