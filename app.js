@@ -12,6 +12,7 @@ let users = require('./routes/users.js');
 let catalog = require('./routes/catalog.js');
 let wiki = require('./routes/wiki.js');
 let requestLogin = require('./routes/requestLogin');
+let tagRouter = require('./routes/tagRouter.js');
 
 let app = express();
 app.locals.moment = require('moment');
@@ -37,6 +38,7 @@ app.use(
 );
 app.use('/', requestLogin);
 app.use('/', index);
+app.use('/tag', tagRouter);
 app.use('/users', users);
 app.use('/wiki', wiki);
 app.use('/', catalog);

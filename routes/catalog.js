@@ -3,7 +3,6 @@ let express = require('express');
 let router = express.Router();
 
 // Require controller modules.
-let tag_controller = require('../controllers/tagController.js');
 let order_controller = require('../controllers/orderController.js');
 let home_controller = require('../controllers/homeController.js');
 let formidable = require('formidable');
@@ -13,30 +12,6 @@ let fs = require('fs');
 // GET catalog home page.
 
 router.get('/', home_controller.index);
-
-// GET request for creating a Tag. NOTE This must come before routes that display Tag (uses id).
-router.get('/tag/create', tag_controller.tag_create_get);
-
-// POST request for creating Tag.
-router.post('/tag/create', tag_controller.tag_create_post);
-
-// GET request to delete Tag.
-router.get('/tag/:id/delete', tag_controller.tag_delete_get);
-
-// POST request to delete Tag.
-router.post('/tag/:id/delete', tag_controller.tag_delete_post);
-
-// GET request to update Tag.
-router.get('/tag/:id/update', tag_controller.tag_update_get);
-
-// POST request to update Tag.
-router.post('/tag/:id/update', tag_controller.tag_update_post);
-
-// GET request for one Tag.
-router.get('/tag/:id', tag_controller.tag_detail);
-
-// GET request for list of all Tag items.
-router.get('/tags', tag_controller.tag_list);
 
 // / Order ROUTES ///
 
