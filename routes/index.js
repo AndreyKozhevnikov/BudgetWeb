@@ -14,9 +14,9 @@ router.get('/test2', function(req, res, next) {
   let tms = h + ':' + m + ':' + s;
   res.render('index', {title: 'Express', time: tms, data: 'test'});
 });
-router.get('/', function(req, res, next) {
-  res.redirect('/catalog');
-});
+// router.get('/', function(req, res, next) {
+//   res.redirect('/catalog');
+// });
 router.get('/test', function(req, res, next) {
   res.render('test');
 });

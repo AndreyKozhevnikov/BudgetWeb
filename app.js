@@ -39,7 +39,7 @@ app.use('/', requestLogin);
 app.use('/', index);
 app.use('/users', users);
 app.use('/wiki', wiki);
-app.use('/catalog', catalog);
+app.use('/', catalog);
 
 // Set up mongoose connection
 let mongoose = require('mongoose');

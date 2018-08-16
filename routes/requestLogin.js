@@ -82,7 +82,7 @@ function requiresLogin(req, res, next) {
     }
   } else if (
     req.cookies.cookiename &&
-    (req.url == '/catalog/orders/export' || req.url == '/catalog/update/order')
+    (req.url == '/orders/export' || req.url == '/update/order')
   ) {
     let values = req.cookies.cookiename.split('-');
     let username = values[0];

@@ -124,7 +124,7 @@ exports.order_delete_post = function(req, res, next) {
     if (err) {
       next(err);
     }
-    res.redirect('/catalog/orders');
+    res.redirect('/orders');
   });
 };
 

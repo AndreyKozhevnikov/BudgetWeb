@@ -111,7 +111,7 @@ exports.tag_create_post = [
               return next(err);
             }
             // Genre saved. Redirect to genre detail page.
-            res.redirect('/catalog/tag/create');
+            res.redirect('/tag/create');
           });
         }
       });
