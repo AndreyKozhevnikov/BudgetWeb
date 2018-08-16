@@ -22,16 +22,18 @@ router.get('/:id/update', order_controller.order_update_get);
 // POST request to update Order.
 router.post('/:id/update', order_controller.order_update_post);
 
-// GET request for one Order.
-router.get('/:id', order_controller.order_detail);
+
 
 // Post update localid of order
-router.post('/order/update', order_controller.update_localid);
+router.post('/update', order_controller.update_localid);
 
 // GET request for list of all Orders.
-router.get('/order/list', order_controller.order_list);
+router.get('/list', order_controller.order_list);
 
 // export orders with empty localid to csv
-router.get('/order/exportWithEmptyLocalId', order_controller.orders_exportWithEmptyLocalId);
+router.get('/exportWithEmptyLocalId', order_controller.orders_exportWithEmptyLocalId);
+
+// GET request for one Order.
+router.get('/:id', order_controller.order_detail);
 
 module.exports = router;
