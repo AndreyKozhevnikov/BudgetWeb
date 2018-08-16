@@ -215,7 +215,7 @@ exports.order_update_post = [
     }
   },
 ];
-exports.orders_export = function(req, res, next) {
+exports.orders_exportWithEmptyLocalId = function(req, res, next) {
   Order.find({
     LocalId: null,
   })
