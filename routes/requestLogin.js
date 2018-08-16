@@ -3,39 +3,6 @@ let express = require('express');
 let router = express.Router();
 let User = require('../models/user.js');
 let targetURI;
-function canCreateUser() {
-  return process.env.CANCREATEUSER == 'TRUE';
-}
-
-router.get('/createuser', function(req, res, next) {
-  if (!canCreateUser()) {
-    next();
-    return;
-  }
-  res.render('userview');
-});
-
-router.post('/createuser', function(req, res, next) {
-  if (!canCreateUser()) {
-    res.redirect('/login');
-  }
-
-  let user = new User({
-    username: req.body.uname,
-    password: req.body.upass,
-  });
-
-  user.save(function(err, resultuser) {
-    if (err) {
-      return next(err);
-    }
-    res.send('user created');
-  });
-});
-
-router.get('/login', function(req, res, next) {
-  res.render('userview');
-});
 
 function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
   User.authenticate(
@@ -56,6 +23,9 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
   );
 }
 
+router.get('/login', function(req, res, next) {
+  res.render('userview');
+});
 router.post('/login', function(req, res, next) {
   if (req.body.uname && req.body.upass) {
     authenticate(req.body.uname, req.body.upass, req, res, next, function() {

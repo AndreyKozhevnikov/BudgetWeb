@@ -22,8 +22,6 @@ router.get('/:id/update', order_controller.order_update_get);
 // POST request to update Order.
 router.post('/:id/update', order_controller.order_update_post);
 
-
-
 // Post update localid of order
 router.post('/update', order_controller.update_localid);
 
