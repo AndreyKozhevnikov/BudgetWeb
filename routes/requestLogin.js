@@ -15,7 +15,7 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
         return next(err);
       } else {
         req.session.userId = user._id;
-        res.cookie('bwebuserid', user._id, {maxAge: 1000 * 60 * 60 * 24 * 7}); // max age = 7 days
+        res.cookie('bwebuserid', user._id, { maxAge: 1000 * 60 * 60 * 24 * 7 }); // max age = 7 days
         succesAuthentificate();
       }
     },
@@ -52,7 +52,7 @@ function requiresLogin(req, res, next) {
     }
   } else if (
     req.cookies.cookiename &&
-    (req.url == '/orders/exportWithEmptyLocalId' || req.url == '/order/update')
+    (req.url == '/order/exportWithEmptyLocalId' || req.url == '/order/update')
   ) {
     let values = req.cookies.cookiename.split('-');
     let username = values[0];

@@ -96,7 +96,7 @@ function canCreateUser() {
 }
 function createUserGet(req, res, next) {
   if (!canCreateUser()) {
-    next();
+    res.send('cant create user');
     return;
   }
   res.render('userview');
