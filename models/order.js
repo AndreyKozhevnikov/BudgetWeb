@@ -24,7 +24,7 @@ let OrderSchema = new Schema({
 
 // Virtual for author's URL
 OrderSchema.virtual('url').get(function() {
-  return '/order/' + this._id;
+  return '/order/' + this._id + '/update';
 });
 
 OrderSchema.virtual('DateOrder_formatted').get(function() {
