@@ -7,6 +7,9 @@ function init() {
   btn.addEventListener('click', disableOnSubmit);
   let btnYesterDay = document.getElementById('btnSetYesterday');
   btnYesterDay.addEventListener('click', setYesterday);
+
+  let valueInput = document.getElementById('txValue');
+  valueInput.focus();
 }
 
 function disableOnSubmit() {
