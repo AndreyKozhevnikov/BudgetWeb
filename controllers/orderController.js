@@ -106,7 +106,7 @@ exports.order_create_post = [
         if (err) {
           next(err);
         }
-        res.redirect(order.url);
+        res.redirect('/order/list');
       });
     }
   },
@@ -124,7 +124,7 @@ exports.order_delete_post = function(req, res, next) {
     if (err) {
       next(err);
     }
-    res.redirect('/catalog/orders');
+    res.redirect('/orders');
   });
 };
 
@@ -215,7 +215,7 @@ exports.order_update_post = [
     }
   },
 ];
-exports.orders_export = function(req, res, next) {
+exports.orders_exportWithEmptyLocalId = function(req, res, next) {
   Order.find({
     LocalId: null,
   })
