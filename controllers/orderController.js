@@ -106,7 +106,7 @@ exports.order_create_post = [
         if (err) {
           next(err);
         }
-        res.redirect(order.url);
+        res.redirect('/order/list');
       });
     }
   },
