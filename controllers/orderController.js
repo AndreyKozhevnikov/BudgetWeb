@@ -210,7 +210,7 @@ exports.order_update_post = [
         if (err) {
           return next(err);
         }
-        res.redirect(theOrder.url);
+        res.redirect('/order/list');
       });
     }
   },
