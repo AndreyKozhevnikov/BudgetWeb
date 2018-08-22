@@ -6,9 +6,10 @@ let order_controller = require('../controllers/orderController.js');
 
 // GET request for creating Order. NOTE This must come before route for id (i.e. display order).
 router.get('/create', order_controller.order_create_get);
-
+router.get('/createWithNewTag', order_controller.order_create_get_withNewTag);
 // POST request for creating Order.
 router.post('/create', order_controller.order_create_post);
+
 
 // GET request to delete Order.
 router.get('/:id/delete', order_controller.order_delete_get);

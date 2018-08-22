@@ -44,6 +44,11 @@ function order_create_get(req, res, next) {
   res.render('order_form', { title: 'Create Order', tag_list: tagList });
 };
 
+function order_create_get_withNewTag(req, res, next){
+  populateTagList();
+  order_create_get(req, res, next);
+}
+
 function order_create_post(req, res, next) {
   let order = new Order({
     DateOrder: req.body.fDate,
@@ -284,6 +289,7 @@ populateTagList();
 exports.order_detail = order_detail;
 exports.order_list = order_list;
 exports.order_create_get = order_create_get;
+exports.order_create_get_withNewTag = order_create_get_withNewTag;
 exports.order_create_post = order_create_post_array;
 exports.order_delete_get = order_delete_get;
 exports.order_delete_post = order_delete_post;

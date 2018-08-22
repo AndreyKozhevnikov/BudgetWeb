@@ -93,7 +93,7 @@ function tag_create_post(req, res, next) {
             return next(err);
           }
           // Genre saved. Redirect to genre detail page.
-          res.redirect('/tag/create');
+          res.redirect('/order/createWithNewTag');
         });
       }
     });
