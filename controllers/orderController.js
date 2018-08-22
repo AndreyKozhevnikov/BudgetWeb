@@ -2,8 +2,8 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let stream = require('stream');
-let ListTags;
 let async = require('async');
+let tagList;
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 // Display list of all orders.
@@ -38,16 +38,10 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  Tag.find({}, null).exec(function(err, tags) {
-    if (err) {
-      return next(err);
-    }
-    ListTags = tags;
-    tags.sort(function(a, b) {
-      return a.OrderNumber - b.OrderNumber;
-    });
-    res.render('order_form', { title: 'Create Order', tag_list: tags });
+  tagList.sort(function(a, b) {
+    return a.OrderNumber - b.OrderNumber;
   });
+  res.render('order_form', { title: 'Create Order', tag_list: tagList });
 };
 
 function order_create_post(req, res, next) {
@@ -61,7 +55,7 @@ function order_create_post(req, res, next) {
     LocalId: req.body.fLocalId,
   });
   if (!order.Description) {
-    let tagDescr = ListTags.find(
+    let tagDescr = tagList.find(
       item => JSON.stringify(item._id) === JSON.stringify(order.ParentTag)
     );
     order.Description = tagDescr.Name;
@@ -69,21 +63,15 @@ function order_create_post(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/errors messages.
-    Tag.find({}, null).exec(function(err, tags) {
-      if (err) {
-        return next(err);
-      }
-      res.render('order_form', {
-        title: 'Create Order (err)',
-        fOrder: order,
-        errors: errors.array(),
-        tag_list: tags,
-      });
-      return;
+    res.render('order_form', {
+      title: 'Create Order (err)',
+      fOrder: order,
+      errors: errors.array(),
+      tag_list: tagList,
     });
+    return;
   } else {
     // Data from form is valid.
-
     order.save(function(err) {
       if (err) {
         next(err);
@@ -131,26 +119,16 @@ function order_delete_post(req, res, next) {
 
 // Display order update form on GET.
 function order_update_get(req, res, next) {
-  async.parallel(
-    {
-      order: function(callback) {
-        Order.findById(req.params.id).exec(callback);
-      },
-      tags: function(callback) {
-        Tag.find().exec(callback);
-      },
-    },
-    function(err, results) {
-      if (err) {
-        return next(err);
-      }
-      res.render('order_form', {
-        title: 'Update Order',
-        fOrder: results.order,
-        tag_list: results.tags,
-      });
+  Order.findById(req.params.id).exec(function(err, order) {
+    if (err) {
+      return next(err);
     }
-  );
+    res.render('order_form', {
+      title: 'Update Order',
+      fOrder: order,
+      tag_list: tagList,
+    });
+  });
 };
 
 // Handle order update on POST.
@@ -169,18 +147,13 @@ function order_update_post(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/errors messages.
-    Tag.find({}, null).exec(function(err, tags) {
-      if (err) {
-        return next(err);
-      }
-      res.render('order_form', {
-        title: 'Create Order (err)',
-        fOrder: order,
-        errors: errors.array(),
-        tag_list: tags,
-      });
-      return;
+    res.render('order_form', {
+      title: 'Create Order (err)',
+      fOrder: order,
+      errors: errors.array(),
+      tag_list: tagList,
     });
+    return;
   } else {
     // Data from form is valid.
 
@@ -299,6 +272,15 @@ function createOrderFromBackup(tmpOrder, storedTag) {
   });
 };
 
+function populateTagList() {
+  Tag.find().exec(function(err, tags) {
+    if (err) {
+      console.log('error in populateTagList');
+    }
+    tagList = tags;
+  });
+}
+populateTagList();
 exports.order_detail = order_detail;
 exports.order_list = order_list;
 exports.order_create_get = order_create_get;
