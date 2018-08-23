@@ -21,7 +21,7 @@ block content
           if fOrder
             option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name}
           else
-            option(value=tag._id) #{tag.Name} 
+            option(value=tag._id) #{tag.Name} - #{tag.MyNumber}
 
       label(for='txValue') Value:
       input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))

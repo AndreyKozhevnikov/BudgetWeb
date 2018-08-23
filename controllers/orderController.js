@@ -2,7 +2,6 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let stream = require('stream');
-let async = require('async');
 let tagList;
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -38,13 +37,11 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  tagList.sort(function(a, b) {
-    return a.OrderNumber - b.OrderNumber;
-  });
+
   res.render('order_form', { title: 'Create Order', tag_list: tagList });
 };
 
-function order_create_get_withNewTag(req, res, next){
+function order_create_get_withNewTag(req, res, next) {
   populateTagList();
   order_create_get(req, res, next);
 }
@@ -283,9 +280,48 @@ function populateTagList() {
       console.log('error in populateTagList');
     }
     tagList = tags;
+    let cutDate = new Date();
+    cutDate.setDate(cutDate.getDate() - 60);
+    Order
+      .aggregate(
+        [
+          {
+            $match: {
+              IsDeleted: { $exists: false },
+              DateOrder: { $gt: cutDate },
+            },
+          },
+          {
+            $group: {
+              _id: '$ParentTag',
+              count: { $sum: 1 },
+            },
+          },
+        ]
+      )
+      .exec(function(err, list_orders) {
+        if (err) {
+          console.log(err);
+        }
+        tagList.sort(function(a, b) {
+          let aNumber = list_orders.find(item => item._id.equals(a._id));
+          let bNumber = list_orders.find(item => item._id.equals(b._id));
+          aNumber = aNumber ? aNumber.count : 0;
+          bNumber = bNumber ? bNumber.count : 0;
+          if (!a.MyNumber) {
+            a.MyNumber = aNumber;
+          }
+          if (!b.MyNumber) {
+            b.MyNumber = bNumber;
+          }
+          return bNumber - aNumber;
+        });
+      });
   });
 }
+
 populateTagList();
+
 exports.order_detail = order_detail;
 exports.order_list = order_list;
 exports.order_create_get = order_create_get;
