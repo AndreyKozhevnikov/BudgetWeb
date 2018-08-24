@@ -3,6 +3,8 @@ let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let stream = require('stream');
 let tagList;
+let popularTagList;
+
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 // Display list of all orders.
@@ -38,11 +40,11 @@ function order_detail(req, res, next) {
 // Display order create form on GET.
 function order_create_get(req, res, next) {
 
-  res.render('order_form', { title: 'Create Order', tag_list: tagList });
+  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList});
 };
 
 function order_create_get_withNewTag(req, res, next) {
-  populateTagList();
+  populateTagLists();
   order_create_get(req, res, next);
 }
 
@@ -274,7 +276,7 @@ function createOrderFromBackup(tmpOrder, storedTag) {
   });
 };
 
-function populateTagList() {
+function populateTagLists() {
   Tag.find().exec(function(err, tags) {
     if (err) {
       console.log('error in populateTagList');
@@ -316,11 +318,12 @@ function populateTagList() {
           }
           return bNumber - aNumber;
         });
+        popularTagList = tagList.slice(1, 4);
       });
   });
 }
 
-populateTagList();
+populateTagLists();
 
 exports.order_detail = order_detail;
 exports.order_list = order_list;
