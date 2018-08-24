@@ -8,12 +8,13 @@ block content
      
       
       label(for='dtDateOrder') Date order:
-      table
+      table(style='width:100%')
         tr
           td
             input(id='dtDateOrder').form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment().format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
+          td(style="width:10px")
           td
-            button#btnSetYesterday.btn-primary(type='button') Yesterday
+            button#btnSetYesterday.btn-primary(type='button' style='width:100%') Yesterday
 
       label(for='cmbParentTag') Parent tag:
       select#cmbParentTag.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
@@ -22,6 +23,7 @@ block content
             option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name}
           else
             option(value=tag._id) #{tag.Name} - #{tag.MyNumber}
+      br
       table(style='width:100%')
         tr
         each tag, index in popularTagList
@@ -36,7 +38,7 @@ block content
 
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
-
+      br
       button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
       br
       label(for='txTags') Tags:
