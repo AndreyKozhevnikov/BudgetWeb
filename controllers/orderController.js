@@ -131,6 +131,7 @@ function order_update_get(req, res, next) {
       title: 'Update Order',
       fOrder: order,
       tag_list: tagList,
+      popularTagList: popularTagList,
     });
   });
 };
