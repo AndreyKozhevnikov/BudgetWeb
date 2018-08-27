@@ -39,7 +39,6 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-
   res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList});
 };
 
@@ -131,6 +130,7 @@ function order_update_get(req, res, next) {
       title: 'Update Order',
       fOrder: order,
       tag_list: tagList,
+      popularTagList: popularTagList,
     });
   });
 };
