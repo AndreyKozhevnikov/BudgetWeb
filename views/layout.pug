@@ -11,7 +11,7 @@ html(lang='en')
     block mystyles
 
   body
-    div
+    div(class='col-lg-4' id='mainlinks_holder')
       table(style='width:100%')
         tr
           td
@@ -20,5 +20,5 @@ html(lang='en')
             a(class='mainLink' href='/order/list') All orders
           td
             a(class='mainLink' href='/wiki') Wiki            
-    div(class='col-sm-10')
+    div(class='col-lg-4')
       block content

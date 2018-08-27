@@ -17,11 +17,19 @@ cursor: default;
 color: #fff;
 position: relative;
 text-align: center;
-margin: 3px
+margin: 3px;
+width: 90%;
+}
+.col-lg-4{
+  float: none;
 }
 .mainLink:hover
 {
 text-decoration: none;
+}
+#mainlinks_holder{
+  padding-left: 0px;
+  padding-right: 0px;
 }
 #btnDisableAfterClick
 {
