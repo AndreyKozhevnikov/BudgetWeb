@@ -6,33 +6,14 @@ block mystyles
       td,th{
         text-align:center
       }
+   script.
+     var order_list=!{JSON.stringify(order_list)}; 
+   script(src='/javascripts/order_list.js')
 block content
 
 
   h1= title
   
-  div
-    table(style="width:100%")
-      thead
-        tr 
-          th DateOrder 
-          th Value
-          th Description
-          th ParentTag
-          th LocalId
-          th IsJourney
-          th Tags
-      tbody
-        each order in order_list
-          tr
-            td 
-              a(href=order.url) #{order.DateOrder_formatted}
-            td #{order.Value}
-            //td #{order.Description}
-            td 
-              a(href=order.url) #{order.Description}
-            td #{order.ParentTag.Name}
-            td #{order.LocalId}
-            td #{order.IsJourney}
-            td #{order.Tags}
+  div(id='orderListContainer')
+   
             
