@@ -5,22 +5,17 @@ let moment = require('moment');
 let Schema = mongoose.Schema;
 
 let OrderSchema = new Schema({
-  DateOrder: {type: Date, required: true},
-  Value: {type: Number, required: true},
-  Description: {type: String, max: 100},
-  ParentTag: {type: Schema.ObjectId, ref: 'Tag', required: true},
-  IsJourney: {type: Boolean},
-  Tags: {type: String, max: 100},
-  LocalId: {type: Number},
-  IsDeleted: {type: Boolean},
+  DateOrder: { type: Date, required: true },
+  Value: { type: Number, required: true },
+  Description: { type: String, max: 100 },
+  ParentTag: { type: Schema.ObjectId, ref: 'Tag', required: true },
+  IsJourney: { type: Boolean },
+  Tags: { type: String, max: 100 },
+  LocalId: { type: Number },
+  IsDeleted: { type: Boolean },
 });
 
-// Virtual for author's full name
-// OrderSchema
-// .virtual('name')
-// .get(function () {
-// return this.family_name + ', ' + this.first_name;
-// });
+// OrderSchema.set('toJSON', { virtuals: true });
 
 // Virtual for author's URL
 OrderSchema.virtual('url').get(function() {
