@@ -19,7 +19,10 @@ window.onload = function() {
           dataType: 'date',
           format: 'dd-MMM-yy EEE',
         },
-        'Value',
+        {
+          dataField: 'Value',
+          width: 50,
+        },
         {
           dataField: 'Description',
           cellTemplate: (container, options) => {
@@ -27,11 +30,13 @@ window.onload = function() {
             a.classList.add('dx-link');
             a.text = options.data.Description;
             a.href = '/order/' + options.data._id + '/update';
+            a.style.wordWrap = 'break-word';
             container[0].appendChild(a);
           },
         },
         'ParentTag.Name',
       ],
+      wordWrapEnabled: true,
     }
   );
 };
