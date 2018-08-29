@@ -18,10 +18,12 @@ window.onload = function() {
           dataField: 'DateOrder',
           dataType: 'date',
           format: 'dd-MMM-yy EEE',
+          caption: 'Date',
+          width: '29%',
         },
         {
           dataField: 'Value',
-          width: 50,
+          width: '19%',
         },
         {
           dataField: 'Description',
@@ -34,7 +36,11 @@ window.onload = function() {
             container[0].appendChild(a);
           },
         },
-        'ParentTag.Name',
+        {
+          dataField: 'ParentTag.Name',
+          caption: 'Tag',
+          width: '21%',
+        },
       ],
       wordWrapEnabled: true,
     }
