@@ -18,8 +18,13 @@ window.onload = function() {
           dataField: 'DateOrder',
           dataType: 'date',
           format: 'dd-MMM-yy EEE',
+          caption: 'Date',
+          width: '29%',
         },
-        'Value',
+        {
+          dataField: 'Value',
+          width: '19%',
+        },
         {
           dataField: 'Description',
           cellTemplate: (container, options) => {
@@ -27,11 +32,17 @@ window.onload = function() {
             a.classList.add('dx-link');
             a.text = options.data.Description;
             a.href = '/order/' + options.data._id + '/update';
+            a.style.wordWrap = 'break-word';
             container[0].appendChild(a);
           },
         },
-        'ParentTag.Name',
+        {
+          dataField: 'ParentTag.Name',
+          caption: 'Tag',
+          width: '21%',
+        },
       ],
+      wordWrapEnabled: true,
     }
   );
 };
