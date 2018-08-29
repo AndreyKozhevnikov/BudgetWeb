@@ -10,6 +10,17 @@ function init() {
 
   let valueInput = document.getElementById('txValue');
   valueInput.focus();
+  valueInput.onkeydown = function(keyBoardEvent) {
+    let isNumber = isFinite(keyBoardEvent.key);
+    let isSpace = keyBoardEvent.keyCode == 32;
+    if (!isNumber || isSpace) {
+      let descriptionInput = document.getElementById('txDescr');
+      descriptionInput.focus();
+    }
+    if (isSpace){
+      return false;
+    }
+  };
 }
 
 function disableOnSubmit() {
