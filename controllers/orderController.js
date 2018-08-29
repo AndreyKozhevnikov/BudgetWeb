@@ -301,13 +301,13 @@ function populateTagLists() {
           },
         ]
       )
-      .exec(function(err, list_orders) {
+      .exec(function(err, list_groupedOrders) {
         if (err) {
           console.log(err);
         }
         tagList.sort(function(a, b) {
-          let aNumber = list_orders.find(item => item._id.equals(a._id));
-          let bNumber = list_orders.find(item => item._id.equals(b._id));
+          let aNumber = list_groupedOrders.find(item => item._id.equals(a._id));
+          let bNumber = list_groupedOrders.find(item => item._id.equals(b._id));
           aNumber = aNumber ? aNumber.count : 0;
           bNumber = bNumber ? bNumber.count : 0;
           if (!a.MyNumber) {

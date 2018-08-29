@@ -4,19 +4,6 @@ block content
 
   h1 Name: #{tag.Name}
   h1 LocalId: #{tag.LocalId}
-  h1 OrderNumber: #{tag.OrderNumber}
   div(style='margin-left:20px;margin-top:20px')
   p
     a(href=tag.url+'/update') Update Tag
-  h4 Orders
-    
-    dl
-    each order in tag_orders
-      dt 
-        //a(href=order.url) #{order.Description}
-        // order 'sdf' #{order.Description} #{order.url} 
-        a(href=order.url) #{order.DateOrder_formatted} #{order.Value} #{order.Description}
-        //dd #{order.Value}
-
-    else
-      p This tag has no orders

@@ -6,7 +6,6 @@ let Schema = mongoose.Schema;
 let TagSchema = new Schema({
   Name: {type: String, required: true, max: 100},
   LocalId: {type: Number, required: true},
-  OrderNumber: {type: Number},
 });
 
 // Virtual for author's full name
