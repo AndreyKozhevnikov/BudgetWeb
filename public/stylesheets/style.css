@@ -18,7 +18,7 @@ color: #fff;
 position: relative;
 text-align: center;
 margin: 3px;
-width: 90%;
+width: 95%;
 }
 .col-lg-5{
   float: none;
@@ -39,4 +39,9 @@ text-decoration: none;
 #btnSetYesterday
 {
 	height: 34px;
+}
+.dx-datagrid-rowsview,
+.dx-datagrid-scroll-container
+{
+  overflow: visible;
 }
