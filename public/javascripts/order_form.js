@@ -11,13 +11,16 @@ function init() {
   let valueInput = document.getElementById('txValue');
   valueInput.focus();
   valueInput.onkeydown = function(keyBoardEvent) {
+    if (keyBoardEvent.key == 'Tab' || keyBoardEvent.key == 'ArrowRight' || keyBoardEvent.key == 'ArrowLeft') {
+      return true;
+    }
     let isNumber = isFinite(keyBoardEvent.key);
-    let isSpace = keyBoardEvent.keyCode == 32;
+    let isSpace = keyBoardEvent.code == 'Space';
     if (!isNumber || isSpace) {
       let descriptionInput = document.getElementById('txDescr');
       descriptionInput.focus();
     }
-    if (isSpace){
+    if (isSpace) {
       return false;
     }
   };
