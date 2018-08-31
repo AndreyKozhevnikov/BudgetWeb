@@ -1,23 +1,23 @@
 .sidebar-nav {
-    margin-top: 20px;
-    padding: 0;
-    list-style: none;
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
 }
 .mainLink
 {
-text-decoration:none;
-border:1px solid #4285f4;
-background:#4285f4;
-display: inline-block;
-line-height: 50px;
-font-size: 15px;
-border-radius: 12px;
-cursor: default;
-color: #fff;
-position: relative;
-text-align: center;
-margin: 3px;
-width: 95%;
+  text-decoration:none;
+  border:1px solid #4285f4;
+  background:#4285f4;
+  display: inline-block;
+  line-height: 50px;
+  font-size: 15px;
+  border-radius: 12px;
+  cursor: default;
+  color: #fff;
+  position: relative;
+  text-align: center;
+  margin: 3px;
+  width: 95%;
 }
 .col-lg-5{
   float: none;
