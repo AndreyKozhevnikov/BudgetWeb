@@ -12,8 +12,27 @@ block mystyles
 block content
 
 
-  h1= title
+  div
+    table#statisticTable
+      tr
+        td 
+          label Eat
+        td
+          label #{statObject.normEat}
+        td 
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.spendEat}   
+        td 
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.diffEat}   
+      tr
+        td
+          label All
+        td
+          label #{statObject.normAll}
+        td 
+          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.spendAll}            
+        td 
+          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.diffAll}            
   
-  div(id='orderListContainer')
+  div#orderListContainer
    
             
