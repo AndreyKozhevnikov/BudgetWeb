@@ -13,18 +13,26 @@ block content
 
 
   div
-    table
+    table#statisticTable
       tr
+        td 
+          label Eat
         td
           label #{statObject.normEat}
         td 
-          label #{statObject.spendEat}   
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.spendEat}   
+        td 
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.diffEat}   
       tr
+        td
+          label All
         td
           label #{statObject.normAll}
         td 
-          label #{statObject.spendAll}            
+          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.spendAll}            
+        td 
+          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.diffAll}            
   
-  div(id='orderListContainer')
+  div#orderListContainer
    
             

@@ -48,6 +48,10 @@ function getStaticObject(order_list) {
     spendAll: sumAllOrders,
     normAll: normAllPerDay * dayCount,
   };
+  statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
+  statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
+  statisticObject.allColorAttribute = statisticObject.diffAll < 0;
+  statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
   return statisticObject;
 }
 
