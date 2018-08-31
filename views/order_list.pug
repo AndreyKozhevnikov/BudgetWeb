@@ -12,7 +12,18 @@ block mystyles
 block content
 
 
-  h1= title
+  div
+    table
+      tr
+        td
+          label #{statObject.normEat}
+        td 
+          label #{statObject.spendEat}   
+      tr
+        td
+          label #{statObject.normAll}
+        td 
+          label #{statObject.spendAll}            
   
   div(id='orderListContainer')
    

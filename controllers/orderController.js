@@ -12,14 +12,44 @@ function order_list(req, res, next) {
   Order.find({ IsDeleted: { $exists: false } })
     .populate('ParentTag')
     .sort({ DateOrder: -1, _id: -1 })
-    .exec(function(err, list_orders) {
+    .exec(function(err, order_list) {
       if (err) {
         return next(err);
       }
+      let statisticObject = getStaticObject(order_list);
       // Successful, so render
-      res.render('order_list', { title: 'Order List', order_list: list_orders });
+      res.render('order_list', { order_list: order_list, statObject: statisticObject });
     });
 };
+
+function getStaticObject(order_list) {
+  const normEatPerDay = 350;
+  const normAllPerDay = 1500;
+  let today = new Date();
+  let dayCount = today.getDate();
+  let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  let thisMonthsorders = order_list.filter(function(order) {
+    return order.DateOrder >= firstDay;
+  });
+  let sumAllOrders = thisMonthsorders.reduce(function(accumulator, order) {
+    return accumulator + order.Value;
+  }, 0);
+  let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
+    if (order.ParentTag.LocalId == 1) {
+      accumulator = accumulator + order.Value;
+    }
+    return accumulator;
+  }, 0);
+
+  let statisticObject =
+  {
+    spendEat: sumEatOrders,
+    normEat: normEatPerDay * dayCount,
+    spendAll: sumAllOrders,
+    normAll: normAllPerDay * dayCount,
+  };
+  return statisticObject;
+}
 
 // Display detail page for a specific order.
 function order_detail(req, res, next) {
@@ -39,7 +69,7 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList});
+  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList });
 };
 
 function order_create_get_withNewTag(req, res, next) {
