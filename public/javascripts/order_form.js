@@ -11,10 +11,8 @@ function init() {
   let valueInput = document.getElementById('txValue');
   valueInput.focus();
   valueInput.onkeydown = function(keyBoardEvent) {
-    let stringTest = keyBoardEvent.key + ' - ' + keyBoardEvent.keyCode + ' - ' +keyBoardEvent.code;
-    let testLabel = document.getElementById('testlabel');
-    testLabel.innerText = stringTest;
-    if (keyBoardEvent.key == 'Tab' || keyBoardEvent.key == 'ArrowRight' || keyBoardEvent.key == 'ArrowLeft') {
+    let notHandledKeys=['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
+    if (notHandledKeys.indexOf(keyBoardEvent.key)>-1) {
       return true;
     }
     let isNumber = isFinite(keyBoardEvent.key);
