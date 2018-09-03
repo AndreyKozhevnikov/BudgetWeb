@@ -5,6 +5,8 @@ block content
   h1 #{title}
   form#order_form(method='POST' action='')
     div.form-group
+     
+      
       label(for='dtDateOrder') Date order:
       table(style='width:100%')
         tr
@@ -33,8 +35,7 @@ block content
 
       label(for='txValue') Value:
       input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))
-      label#testlabel
-      br
+
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
       br

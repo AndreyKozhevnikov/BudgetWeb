@@ -11,9 +11,6 @@ function init() {
   let valueInput = document.getElementById('txValue');
   valueInput.focus();
   valueInput.onkeydown = function(keyBoardEvent) {
-    let stringTest = keyBoardEvent.key + ' - ' + keyBoardEvent.keyCode + ' - ' +keyBoardEvent.code;
-    let testLabel = document.getElementById('testlabel');
-    testLabel.innerText = stringTest;
     if (keyBoardEvent.key == 'Tab' || keyBoardEvent.key == 'ArrowRight' || keyBoardEvent.key == 'ArrowLeft') {
       return true;
     }
