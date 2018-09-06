@@ -23,7 +23,7 @@ function order_list(req, res, next) {
 };
 
 function getStaticObject(order_list) {
-  const normEatPerDay = 350;
+  const normEatPerDay = 500;
   const normAllPerDay = 1500;
   let today = new Date();
   let dayCount = today.getDate();
