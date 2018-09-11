@@ -11,8 +11,8 @@ function init() {
   let valueInput = document.getElementById('txValue');
   valueInput.focus();
   valueInput.onkeydown = function(keyBoardEvent) {
-    let notHandledKeys=['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
-    if (notHandledKeys.indexOf(keyBoardEvent.key)>-1) {
+    let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
+    if (notHandledKeys.indexOf(keyBoardEvent.key) > -1) {
       return true;
     }
     let isNumber = isFinite(keyBoardEvent.key);

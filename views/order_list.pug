@@ -22,7 +22,13 @@ block content
         td 
           label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.spendEat}   
         td 
-          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.diffEat}   
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.diffEat}
+        td
+          label #{statObject.normEatMonth}  
+        td
+          label #{statObject.diffEatMonth}  
+        td
+          label #{statObject.moneyLeftEat}                       
       tr
         td
           label All
@@ -32,7 +38,12 @@ block content
           label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.spendAll}            
         td 
           label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.diffAll}            
-  
+        td
+          label #{statObject.normAllMonth}  
+        td
+          label #{statObject.diffAllMonth}  
+        td
+          label #{statObject.moneyLeftAll}                      
   div#orderListContainer
    
             

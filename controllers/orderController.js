@@ -23,7 +23,7 @@ function order_list(req, res, next) {
 };
 
 function getStaticObject(order_list) {
-  const normEatPerDay = 350;
+  const normEatPerDay = 500;
   const normAllPerDay = 1500;
   let today = new Date();
   let dayCount = today.getDate();
@@ -40,16 +40,29 @@ function getStaticObject(order_list) {
     }
     return accumulator;
   }, 0);
+  let monthDayCount = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  let leftDayCount = monthDayCount - dayCount;
+  if (leftDayCount < 1)
+    leftDayCount = 1;
+  let desiredAllSumForMonth = normAllPerDay * monthDayCount;
+  let desiredEatSumForMonth = normEatPerDay * monthDayCount;
 
   let statisticObject =
   {
     spendEat: sumEatOrders,
     normEat: normEatPerDay * dayCount,
+    normEatMonth: desiredEatSumForMonth,
     spendAll: sumAllOrders,
     normAll: normAllPerDay * dayCount,
+    normAllMonth: desiredAllSumForMonth,
   };
   statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
+  statisticObject.diffEatMonth = statisticObject.normEatMonth - statisticObject.spendEat;
+  statisticObject.moneyLeftEat = Math.round(statisticObject.diffEatMonth / leftDayCount);
   statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
+  statisticObject.diffAllMonth = statisticObject.normAllMonth - statisticObject.spendAll;
+  statisticObject.moneyLeftAll = Math.round(statisticObject.diffAllMonth / leftDayCount);
+
   statisticObject.allColorAttribute = statisticObject.diffAll < 0;
   statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
   return statisticObject;
