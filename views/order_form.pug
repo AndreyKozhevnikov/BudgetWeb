@@ -20,7 +20,7 @@ block content
       select#cmbParentTag.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
         for tag in tag_list
           if fOrder
-            option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name}
+            option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name} - #{tag.MyNumber}
           else
             option(value=tag._id) #{tag.Name} - #{tag.MyNumber}
       br
