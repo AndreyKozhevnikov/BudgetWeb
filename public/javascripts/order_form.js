@@ -1,14 +1,17 @@
 'use strict';
 window.onload = init;
 window.onkeydown = processKeyDown;
-
+let valueInput;
+let cmbParent;
 function init() {
+  cmbParent = document.getElementById('cmbParentTag');
+  cmbParent.addEventListener('change', () => { valueInput.focus(); });
   let btn = document.getElementById('btnDisableAfterClick');
   btn.addEventListener('click', disableOnSubmit);
   let btnYesterDay = document.getElementById('btnSetYesterday');
   btnYesterDay.addEventListener('click', setYesterday);
 
-  let valueInput = document.getElementById('txValue');
+  valueInput = document.getElementById('txValue');
   valueInput.focus();
   valueInput.onkeydown = function(keyBoardEvent) {
     let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
@@ -58,6 +61,6 @@ function formatDate(date) {
 /* eslint-disable */
 function popularTagButtonClick(tagId) {
   /* eslint-enable */
-  let cmb = document.getElementById('cmbParentTag');
-  cmb.value = tagId;
+  cmbParent.value = tagId;
+  valueInput.focus();
 };
