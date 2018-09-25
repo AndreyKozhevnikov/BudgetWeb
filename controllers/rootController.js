@@ -15,21 +15,21 @@ function checkTime(i) {
   return i;
 }
 
-function restore(req, res, next){
+function restore(req, res, next) {
   var form = new formidable.IncomingForm();
   form.parse(req, function(err, fields, files) {
     if (err) {
       next(err);
     };
-    console.dir(files.file.path);
+    // console.dir(files.file.path);
     fs.readFile(files.file.path, function(err, data) {
       if (err) {
         next(err);
       }
-      console.log('data');
-      console.log(data.toString());
+      // console.log('data');
+      // console.log(data.toString());
       let testjsong = JSON.parse(data);
-      console.log(testjsong);
+      // console.log(testjsong);
       // console.assert(false);
       let storedTags = {};
 
@@ -47,7 +47,7 @@ function restore(req, res, next){
   });
 }
 
-function index(req, res){
+function index(req, res) {
   async.parallel(
     {
       tag_count: function(callback) {
@@ -82,13 +82,13 @@ function deleteAll(req, res, next) {
   // tag_controller.deleteTags(res, res, next);
 }
 
-function wiki(req, res){
+function wiki(req, res) {
   res.render('wiki');
 }
 function wikiAbout(req, res) {
   res.send('About this wikitttt');
 }
-function orders_backup(req, res, next){
+function orders_backup(req, res, next) {
   order_controller.orders_backup(req, res, next);
 }
 function canCreateUser() {
