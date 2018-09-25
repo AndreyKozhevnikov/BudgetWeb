@@ -35,7 +35,7 @@ function getStaticObject(order_list) {
     return accumulator + order.Value;
   }, 0);
   let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.ParentTag.LocalId == 1) {
+    if (order.ParentTag.LocalId === 1) {
       accumulator = accumulator + order.Value;
     }
     return accumulator;

@@ -19,7 +19,7 @@ function init() {
       return true;
     }
     let isNumber = isFinite(keyBoardEvent.key);
-    let isSpace = keyBoardEvent.code == 'Space';
+    let isSpace = keyBoardEvent.code === 'Space';
     if (!isNumber || isSpace) {
       let descriptionInput = document.getElementById('txDescr');
       descriptionInput.focus();
@@ -36,7 +36,7 @@ function disableOnSubmit() {
 }
 
 function processKeyDown() {
-  if (event.ctrlKey && event.keyCode == 13) {
+  if (event.ctrlKey && event.keyCode === 13) {
     let form = document.querySelector('#order_form');
     form.submit();
   }

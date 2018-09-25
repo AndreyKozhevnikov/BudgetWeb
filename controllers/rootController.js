@@ -37,7 +37,7 @@ function restore(req, res, next){
         let tmpOrder = testjsong[i];
         let tmpTag = tmpOrder.ParentTag;
         let storedTag = storedTags[tmpTag.Name];
-        if (storedTag == undefined) {
+        if (storedTag === undefined) {
           storedTag = tag_controller.createTagFromBackup(tmpTag);
           storedTags[storedTag.Name] = storedTag;
         }
@@ -92,7 +92,7 @@ function orders_backup(req, res, next){
   order_controller.orders_backup(req, res, next);
 }
 function canCreateUser() {
-  return process.env.CANCREATEUSER == 'TRUE';
+  return process.env.CANCREATEUSER === 'TRUE';
 }
 function createUserGet(req, res, next) {
   if (!canCreateUser()) {

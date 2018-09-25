@@ -7,7 +7,6 @@
     },
     "extends": "strongloop",
     "rules":{
-        "max-len":[2,120,4,{"ignoreStrings":true,"ignoreComments":true}],
-        "eqeqeq":"off"
+        "max-len":[2,120,4,{"ignoreStrings":true,"ignoreComments":true}]
     }
 }
