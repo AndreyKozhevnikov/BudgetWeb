@@ -51,10 +51,10 @@ function index(req, res){
   async.parallel(
     {
       tag_count: function(callback) {
-        Tag.count(callback);
+        Tag.countDocuments(callback);
       },
       order_count: function(callback) {
-        Order.count(callback);
+        Order.countDocuments(callback);
       },
     },
     function(err, results) {
