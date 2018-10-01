@@ -11,6 +11,7 @@ function orderType_create_get(req, res, next) {
 function orderType_create_post(req, res, next) {
   let orderType = new OrderType({
     Name: req.body.fName,
+    CurrentCount: 0,
   });
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
