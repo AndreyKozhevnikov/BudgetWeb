@@ -11,7 +11,7 @@ let session = require('express-session');
 let requestLogin = require('./routes/requestLogin');
 let tagRouter = require('./routes/tagRouter.js');
 let orderRouter = require('./routes/orderRouter.js');
-let orderTypeRouter = require('./routes/orderTypeRouter.js');
+let paymentTypeRouter = require('./routes/paymentTypeRouter.js');
 let rootRouter = require('./routes/rootRouter.js');
 
 let app = express();
@@ -40,7 +40,7 @@ app.use('/', requestLogin);
 app.use('/', rootRouter);
 app.use('/tag', tagRouter);
 app.use('/order', orderRouter);
-app.use('/orderType', orderTypeRouter);
+app.use('/paymentType', paymentTypeRouter);
 
 // Set up mongoose connection
 let mongoose = require('mongoose');

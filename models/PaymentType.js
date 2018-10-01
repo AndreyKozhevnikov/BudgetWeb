@@ -11,8 +11,8 @@ let OrderSchema = new Schema({
 
 // Virtual for author's URL
 OrderSchema.virtual('url').get(function() {
-  return '/orderType/' + this._id + '/update';
+  return '/paymentType/' + this._id + '/update';
 });
 
 // Export model
-module.exports = mongoose.model('OrderType', OrderSchema);
+module.exports = mongoose.model('PaymentType', OrderSchema);
