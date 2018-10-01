@@ -1,9 +1,11 @@
 'use strict';
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
+let PaymentType = require('../models/paymentType.js');
 let stream = require('stream');
 let tagList;
 let popularTagList;
+let paymentTypeList;
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -86,11 +88,11 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList });
+  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList, paymentType_list: paymentTypeList});
 };
 
 function order_create_get_withNewTag(req, res, next) {
-  populateTagLists();
+  populateAdditionalLists();
   order_create_get(req, res, next);
 }
 
@@ -323,7 +325,7 @@ function createOrderFromBackup(tmpOrder, storedTag) {
   });
 };
 
-function populateTagLists() {
+function populateAdditionalLists() {
   Tag.find().exec(function(err, tags) {
     if (err) {
       console.log('error in populateTagList');
@@ -368,9 +370,15 @@ function populateTagLists() {
         popularTagList = tagList.slice(1, 4);
       });
   });
+  PaymentType.find().exec(function(err, paymentTypes) {
+    if (err) {
+      console.log('error in populateTagList');
+    }
+    paymentTypeList = paymentTypes;
+  });
 }
 
-populateTagLists();
+populateAdditionalLists();
 
 exports.order_detail = order_detail;
 exports.order_list = order_list;

@@ -39,6 +39,14 @@ block content
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
       br
+      label(for='cmbPaymentType') PaymentType:
+      select#cmbPaymentType.form-control(type='select', placeholder='Payment Type' name='fPaymentType')
+        for paymentType in paymentType_list
+          if fOrder
+            option(value=paymentType._id selected=(fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name}
+          else
+            option(value=paymentType._id) #{paymentType.Name}
+      br
       button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
       br
       label(for='txTags') Tags:
