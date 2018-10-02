@@ -36,5 +36,16 @@ let paymentType_create_post_array = [
   (req, res, next) => paymentType_create_post(req, res, next),
 ];
 
+function deletePaymentTypes(req, res, next) {
+  PaymentType.remove({}, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      res.end('success');
+    }
+  });
+};
+
 exports.paymentType_create_get = paymentType_create_get;
 exports.paymentType_create_post = paymentType_create_post_array;
+exports.deletePaymentTypes = deletePaymentTypes;
