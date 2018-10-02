@@ -41,6 +41,11 @@ window.onload = function() {
           caption: 'Tag',
           width: '21%',
         },
+        {
+          dataField: 'PaymentType.Name',
+          caption: 'Type',
+          width: '5%',
+        },
       ],
       wordWrapEnabled: true,
     }
