@@ -24,6 +24,20 @@ window.onload = function() {
         {
           dataField: 'Value',
           width: '19%',
+          cellTemplate: (container, options) => {
+            let lblValue = this.document.createElement('label');
+            lblValue.classList.add('plainLabel');
+            lblValue.innerHTML = options.data.Value;
+            container[0].appendChild(lblValue);
+            if (options.data.PaymentType) {
+              let br = this.document.createElement('br');
+              let lbl = this.document.createElement('label');
+              lbl.classList.add('plainLabel');
+              lbl.innerHTML = options.data.PaymentType.Name;
+              container[0].appendChild(br);
+              container[0].appendChild(lbl);
+            }
+          },
         },
         {
           dataField: 'Description',
@@ -40,11 +54,6 @@ window.onload = function() {
           dataField: 'ParentTag.Name',
           caption: 'Tag',
           width: '21%',
-        },
-        {
-          dataField: 'PaymentType.Name',
-          caption: 'Type',
-          width: '5%',
         },
       ],
       wordWrapEnabled: true,

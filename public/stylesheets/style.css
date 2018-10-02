@@ -54,3 +54,7 @@ text-decoration: none;
 {
   color:red;
 }
+.plainLabel
+{
+  font-weight: normal;
+}
