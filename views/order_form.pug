@@ -43,7 +43,7 @@ block content
       select#cmbPaymentType.form-control(type='select', placeholder='Payment Type' name='fPaymentType')
         for paymentType in paymentType_list
           if fOrder
-            option(value=paymentType._id selected=(fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name}
+            option(value=paymentType._id selected=(fOrder.PaymentType && fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name}
           else
             option(value=paymentType._id) #{paymentType.Name}
       br

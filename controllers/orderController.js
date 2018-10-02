@@ -13,6 +13,7 @@ const { sanitizeBody } = require('express-validator/filter');
 function order_list(req, res, next) {
   Order.find({ IsDeleted: { $exists: false } })
     .populate('ParentTag')
+    .populate('PaymentType')
     .sort({ DateOrder: -1, _id: -1 })
     .exec(function(err, order_list) {
       if (err) {
@@ -88,7 +89,7 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList, paymentType_list: paymentTypeList});
+  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList, paymentType_list: paymentTypeList });
 };
 
 function order_create_get_withNewTag(req, res, next) {
@@ -97,15 +98,7 @@ function order_create_get_withNewTag(req, res, next) {
 }
 
 function order_create_post(req, res, next) {
-  let order = new Order({
-    DateOrder: req.body.fDate,
-    Value: req.body.fValue,
-    Description: req.body.fDescription,
-    ParentTag: req.body.fParentTag,
-    IsJourney: Boolean(req.body.fIsJourney),
-    Tags: req.body.fTags,
-    LocalId: req.body.fLocalId,
-  });
+  let order = createOrderFromRequest(req, false);
   if (!order.Description) {
     let tagDescr = tagList.find(
       item => JSON.stringify(item._id) === JSON.stringify(order.ParentTag)
@@ -180,12 +173,11 @@ function order_update_get(req, res, next) {
       fOrder: order,
       tag_list: tagList,
       popularTagList: popularTagList,
+      paymentType_list: paymentTypeList,
     });
   });
 };
-
-// Handle order update on POST.
-function order_update_post(req, res, next) {
+function createOrderFromRequest(req, isGetIdFromRequest) {
   let order = new Order({
     DateOrder: req.body.fDate,
     Value: req.body.fValue,
@@ -194,8 +186,17 @@ function order_update_post(req, res, next) {
     IsJourney: Boolean(req.body.fIsJourney),
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
-    _id: req.params.id,
+    PaymentType: req.body.fPaymentType,
+
   });
+  if (isGetIdFromRequest) {
+    order._id = req.params.id;
+  }
+  return order;
+}
+// Handle order update on POST.
+function order_update_post(req, res, next) {
+  let order = createOrderFromRequest(req, true);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
