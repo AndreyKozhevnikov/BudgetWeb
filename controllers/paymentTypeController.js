@@ -12,6 +12,7 @@ function paymentType_create_post(req, res, next) {
   let paymentType = new PaymentType({
     Name: req.body.fName,
     CurrentCount: 0,
+    IsYandex: Boolean(req.body.fIsYandex),
   });
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
