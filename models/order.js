@@ -14,6 +14,7 @@ let OrderSchema = new Schema({
   LocalId: { type: Number },
   IsDeleted: { type: Boolean },
   PaymentType: { type: Schema.ObjectId, ref: 'PaymentType' },
+  PaymentNumber: { type: Number },
 });
 
 // OrderSchema.set('toJSON', { virtuals: true });

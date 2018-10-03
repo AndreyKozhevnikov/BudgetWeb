@@ -177,7 +177,7 @@ function order_update_get(req, res, next) {
     });
   });
 };
-function createOrderFromRequest(req, isGetIdFromRequest) {
+function createOrderFromRequest(req, isUpdate) {
   let order = new Order({
     DateOrder: req.body.fDate,
     Value: req.body.fValue,
@@ -187,9 +187,19 @@ function createOrderFromRequest(req, isGetIdFromRequest) {
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
     PaymentType: req.body.fPaymentType,
-
+    PaymentNumber: req.body.fPaymentNumber,
   });
-  if (isGetIdFromRequest) {
+  let paymentType = paymentTypeList.find(el => el._id.equals(order.PaymentType));
+  if (paymentType.IsYandex && !isUpdate) {
+    if (paymentType.CurrentCount === 5) {
+      paymentType.CurrentCount = 1;
+    } else {
+      paymentType.CurrentCount++;
+    }
+    order.PaymentNumber = paymentType.CurrentCount;
+    paymentType.save();
+  }
+  if (isUpdate) {
     order._id = req.params.id;
   }
   return order;

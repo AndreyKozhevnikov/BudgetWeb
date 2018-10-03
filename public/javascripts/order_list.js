@@ -33,7 +33,7 @@ window.onload = function() {
               let br = this.document.createElement('br');
               let lbl = this.document.createElement('label');
               lbl.classList.add('plainLabel');
-              lbl.innerHTML = options.data.PaymentType.Name;
+              lbl.innerHTML = options.data.PaymentType.Name + '-' + options.data.PaymentNumber;
               container[0].appendChild(br);
               container[0].appendChild(lbl);
             }
