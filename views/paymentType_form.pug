@@ -6,9 +6,12 @@ block content
   form(method='POST' action='')
     div.form-group
       label(for='input1') Name:
-      input#input1.form-control(type='text', placeholder='Enter a new PaymentType name' name='fName')
+      input#input1.form-control(type='text', placeholder='Enter a new PaymentType name' name='fName' value=(undefined===fpaymentType ? '' : fpaymentType.Name))
+      if (fpaymentType)
+        label(for='input2') CurrentCount:
+        input#input2.form-control(type='text', placeholder='Enter a new PaymentType name' name='fCurrentCount' value=fpaymentType.CurrentCount)
       label(for='chIsYandex') IsYandex:
-      input#chIsYandex.form-control(type='checkbox',  name='fIsYandex')
+      input#chIsYandex.form-control(type='checkbox', name='fIsYandex', checked=(undefined===fpaymentType ? '' : fpaymentType.IsYandex))
 
     button.btn.btn-primary(type='submit') Submit
 

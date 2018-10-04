@@ -191,7 +191,7 @@ function createOrderFromRequest(req, isUpdate) {
   });
   let paymentType = paymentTypeList.find(el => el._id.equals(order.PaymentType));
   if (paymentType.IsYandex && !isUpdate) {
-    if (paymentType.CurrentCount === 5) {
+    if (paymentType.CurrentCount > 4) {
       paymentType.CurrentCount = 1;
     } else {
       paymentType.CurrentCount++;
