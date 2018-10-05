@@ -33,7 +33,16 @@ window.onload = function() {
               let br = this.document.createElement('br');
               let lbl = this.document.createElement('label');
               lbl.classList.add('plainLabel');
-              lbl.innerHTML = options.data.PaymentType.Name + '-' + options.data.PaymentNumber;
+              let pNumber = options.data.PaymentNumber;
+              if (pNumber) {
+                lbl.innerHTML = options.data.PaymentType.Name + '-' + pNumber;
+                lbl.classList.add('yaLabel');
+                if (pNumber === 4) {
+                  lbl.classList.add('yaLabel5');
+                }
+              } else {
+                lbl.innerHTML = options.data.PaymentType.Name;
+              }
               container[0].appendChild(br);
               container[0].appendChild(lbl);
             }
