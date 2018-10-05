@@ -37,7 +37,7 @@ function restore(req, res, next) {
         let tmpOrder = testjsong[i];
         let tmpTag = tmpOrder.ParentTag;
         let storedTag = storedTags[tmpTag.Name];
-        if (storedTag == undefined) {
+        if (storedTag === undefined) {
           storedTag = tag_controller.createTagFromBackup(tmpTag);
           storedTags[storedTag.Name] = storedTag;
         }
@@ -51,10 +51,10 @@ function index(req, res) {
   async.parallel(
     {
       tag_count: function(callback) {
-        Tag.count(callback);
+        Tag.countDocuments(callback);
       },
       order_count: function(callback) {
-        Order.count(callback);
+        Order.countDocuments(callback);
       },
     },
     function(err, results) {
@@ -92,7 +92,7 @@ function orders_backup(req, res, next) {
   order_controller.orders_backup(req, res, next);
 }
 function canCreateUser() {
-  return process.env.CANCREATEUSER == 'TRUE';
+  return process.env.CANCREATEUSER === 'TRUE';
 }
 function createUserGet(req, res, next) {
   if (!canCreateUser()) {

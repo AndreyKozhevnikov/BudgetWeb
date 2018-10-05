@@ -39,6 +39,14 @@ block content
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
       br
+      label(for='cmbPaymentType') PaymentType:
+      select#cmbPaymentType.form-control(type='select', placeholder='Payment Type' name='fPaymentType')
+        for paymentType in paymentType_list
+          if fOrder
+            option(value=paymentType._id selected=(fOrder.PaymentType && fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name}
+          else
+            option(value=paymentType._id) #{paymentType.Name}
+      br
       button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
       br
       label(for='txTags') Tags:
@@ -48,8 +56,10 @@ block content
       input#chIsJourney.form-control(type='checkbox',  name='fIsJourney' checked= (undefined===fOrder ? false :fOrder.IsJourney))
 
       label(for='txLocId') LocalId:
-      input#chIsJourney.form-control(type='text',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))
-               
+      input#txLocId.form-control(type='number',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))
+
+      label(for='txLocId') PaymentNumber:
+      input#txCurrNumber.form-control(type='number',  name='fPaymentNumber' value=(undefined===fOrder ? '' : fOrder.PaymentNumber))
 
   if errors 
     ul

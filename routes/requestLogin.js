@@ -52,7 +52,7 @@ function requiresLogin(req, res, next) {
     }
   } else if (
     req.cookies.cookiename &&
-    (req.url == '/order/exportWithEmptyLocalId' || req.url == '/order/update')
+    (req.url === '/order/exportWithEmptyLocalId' || req.url === '/order/update')
   ) {
     let values = req.cookies.cookiename.split('-');
     let username = values[0];

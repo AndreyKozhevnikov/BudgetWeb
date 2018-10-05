@@ -11,6 +11,7 @@ let compression = require('compression');
 let requestLogin = require('./routes/requestLogin');
 let tagRouter = require('./routes/tagRouter.js');
 let orderRouter = require('./routes/orderRouter.js');
+let paymentTypeRouter = require('./routes/paymentTypeRouter.js');
 let rootRouter = require('./routes/rootRouter.js');
 
 let app = express();
@@ -40,6 +41,7 @@ app.use('/', requestLogin);
 app.use('/', rootRouter);
 app.use('/tag', tagRouter);
 app.use('/order', orderRouter);
+app.use('/paymentType', paymentTypeRouter);
 
 // Set up mongoose connection
 let mongoose = require('mongoose');
@@ -67,7 +69,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  console.dir(err);
 });
 
 module.exports = app;

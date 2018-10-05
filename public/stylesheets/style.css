@@ -42,7 +42,7 @@ text-decoration: none;
 {
   overflow: visible;
 }
-#statisticTable
+.statisticTable
 {
   width: 100%;
 }
@@ -51,6 +51,23 @@ text-decoration: none;
   color:rgb(153, 211, 66);
 }
 .spentLabel[overflownorm]
+{
+  color:red;
+}
+.plainLabel
+{
+  font-weight: normal;
+}
+.yaLabel {
+  background: beige;
+}
+.yaLabel5 {
+  color: red;
+}
+.yaCell{
+  font-weight: 700;
+}
+.yaCell[isFourth]
 {
   color:red;
 }

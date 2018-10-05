@@ -1,9 +1,11 @@
 'use strict';
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
+let PaymentType = require('../models/paymentType.js');
 let stream = require('stream');
 let tagList;
 let popularTagList;
+let paymentTypeList;
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -11,6 +13,7 @@ const { sanitizeBody } = require('express-validator/filter');
 function order_list(req, res, next) {
   Order.find({ IsDeleted: { $exists: false } })
     .populate('ParentTag')
+    .populate('PaymentType')
     .sort({ DateOrder: -1, _id: -1 })
     .exec(function(err, order_list) {
       if (err) {
@@ -35,7 +38,7 @@ function getStaticObject(order_list) {
     return accumulator + order.Value;
   }, 0);
   let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.ParentTag.LocalId == 1) {
+    if (order.ParentTag.LocalId === 1) {
       accumulator = accumulator + order.Value;
     }
     return accumulator;
@@ -65,6 +68,15 @@ function getStaticObject(order_list) {
 
   statisticObject.allColorAttribute = statisticObject.diffAll < 0;
   statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
+
+  let allYaPaymentTypes = paymentTypeList.filter(p => p.IsYandex);
+  let yandexMappedList = allYaPaymentTypes.map(function(p) {
+    let newObj = { value: p.Name + '-' + p.CurrentCount, isFourth: p.CurrentCount === 4 };
+    return newObj;
+  });
+  statisticObject.yaList = yandexMappedList;
+
+
   return statisticObject;
 }
 
@@ -86,24 +98,16 @@ function order_detail(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList });
+  res.render('order_form', { title: 'Create Order', tag_list: tagList, popularTagList: popularTagList, paymentType_list: paymentTypeList });
 };
 
 function order_create_get_withNewTag(req, res, next) {
-  populateTagLists();
+  populateAdditionalLists();
   order_create_get(req, res, next);
 }
 
 function order_create_post(req, res, next) {
-  let order = new Order({
-    DateOrder: req.body.fDate,
-    Value: req.body.fValue,
-    Description: req.body.fDescription,
-    ParentTag: req.body.fParentTag,
-    IsJourney: Boolean(req.body.fIsJourney),
-    Tags: req.body.fTags,
-    LocalId: req.body.fLocalId,
-  });
+  let order = createOrderFromRequest(req, false);
   if (!order.Description) {
     let tagDescr = tagList.find(
       item => JSON.stringify(item._id) === JSON.stringify(order.ParentTag)
@@ -178,12 +182,11 @@ function order_update_get(req, res, next) {
       fOrder: order,
       tag_list: tagList,
       popularTagList: popularTagList,
+      paymentType_list: paymentTypeList,
     });
   });
 };
-
-// Handle order update on POST.
-function order_update_post(req, res, next) {
+function createOrderFromRequest(req, isUpdate) {
   let order = new Order({
     DateOrder: req.body.fDate,
     Value: req.body.fValue,
@@ -192,8 +195,27 @@ function order_update_post(req, res, next) {
     IsJourney: Boolean(req.body.fIsJourney),
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
-    _id: req.params.id,
+    PaymentType: req.body.fPaymentType,
+    PaymentNumber: req.body.fPaymentNumber,
   });
+  let paymentType = paymentTypeList.find(el => el._id.equals(order.PaymentType));
+  if (paymentType.IsYandex && !isUpdate) {
+    if (paymentType.CurrentCount > 4) {
+      paymentType.CurrentCount = 1;
+    } else {
+      paymentType.CurrentCount++;
+    }
+    order.PaymentNumber = paymentType.CurrentCount;
+    paymentType.save();
+  }
+  if (isUpdate) {
+    order._id = req.params.id;
+  }
+  return order;
+}
+// Handle order update on POST.
+function order_update_post(req, res, next) {
+  let order = createOrderFromRequest(req, true);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -323,7 +345,7 @@ function createOrderFromBackup(tmpOrder, storedTag) {
   });
 };
 
-function populateTagLists() {
+function populateAdditionalLists() {
   Tag.find().exec(function(err, tags) {
     if (err) {
       console.log('error in populateTagList');
@@ -368,9 +390,15 @@ function populateTagLists() {
         popularTagList = tagList.slice(1, 4);
       });
   });
+  PaymentType.find().exec(function(err, paymentTypes) {
+    if (err) {
+      console.log('error in populateTagList');
+    }
+    paymentTypeList = paymentTypes;
+  });
 }
 
-populateTagLists();
+populateAdditionalLists();
 
 exports.order_detail = order_detail;
 exports.order_list = order_list;

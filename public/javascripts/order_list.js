@@ -24,6 +24,29 @@ window.onload = function() {
         {
           dataField: 'Value',
           width: '19%',
+          cellTemplate: (container, options) => {
+            let lblValue = this.document.createElement('label');
+            lblValue.classList.add('plainLabel');
+            lblValue.innerHTML = options.data.Value;
+            container[0].appendChild(lblValue);
+            if (options.data.PaymentType) {
+              let br = this.document.createElement('br');
+              let lbl = this.document.createElement('label');
+              lbl.classList.add('plainLabel');
+              let pNumber = options.data.PaymentNumber;
+              if (pNumber) {
+                lbl.innerHTML = options.data.PaymentType.Name + '-' + pNumber;
+                lbl.classList.add('yaLabel');
+                if (pNumber === 5) {
+                  lbl.classList.add('yaLabel5');
+                }
+              } else {
+                lbl.innerHTML = options.data.PaymentType.Name;
+              }
+              container[0].appendChild(br);
+              container[0].appendChild(lbl);
+            }
+          },
         },
         {
           dataField: 'Description',

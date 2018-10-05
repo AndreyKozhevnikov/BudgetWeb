@@ -13,6 +13,8 @@ let OrderSchema = new Schema({
   Tags: { type: String, max: 100 },
   LocalId: { type: Number },
   IsDeleted: { type: Boolean },
+  PaymentType: { type: Schema.ObjectId, ref: 'PaymentType' },
+  PaymentNumber: { type: Number },
 });
 
 // OrderSchema.set('toJSON', { virtuals: true });
