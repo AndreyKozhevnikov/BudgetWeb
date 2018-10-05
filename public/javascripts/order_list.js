@@ -37,7 +37,7 @@ window.onload = function() {
               if (pNumber) {
                 lbl.innerHTML = options.data.PaymentType.Name + '-' + pNumber;
                 lbl.classList.add('yaLabel');
-                if (pNumber === 4) {
+                if (pNumber === 5) {
                   lbl.classList.add('yaLabel5');
                 }
               } else {
