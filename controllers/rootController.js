@@ -22,15 +22,15 @@ function restore(req, res, next) {
     if (err) {
       next(err);
     };
-    console.dir(files.file.path);
+    // console.dir(files.file.path);
     fs.readFile(files.file.path, function(err, data) {
       if (err) {
         next(err);
       }
-      console.log('data');
-      console.log(data.toString());
+      // console.log('data');
+      // console.log(data.toString());
       let testjsong = JSON.parse(data);
-      console.log(testjsong);
+      // console.log(testjsong);
       // console.assert(false);
       let storedTags = {};
       let storedPaymentTypes = {};

@@ -6,7 +6,7 @@ let logger = require('morgan');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
 let session = require('express-session');
-
+let compression = require('compression');
 
 let requestLogin = require('./routes/requestLogin');
 let tagRouter = require('./routes/tagRouter.js');
@@ -23,6 +23,7 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(compression()); // Compress all routes
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
