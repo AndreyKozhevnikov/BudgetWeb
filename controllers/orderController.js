@@ -283,6 +283,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
 function orders_backup(req, res, next) {
   Order.find()
     .populate('ParentTag')
+    .populate('PaymentType')
     .exec(function(err, list_orders) {
       if (err) {
         return next(err);
