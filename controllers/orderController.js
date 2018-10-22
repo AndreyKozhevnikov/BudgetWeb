@@ -269,6 +269,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
     LocalId: null,
   })
     .populate('ParentTag')
+    .populate('PaymentType')
     .exec(function(err, list_orders) {
       if (err) {
         return next(err);
