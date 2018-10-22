@@ -6,6 +6,7 @@ let formidable = require('formidable');
 let fs = require('fs');
 let order_controller = require('../controllers/orderController.js');
 let tag_controller = require('../controllers/tagController.js');
+let paymentType_controller = require('../controllers/paymentTypeController.js');
 let User = require('../models/user.js');
 
 function checkTime(i) {
@@ -15,7 +16,7 @@ function checkTime(i) {
   return i;
 }
 
-function restore(req, res, next){
+function restore(req, res, next) {
   var form = new formidable.IncomingForm();
   form.parse(req, function(err, fields, files) {
     if (err) {
@@ -32,6 +33,7 @@ function restore(req, res, next){
       console.log(testjsong);
       // console.assert(false);
       let storedTags = {};
+      let storedPaymentTypes = {};
 
       for (let i = 0; i < testjsong.length; i++) {
         let tmpOrder = testjsong[i];
@@ -40,14 +42,24 @@ function restore(req, res, next){
         if (storedTag === undefined) {
           storedTag = tag_controller.createTagFromBackup(tmpTag);
           storedTags[storedTag.Name] = storedTag;
+
         }
-        order_controller.createOrderFromBackup(tmpOrder, storedTag);
+        let storedPType;
+        if (tmpOrder.PaymentType) {
+          let tmpPType = tmpOrder.PaymentType;
+          storedPType = storedPaymentTypes[tmpPType.Name];
+          if (storedPType === undefined) {
+            storedPType = paymentType_controller.createPaymentTypeFromBackup(tmpPType);
+            storedPaymentTypes[storedPType.Name] = storedPType;
+          }
+        }
+        order_controller.createOrderFromBackup(tmpOrder, storedTag, storedPType);
       }
     });
   });
 }
 
-function index(req, res){
+function index(req, res) {
   async.parallel(
     {
       tag_count: function(callback) {
@@ -78,17 +90,18 @@ function index(req, res){
 }
 
 function deleteAll(req, res, next) {
-  // order_controller.deleteOrders(req, res, next);
-  // tag_controller.deleteTags(res, res, next);
+  order_controller.deleteOrders(req, res, next);
+  tag_controller.deleteTags(res, res, next);
+  paymentType_controller.deleteTypes(req, res, next);
 }
 
-function wiki(req, res){
+function wiki(req, res) {
   res.render('wiki');
 }
 function wikiAbout(req, res) {
   res.send('About this wikitttt');
 }
-function orders_backup(req, res, next){
+function orders_backup(req, res, next) {
   order_controller.orders_backup(req, res, next);
 }
 function canCreateUser() {

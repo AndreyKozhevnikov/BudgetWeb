@@ -284,6 +284,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
 function orders_backup(req, res, next) {
   Order.find()
     .populate('ParentTag')
+    .populate('PaymentType')
     .exec(function(err, list_orders) {
       if (err) {
         return next(err);
@@ -336,9 +337,10 @@ function deleteOrders(req, res, next) {
   });
 };
 
-function createOrderFromBackup(tmpOrder, storedTag) {
+function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
   let order = new Order(tmpOrder);
   order.ParentTag = storedTag;
+  order.PaymentType = storedPType;
   order.save(function(err, savedTag) {
     if (err) {
       console.dir(err);

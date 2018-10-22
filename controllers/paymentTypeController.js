@@ -113,9 +113,32 @@ function paymentTypeList(req, res, next) {
   });
 }
 
+function deleteTypes(req, res, next) {
+  PaymentType.remove({}, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      res.end('success');
+    }
+
+  });
+}
+
+function createPaymentTypeFromBackup(paymentTypeFromBackup) {
+  let pType = new PaymentType(paymentTypeFromBackup);
+  pType.save(function(err) {
+    if (err) {
+      console.dir(err);
+    }
+  });
+  return pType;
+};
+
 exports.paymentType_create_get = paymentType_create_get;
 exports.paymentType_create_post = paymentType_create_post_array;
 exports.deletePaymentTypes = deletePaymentTypes;
 exports.paymentType_list = paymentTypeList;
 exports.paymentType_update_get = paymentType_update_get;
 exports.paymentType_update_post = paymentType_post_array;
+exports.deleteTypes = deleteTypes;
+exports.createPaymentTypeFromBackup = createPaymentTypeFromBackup;
