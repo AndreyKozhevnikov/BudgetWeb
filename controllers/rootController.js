@@ -132,6 +132,33 @@ function createUserPost(req, res, next) {
   });
 }
 
+function update_localid(req, res, next) {
+  let id = req.body.id;
+  let localId = req.body.localid;
+  let type = req.body.type;
+  let rt;
+  switch (type) {
+    case 'Order':
+      rt = Order;
+      break;
+    case 'Tag':
+      rt = Tag;
+      break;
+  }
+  rt.findById(id, function(err, theEntity) {
+    if (err) {
+      next(err);
+    }
+    theEntity.LocalId = localId;
+    theEntity.save(function(err, savedEntity) {
+      if (err) {
+        next(err);
+      }
+      res.send('update is Successful');
+    });
+  });
+};
+
 exports.restore = restore;
 exports.index = index;
 exports.wikiAbout = wikiAbout;
@@ -140,5 +167,5 @@ exports.deleteAll = deleteAll;
 exports.orders_backup = orders_backup;
 exports.createUserGet = createUserGet;
 exports.createUserPost = createUserPost;
-
+exports.update_localid = update_localid;
 

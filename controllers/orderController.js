@@ -310,23 +310,6 @@ function formatDate(date) {
   return [year, month, day].join('-');
 }
 
-function update_localid(req, res, next) {
-  let id = req.body.id;
-  let localId = req.body.localid;
-  Order.findById(id, function(err, theTag) {
-    if (err) {
-      next(err);
-    }
-    theTag.LocalId = localId;
-    theTag.save(function(err, savedTag) {
-      if (err) {
-        next(err);
-      }
-      res.send('update is Successful');
-    });
-  });
-};
-
 function deleteOrders(req, res, next) {
   Order.remove({}, function(err) {
     if (err) {
@@ -414,6 +397,5 @@ exports.order_update_get = order_update_get;
 exports.order_update_post = order_update_post_array;
 exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
 exports.orders_backup = orders_backup;
-exports.update_localid = update_localid;
 exports.deleteOrders = deleteOrders;
 exports.createOrderFromBackup = createOrderFromBackup;

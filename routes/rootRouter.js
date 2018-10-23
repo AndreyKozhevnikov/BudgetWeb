@@ -24,4 +24,6 @@ router.get('/createuser', root_controller.createUserGet);
 
 router.post('/createuser', root_controller.createUserPost);
 
+router.post('/updateLocalId', root_controller.update_localid);
+
 module.exports = router;
