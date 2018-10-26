@@ -12,6 +12,8 @@ block content
         input#input2.form-control(type='text', placeholder='Enter a new PaymentType name' name='fCurrentCount' value=fpaymentType.CurrentCount)
       label(for='chIsYandex') IsYandex:
       input#chIsYandex.form-control(type='checkbox', name='fIsYandex', checked=(undefined===fpaymentType ? '' : fpaymentType.IsYandex))
+      label(for='inLocalId') LocalId:
+      input#input1.form-control(type='text', placeholder='Enter a LocalId' name='fLocalId' value=(undefined===fpaymentType ? '' : fpaymentType.LocalId))
 
     button.btn.btn-primary(type='submit') Submit
 

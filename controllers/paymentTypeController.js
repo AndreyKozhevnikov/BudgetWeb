@@ -12,6 +12,7 @@ function createPaymentTypeFromRequest(req, isUpdate) {
   let paymentType = new PaymentType({
     Name: req.body.fName,
     IsYandex: Boolean(req.body.fIsYandex),
+    LocalId: req.body.fLocalId,
   });
   if (isUpdate) {
     paymentType._id = req.params.id;
@@ -43,6 +44,9 @@ function paymentType_create_post(req, res, next) {
 };
 let paymentType_create_post_array = [
   sanitizeBody('fName')
+    .trim()
+    .escape(),
+  sanitizeBody('fLocalId')
     .trim()
     .escape(),
   (req, res, next) => paymentType_create_post(req, res, next),
@@ -96,8 +100,11 @@ function paymentType_update_post(req, res, next) {
   }
 }
 
-let paymentType_post_array = [
+let paymentType_update_post_array = [
   sanitizeBody('fName')
+    .trim()
+    .escape(),
+  sanitizeBody('fLocalId')
     .trim()
     .escape(),
   (req, res, next) => paymentType_update_post(req, res, next),
@@ -139,6 +146,6 @@ exports.paymentType_create_post = paymentType_create_post_array;
 exports.deletePaymentTypes = deletePaymentTypes;
 exports.paymentType_list = paymentTypeList;
 exports.paymentType_update_get = paymentType_update_get;
-exports.paymentType_update_post = paymentType_post_array;
+exports.paymentType_update_post = paymentType_update_post_array;
 exports.deleteTypes = deleteTypes;
 exports.createPaymentTypeFromBackup = createPaymentTypeFromBackup;

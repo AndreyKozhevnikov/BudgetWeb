@@ -64,6 +64,9 @@ window.onload = function() {
           caption: 'Tag',
           width: '21%',
         },
+        {
+          dataField: 'LocalId',
+        },
       ],
       wordWrapEnabled: true,
     }

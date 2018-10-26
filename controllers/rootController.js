@@ -1,6 +1,7 @@
 'use strict';
 let Tag = require('../models/tag.js');
 let Order = require('../models/order.js');
+let PaymentType = require('../models/paymentType.js');
 let async = require('async');
 let formidable = require('formidable');
 let fs = require('fs');
@@ -143,6 +144,9 @@ function update_localid(req, res, next) {
       break;
     case 'Tag':
       rt = Tag;
+      break;
+    case 'PaymentType':
+      rt = PaymentType;
       break;
   }
   rt.findById(id, function(err, theEntity) {

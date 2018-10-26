@@ -18,6 +18,8 @@ block content
           th Name 
           th CurrentCount
           th IsYandex
+          th Id
+          th LocalId
       tbody
         each paymentType in paymentType_list
           tr
@@ -26,3 +28,4 @@ block content
             td #{paymentType.CurrentCount}
             td #{paymentType.IsYandex}
             td #{paymentType._id}
+            td #{paymentType.LocalId}
