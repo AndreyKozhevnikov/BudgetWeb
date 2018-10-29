@@ -10,6 +10,9 @@ window.onload = function() {
       rowAlternationEnabled: true,
       showRowLines: true,
       showColumnLines: true,
+      paging: {
+        pageSize: 50,
+      },
       sorting: {
         mode: 'none',
       },
