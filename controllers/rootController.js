@@ -91,9 +91,13 @@ function index(req, res) {
 }
 
 function deleteAll(req, res, next) {
-  // order_controller.deleteOrders(req, res, next);
-  // tag_controller.deleteTags(res, res, next);
-  // paymentType_controller.deleteTypes(req, res, next);
+  if (!canDeleteEntities()) {
+    res.send('cant delete objects');
+    return;
+  }
+  order_controller.deleteOrders(req, res, next);
+  tag_controller.deleteTags(res, res, next);
+  paymentType_controller.deleteTypes(req, res, next);
 }
 
 function wiki(req, res) {
@@ -107,6 +111,9 @@ function orders_backup(req, res, next) {
 }
 function canCreateUser() {
   return process.env.CANCREATEUSER === 'TRUE';
+}
+function canDeleteEntities() {
+  return process.env.CANDELETEENTITIES === 'TRUE';
 }
 function createUserGet(req, res, next) {
   if (!canCreateUser()) {
