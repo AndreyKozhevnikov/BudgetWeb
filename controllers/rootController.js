@@ -91,9 +91,9 @@ function index(req, res) {
 }
 
 function deleteAll(req, res, next) {
-  order_controller.deleteOrders(req, res, next);
-  tag_controller.deleteTags(res, res, next);
-  paymentType_controller.deleteTypes(req, res, next);
+  // order_controller.deleteOrders(req, res, next);
+  // tag_controller.deleteTags(res, res, next);
+  // paymentType_controller.deleteTypes(req, res, next);
 }
 
 function wiki(req, res) {
