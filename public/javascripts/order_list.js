@@ -30,7 +30,11 @@ window.onload = function() {
           cellTemplate: (container, options) => {
             let lblValue = this.document.createElement('label');
             lblValue.classList.add('plainLabel');
-            lblValue.innerHTML = options.data.Value;
+            let valueString = options.data.Value;
+            if (!options.data.LocalId) {
+              valueString = valueString + '*';
+            }
+            lblValue.innerHTML = valueString;
             container[0].appendChild(lblValue);
             if (options.data.PaymentType) {
               let br = this.document.createElement('br');
@@ -67,9 +71,6 @@ window.onload = function() {
           caption: 'Tag',
           width: '21%',
         },
-        // {
-        //   dataField: 'LocalId',
-        // },
       ],
       wordWrapEnabled: true,
     }
