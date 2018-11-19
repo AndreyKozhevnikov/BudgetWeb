@@ -2,6 +2,7 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
+let async = require('async');
 let stream = require('stream');
 let tagList;
 let popularTagList;
@@ -102,8 +103,8 @@ function order_create_get(req, res, next) {
 };
 
 function order_create_get_withNewTag(req, res, next) {
-  populateAdditionalLists();
-  order_create_get(req, res, next);
+  populateAdditionalLists(order_create_get, { req: req, res: res, next: next });
+  // order_create_get(req, res, next);
 }
 
 function order_create_post(req, res, next) {
@@ -331,16 +332,18 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
   });
 };
 
-function populateAdditionalLists() {
-  Tag.find().exec(function(err, tags) {
-    if (err) {
-      console.log('error in populateTagList');
-    }
-    tagList = tags;
-    let cutDate = new Date();
-    cutDate.setDate(cutDate.getDate() - 60);
-    Order
-      .aggregate(
+function populateAdditionalLists(myCallBack, params) {
+  let cutDate = new Date();
+  cutDate.setDate(cutDate.getDate() - 60);
+  async.parallel({
+    tags: function(callback) {
+      Tag.find(callback);
+    },
+    paymentTypes: function(callback) {
+      PaymentType.find(callback);
+    },
+    groupedOrders: function(callback) {
+      Order.aggregate(
         [
           {
             $match: {
@@ -354,33 +357,30 @@ function populateAdditionalLists() {
               count: { $sum: 1 },
             },
           },
-        ]
-      )
-      .exec(function(err, list_groupedOrders) {
-        if (err) {
-          console.log(err);
-        }
-        tagList.sort(function(a, b) {
-          let aNumber = list_groupedOrders.find(item => item._id.equals(a._id));
-          let bNumber = list_groupedOrders.find(item => item._id.equals(b._id));
-          aNumber = aNumber ? aNumber.count : 0;
-          bNumber = bNumber ? bNumber.count : 0;
-          if (!a.MyNumber) {
-            a.MyNumber = aNumber;
-          }
-          if (!b.MyNumber) {
-            b.MyNumber = bNumber;
-          }
-          return bNumber - aNumber;
-        });
-        popularTagList = tagList.slice(1, 4);
-      });
-  });
-  PaymentType.find().exec(function(err, paymentTypes) {
+        ]).exec(callback);
+    },
+  }, function(err, results) {
     if (err) {
-      console.log('error in populateTagList');
+      console.dir(err);
     }
-    paymentTypeList = paymentTypes;
+    tagList = results.tags;
+    tagList.sort(function(a, b) {
+      let aNumber = results.groupedOrders.find(item => item._id.equals(a._id));
+      let bNumber = results.groupedOrders.find(item => item._id.equals(b._id));
+      aNumber = aNumber ? aNumber.count : 0;
+      bNumber = bNumber ? bNumber.count : 0;
+      if (!a.MyNumber) {
+        a.MyNumber = aNumber;
+      }
+      if (!b.MyNumber) {
+        b.MyNumber = bNumber;
+      }
+      return bNumber - aNumber;
+    });
+    popularTagList = tagList.slice(1, 4);
+    paymentTypeList = results.paymentTypes;
+    if (params)
+      myCallBack(params.req, params.res, params.next);
   });
 }
 

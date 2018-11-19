@@ -38,7 +38,9 @@ function paymentType_create_post(req, res, next) {
       if (err) {
         next(err);
       }
-      res.redirect('/order/list');
+      // res.redirect('/order/list');
+      res.redirect('/order/createWithNewTag');
+
     });
   }
 };
