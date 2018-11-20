@@ -104,7 +104,6 @@ function order_create_get(req, res, next) {
 
 function order_create_get_withNewTag(req, res, next) {
   populateAdditionalLists(order_create_get, { req: req, res: res, next: next });
-  // order_create_get(req, res, next);
 }
 
 function order_create_post(req, res, next) {
@@ -200,13 +199,18 @@ function createOrderFromRequest(req, isUpdate) {
     PaymentNumber: req.body.fPaymentNumber,
   });
   let paymentType = paymentTypeList.find(el => el._id.equals(order.PaymentType));
-  if (paymentType.IsYandex && !isUpdate) {
-    if (paymentType.CurrentCount > 4) {
-      paymentType.CurrentCount = 1;
+  if (paymentType.IsYandex) {
+    if (!isUpdate) {
+      if (paymentType.CurrentCount > 4) {
+        paymentType.CurrentCount = 1;
+      } else {
+        paymentType.CurrentCount++;
+      }
+      order.PaymentNumber = paymentType.CurrentCount;
     } else {
-      paymentType.CurrentCount++;
+      if (order.PaymentNumber)
+        paymentType.CurrentCount = order.PaymentNumber;
     }
-    order.PaymentNumber = paymentType.CurrentCount;
     paymentType.save();
   }
   if (isUpdate) {
@@ -342,7 +346,7 @@ function populateAdditionalLists(myCallBack, params) {
     paymentTypes: function(callback) {
       PaymentType.find(callback);
     },
-    groupedOrders: function(callback) {
+    groupedOrdersByTag: function(callback) {
       Order.aggregate(
         [
           {
@@ -359,14 +363,31 @@ function populateAdditionalLists(myCallBack, params) {
           },
         ]).exec(callback);
     },
+    groupedOrdersByPaymentType: function(callback) {
+      Order.aggregate(
+        [
+          {
+            $match: {
+              IsDeleted: { $exists: false },
+              DateOrder: { $gt: cutDate },
+            },
+          },
+          {
+            $group: {
+              _id: '$PaymentType',
+              count: { $sum: 1 },
+            },
+          },
+        ]).exec(callback);
+    },
   }, function(err, results) {
     if (err) {
       console.dir(err);
     }
     tagList = results.tags;
     tagList.sort(function(a, b) {
-      let aNumber = results.groupedOrders.find(item => item._id.equals(a._id));
-      let bNumber = results.groupedOrders.find(item => item._id.equals(b._id));
+      let aNumber = results.groupedOrdersByTag.find(item => item._id.equals(a._id));
+      let bNumber = results.groupedOrdersByTag.find(item => item._id.equals(b._id));
       aNumber = aNumber ? aNumber.count : 0;
       bNumber = bNumber ? bNumber.count : 0;
       if (!a.MyNumber) {

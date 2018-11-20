@@ -97,7 +97,7 @@ function paymentType_update_post(req, res, next) {
       if (err) {
         return next(err);
       }
-      res.redirect('/paymentType/list');
+      res.redirect('/order/createWithNewTag');
     });
   }
 }
