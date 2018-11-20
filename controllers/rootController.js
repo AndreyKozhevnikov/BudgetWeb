@@ -30,6 +30,8 @@ function restore(req, res, next) {
       }
       // console.log('data');
       // console.log(data.toString());
+      if (data.length === 0)
+        return;
       let testjsong = JSON.parse(data);
       // console.log(testjsong);
       // console.assert(false);
