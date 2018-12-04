@@ -7,6 +7,7 @@ let stream = require('stream');
 let tagList;
 let popularTagList;
 let paymentTypeList;
+let popularPaymentTypeList;
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -385,24 +386,33 @@ function populateAdditionalLists(myCallBack, params) {
       console.dir(err);
     }
     tagList = results.tags;
-    tagList.sort(function(a, b) {
-      let aNumber = results.groupedOrdersByTag.find(item => item._id.equals(a._id));
-      let bNumber = results.groupedOrdersByTag.find(item => item._id.equals(b._id));
-      aNumber = aNumber ? aNumber.count : 0;
-      bNumber = bNumber ? bNumber.count : 0;
-      if (!a.MyNumber) {
-        a.MyNumber = aNumber;
-      }
-      if (!b.MyNumber) {
-        b.MyNumber = bNumber;
-      }
-      return bNumber - aNumber;
-    });
-    popularTagList = tagList.slice(1, 4);
     paymentTypeList = results.paymentTypes;
+    let popularTagListObject = { popularList: popularTagList };
+    let popularPaymentTypesObject = { popularList: popularPaymentTypeList };
+    sortEntities(tagList, results.groupedOrdersByTag, popularTagListObject);
+    sortEntities(paymentTypeList, results.groupedOrdersByPaymentType, popularPaymentTypesObject);
+    popularTagList = popularTagListObject.popularList;
+    popularPaymentTypeList = popularPaymentTypesObject.popularList;
     if (params)
       myCallBack(params.req, params.res, params.next);
   });
+}
+
+function sortEntities(listToSort, groupedList, obj) {
+  listToSort.sort(function(a, b) {
+    let aNumber = groupedList.find(item => item._id.equals(a._id));
+    let bNumber = groupedList.find(item => item._id.equals(b._id));
+    aNumber = aNumber ? aNumber.count : 0;
+    bNumber = bNumber ? bNumber.count : 0;
+    if (!a.MyNumber) {
+      a.MyNumber = aNumber;
+    }
+    if (!b.MyNumber) {
+      b.MyNumber = bNumber;
+    }
+    return bNumber - aNumber;
+  });
+  obj.popularList = listToSort.slice(1, 4);
 }
 
 populateAdditionalLists();
