@@ -43,9 +43,9 @@ block content
       select#cmbPaymentType.form-control(type='select', placeholder='Payment Type' name='fPaymentType')
         for paymentType in paymentType_list
           if fOrder
-            option(value=paymentType._id selected=(fOrder.PaymentType && fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name}
+            option(value=paymentType._id selected=(fOrder.PaymentType && fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name} - #{paymentType.MyNumber}
           else
-            option(value=paymentType._id) #{paymentType.Name}
+            option(value=paymentType._id) #{paymentType.Name} - #{paymentType.MyNumber}
       br
       button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
       br
