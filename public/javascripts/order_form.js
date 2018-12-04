@@ -3,9 +3,11 @@ window.onload = init;
 window.onkeydown = processKeyDown;
 let valueInput;
 let cmbParent;
+let cmbPaymentType;
 function init() {
   cmbParent = document.getElementById('cmbParentTag');
   cmbParent.addEventListener('change', () => { valueInput.focus(); });
+  cmbPaymentType = document.getElementById('cmbPaymentType');
   let btn = document.getElementById('btnDisableAfterClick');
   btn.addEventListener('click', disableOnSubmit);
   let btnYesterDay = document.getElementById('btnSetYesterday');
@@ -63,4 +65,9 @@ function popularTagButtonClick(tagId) {
   /* eslint-enable */
   cmbParent.value = tagId;
   valueInput.focus();
+};
+/* eslint-disable */
+function popularPTypeButtonClick(ptypeId) {
+  /* eslint-enable */
+  cmbPaymentType.value = ptypeId;
 };

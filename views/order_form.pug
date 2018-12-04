@@ -2,11 +2,9 @@ extends layout
 block mystyles
   script(src='/javascripts/order_form.js')
 block content
-  h1 #{title}
+  #{title}
   form#order_form(method='POST' action='')
     div.form-group
-     
-      
       label(for='dtDateOrder') Date order:
       table(style='width:100%')
         tr
@@ -29,7 +27,7 @@ block content
         each tag, index in popularTagList
           td(style='width:30%')
             button.btn.btn-primary(type='button' style='width:100%' onclick='popularTagButtonClick(\'' + tag._id + '\')') #{tag.Name}
-          if (index <2)
+          if (index < 2)
             td(style="width:10px")
 
 
@@ -47,6 +45,14 @@ block content
           else
             option(value=paymentType._id) #{paymentType.Name} - #{paymentType.MyNumber}
       br
+      table(style='width:100%')
+        tr
+        each ptype, index in popularPaymentTypeList
+          td(style='width:30%')
+            button.btn.btn-primary(type='button' style='width:100%' onclick='popularPTypeButtonClick(\'' + ptype._id + '\')') #{ptype.Name}
+          if (index < 2)
+            td(style="width:10px")
+      br            
       button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
       br
       label(for='txTags') Tags:
