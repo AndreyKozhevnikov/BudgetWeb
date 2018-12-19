@@ -205,14 +205,17 @@ function createOrderFromRequest(req, isUpdate) {
     LocalId: req.body.fLocalId,
     PaymentType: req.body.fPaymentType,
     PaymentNumber: req.body.fPaymentNumber,
+    IsMonthCategory: Boolean(req.body.fIsMonthCategory),
   });
   let paymentType = paymentTypeList.find(el => el._id.equals(order.PaymentType));
   if (paymentType.IsYandex) {
     if (!isUpdate) {
-      if (paymentType.CurrentCount > 4) {
-        paymentType.CurrentCount = 1;
-      } else {
-        paymentType.CurrentCount++;
+      if (!order.IsMonthCategory) {
+        if (paymentType.CurrentCount > 4) {
+          paymentType.CurrentCount = 1;
+        } else {
+          paymentType.CurrentCount++;
+        }
       }
       order.PaymentNumber = paymentType.CurrentCount;
     } else {

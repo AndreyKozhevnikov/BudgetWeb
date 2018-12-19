@@ -34,6 +34,9 @@ window.onload = function() {
             if (!options.data.LocalId) {
               valueString = valueString + '*';
             }
+            if (options.data.IsMonthCategory) {
+              valueString = valueString + '(m)';
+            }
             lblValue.innerHTML = valueString;
             container[0].appendChild(lblValue);
             if (options.data.PaymentType) {
