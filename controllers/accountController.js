@@ -16,12 +16,12 @@ function create_post(req, res, next) {
   if (!errors.isEmpty()) {
     res.render('account_form', {
       title: 'Create account(error)',
-      accountFromForm: account,
+      account_frm: account,
       errors: errors.array(),
     });
     return;
   } else {
-    Account.findOne({ Name: req.body.NameFromForm }).exec(function(err, found_acc) {
+    Account.findOne({ Name: req.body.Name_frm }).exec(function(err, found_acc) {
       if (err) {
         return next(err);
       }
@@ -39,13 +39,13 @@ function create_post(req, res, next) {
   }
 };
 let create_post_array = [
-  body('NameFromForm', 'Tag name required')
+  body('Name_frm', 'Tag name required')
     .isLength({ min: 1 })
     .trim(),
-  sanitizeBody('NameFromForm')
+  sanitizeBody('Name_frm')
     .trim()
     .escape(),
-  sanitizeBody('LocalIdFromForm')
+  sanitizeBody('LocalId_frm')
     .trim()
     .escape(),
   sanitizeBody('Balance')
@@ -53,6 +53,7 @@ let create_post_array = [
     .escape(),
   (req, res, next) => create_post(req, res, next),
 ];
+
 function list(req, res, next) {
   Account.find().exec(function(err, list_account) {
     if (err) {
@@ -61,20 +62,21 @@ function list(req, res, next) {
     res.render('account_list', { title: 'Account List', list_account: list_account });
   });
 };
+
 function update_get(req, res, next) {
   Account.findById(req.params.id).exec(function(err, result) {
     if (err) {
       next(err);
     }
-    res.render('account_form', { title: 'Update Account', accountFromForm: result });
+    res.render('account_form', { title: 'Update Account', account_frm: result });
   });
 };
 
 function createAccountFromRequest(req, isUpdate) {
   var account = new Account({
-    Name: req.body.NameFromForm,
-    LocalId: req.body.LocalIdFromForm,
-    Balance: req.body.BalanceFromForm,
+    Name: req.body.Name_frm,
+    LocalId: req.body.LocalId_frm,
+    Balance: req.body.Balance_frm,
   });
   if (isUpdate) {
     account._id = req.params.id;
@@ -87,7 +89,7 @@ function update_post(req, res, next) {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res.render('account_form', { title: 'Update Account', accountFromForm: account });
+    res.render('account_form', { title: 'Update Account', account_frm: account });
   } else {
     Account.findByIdAndUpdate(req.params.id, account, [], function(err, theAcc) {
       if (err) {
@@ -97,18 +99,20 @@ function update_post(req, res, next) {
     });
   }
 }
+
 let update_post_array = [
-  sanitizeBody('LocalIdFromForm')
+  sanitizeBody('LocalId_frm')
     .trim()
     .escape(),
-  sanitizeBody('NameFromForm')
+  sanitizeBody('Name_frm')
     .trim()
     .escape(),
-  sanitizeBody('BalanceFromForm')
+  sanitizeBody('Balance_frm')
     .trim()
     .escape(),
   (req, res, next) => update_post(req, res, next),
 ];
+
 exports.create_get = create_get;
 exports.create_post = create_post_array;
 exports.list = list;
