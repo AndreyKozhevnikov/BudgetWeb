@@ -11,6 +11,7 @@ let compression = require('compression');
 let requestLogin = require('./routes/requestLogin');
 let tagRouter = require('./routes/tagRouter.js');
 let orderRouter = require('./routes/orderRouter.js');
+let accountRouter = require('./routes/accountRouter.js');
 let paymentTypeRouter = require('./routes/paymentTypeRouter.js');
 let rootRouter = require('./routes/rootRouter.js');
 
@@ -41,6 +42,7 @@ app.use('/', requestLogin);
 app.use('/', rootRouter);
 app.use('/tag', tagRouter);
 app.use('/order', orderRouter);
+app.use('/account', accountRouter);
 app.use('/paymentType', paymentTypeRouter);
 
 // Set up mongoose connection

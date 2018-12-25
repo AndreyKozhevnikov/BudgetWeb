@@ -1,0 +1,13 @@
+'use strict';
+let express = require('express');
+let router = express.Router();
+let account_controller = require('../controllers/accountController.js');
+router.get('/create', account_controller.create_get);
+// router.post('/create', account_controller.order_create_post);
+// router.get('/:id/delete', account_controller.order_delete_get);
+// router.post('/:id/delete', account_controller.order_delete_post);
+// router.get('/:id/update', account_controller.order_update_get);
+// router.post('/:id/update', account_controller.order_update_post);
+// router.get('/list', account_controller.order_list);
+// router.get('/:id', account_controller.order_detail);
+module.exports = router;
