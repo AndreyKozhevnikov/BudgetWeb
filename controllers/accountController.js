@@ -11,11 +11,7 @@ function create_get(req, res, next) {
 function create_post(req, res, next) {
   const errors = validationResult(req);
 
-  var account = new Account({
-    Name: req.body.NameFromForm,
-    LocalId: req.body.LocalIdFromForm,
-    Balance: req.body.BalanceFromForm,
-  });
+  var account = createAccountFromRequest(req, false);
 
   if (!errors.isEmpty()) {
     res.render('account_form', {
@@ -36,7 +32,7 @@ function create_post(req, res, next) {
           if (err) {
             return next(err);
           }
-          res.redirect('/order/createWithNewTag');
+          res.redirect('/account/list');
         });
       }
     });
@@ -65,6 +61,56 @@ function list(req, res, next) {
     res.render('account_list', { title: 'Account List', list_account: list_account });
   });
 };
+function update_get(req, res, next) {
+  Account.findById(req.params.id).exec(function(err, result) {
+    if (err) {
+      next(err);
+    }
+    res.render('account_form', { title: 'Update Account', accountFromForm: result });
+  });
+};
+
+function createAccountFromRequest(req, isUpdate) {
+  var account = new Account({
+    Name: req.body.NameFromForm,
+    LocalId: req.body.LocalIdFromForm,
+    Balance: req.body.BalanceFromForm,
+  });
+  if (isUpdate) {
+    account._id = req.params.id;
+  }
+  return account;
+}
+
+function update_post(req, res, next) {
+  let account = createAccountFromRequest(req, true);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.render('account_form', { title: 'Update Account', accountFromForm: account });
+  } else {
+    Account.findByIdAndUpdate(req.params.id, account, [], function(err, theAcc) {
+      if (err) {
+        return next(err);
+      }
+      res.redirect('/account/list');
+    });
+  }
+}
+let update_post_array = [
+  sanitizeBody('LocalIdFromForm')
+    .trim()
+    .escape(),
+  sanitizeBody('NameFromForm')
+    .trim()
+    .escape(),
+  sanitizeBody('BalanceFromForm')
+    .trim()
+    .escape(),
+  (req, res, next) => update_post(req, res, next),
+];
 exports.create_get = create_get;
 exports.create_post = create_post_array;
 exports.list = list;
+exports.update_get = update_get;
+exports.update_post = update_post_array;
