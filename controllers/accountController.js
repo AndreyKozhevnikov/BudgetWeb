@@ -57,5 +57,14 @@ let create_post_array = [
     .escape(),
   (req, res, next) => create_post(req, res, next),
 ];
+function list(req, res, next) {
+  Account.find().exec(function(err, list_account) {
+    if (err) {
+      return next(err);
+    }
+    res.render('account_list', { title: 'Account List', list_account: list_account });
+  });
+};
 exports.create_get = create_get;
 exports.create_post = create_post_array;
+exports.list = list;

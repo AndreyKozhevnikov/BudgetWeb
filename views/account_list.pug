@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  
+  ul
+  each acc in list_account
+    li 
+      a(href=acc.url) #{acc.Name}  
+      | (#{acc._id})
+
+  else
+    li There are no accounts.
