@@ -1,0 +1,40 @@
+extends layout
+
+block content
+  h1 #{title}
+  form(method='POST' action='')
+    div.form-group
+      label(for='cmbType') Type:
+      select#cmbType.form-control(type='select', name='Type_frm')
+        for tp in type_list
+          if serviceOrder_frm
+            option(value=tp selected=(serviceOrder_frm.Type && serviceOrder_frm.Type.toString()==tp ? 'selected' : false)) #{tp}
+          else
+            option(value=tp) #{tp}      
+      label(for='txValue') Value:
+      input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Value))
+      label(for='txComment') Comment:
+      input#txComment.form-control(type='text' name='Comment_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Comment))      
+      label(for='chIsCashBack') IsCashBack:
+      input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===serviceOrder_frm ? false :serviceOrder_frm.IsCashBack))
+      label(for='cmbAccountIn') AccountIn:
+      select#cmbAccountIn.form-control(type='select', name='AccountIn_frm')
+        for account in account_list
+          if serviceOrder_frm
+            option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.Balance}
+          else
+            option(value=account._id) #{account.Name} - #{account.Balance}
+      label(for='cmbAccountOut') AccountOut:
+      select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
+        for account in account_list
+          if serviceOrder_frm
+            option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.Balance}
+          else
+            option(value=account._id) #{account.Name} - #{account.Balance}
+      label(for='txLocalId') LocalId:
+    input#txLocalId.form-control(type='number' required='true'  name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
+    button.btn.btn-primary(type='submit') Submit
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
