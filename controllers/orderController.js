@@ -397,10 +397,10 @@ function populateAdditionalLists(myCallBack, params) {
     }
     tagList = results.tags;
     paymentTypeList = results.paymentTypes;
-    let popularTagListObject = { popularList: popularTagList };
-    let popularPaymentTypesObject = { popularList: popularPaymentTypeList };
-    sortEntities(tagList, results.groupedOrdersByTag, popularTagListObject);
-    sortEntities(paymentTypeList, results.groupedOrdersByPaymentType, popularPaymentTypesObject);
+    let popularTagListObject = {};
+    let popularPaymentTypesObject = {};
+    sortEntities(tagList, results.groupedOrdersByTag, popularTagListObject, 4);
+    sortEntities(paymentTypeList, results.groupedOrdersByPaymentType, popularPaymentTypesObject, 5);
     popularTagList = popularTagListObject.popularList;
     popularPaymentTypeList = popularPaymentTypesObject.popularList;
     if (params)
@@ -408,7 +408,7 @@ function populateAdditionalLists(myCallBack, params) {
   });
 }
 
-function sortEntities(listToSort, groupedList, obj) {
+function sortEntities(listToSort, groupedList, obj, countOfPopular) {
   listToSort.sort(function(a, b) {
     let aNumber = groupedList.find(item => item._id.equals(a._id));
     let bNumber = groupedList.find(item => item._id.equals(b._id));
@@ -422,7 +422,7 @@ function sortEntities(listToSort, groupedList, obj) {
     }
     return bNumber - aNumber;
   });
-  obj.popularList = listToSort.slice(1, 4);
+  obj.popularList = listToSort.slice(1, countOfPopular);
 }
 
 populateAdditionalLists();
