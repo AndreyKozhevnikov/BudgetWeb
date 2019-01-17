@@ -81,7 +81,18 @@ function populateLists() {
     }
   });
 }
+
+function list(req, res, next) {
+  ServiceOrder.find().exec(function(err, list_serviceOrders) {
+    if (err) {
+      return next(err);
+    }
+    res.render('serviceOrder_list', { title: 'Service Order List', serviceOrders_list: list_serviceOrders });
+  });
+};
+
 populateLists();
 
 exports.create_get = create_get;
 exports.create_post = create_post_array;
+exports.list = list;

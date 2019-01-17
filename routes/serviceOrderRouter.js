@@ -8,6 +8,6 @@ router.post('/create', serviceOrder_controller.create_post);
 // router.post('/:id/delete', account_controller.order_delete_post);
 // router.get('/:id/update', serviceOrder_controller.update_get);
 // router.post('/:id/update', serviceOrder_controller.update_post);
-// router.get('/list', serviceOrder_controller.list);
+router.get('/list', serviceOrder_controller.list);
 // router.get('/:id', account_controller.order_detail);
 module.exports = router;
