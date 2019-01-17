@@ -15,6 +15,7 @@ function init() {
 
   valueInput = document.getElementById('txValue');
   valueInput.focus();
+  valueInput.select();
   valueInput.onkeydown = function(keyBoardEvent) {
     let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
     if (notHandledKeys.indexOf(keyBoardEvent.key) > -1) {
