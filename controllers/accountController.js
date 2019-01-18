@@ -1,5 +1,7 @@
 'use strict';
 let Account = require('../models/account.js');
+let Order = require('../models/order.js');
+
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
@@ -8,6 +10,7 @@ function create_get(req, res, next) {
     title: 'Create Account',
   });
 };
+
 function create_post(req, res, next) {
   const errors = validationResult(req);
 
@@ -48,9 +51,6 @@ let create_post_array = [
   sanitizeBody('LocalId_frm')
     .trim()
     .escape(),
-  sanitizeBody('Balance')
-    .trim()
-    .escape(),
   (req, res, next) => create_post(req, res, next),
 ];
 
@@ -62,6 +62,64 @@ function list(req, res, next) {
     res.render('account_list', { title: 'Account List', list_account: list_account });
   });
 };
+
+function aggregatedList(req, res, next) {
+  Account.aggregate(
+    [
+      {
+        $lookup: {
+          from: 'paymenttypes',
+          localField: '_id',
+          foreignField: 'Account',
+          as: 'myPT',
+        },
+      },
+      {
+        $unwind: '$myPT',
+      },
+      {
+        $lookup: {
+          from: 'orders',
+          localField: 'myPT._id',
+          foreignField: 'PaymentType',
+          as: 'myOrders',
+        },
+      },
+      {
+        $project: {
+          myname: { name: '$Name' },
+          mysum: { $sum: '$myOrders.Value' },
+         // count: { $sum: 1 },
+        },
+      },
+    ],
+    function(err, res) {
+
+    }
+  );
+  // Order.Populate('PaymentType').aggregate(
+  //   [
+  //     {
+  //       $match: {
+  //         IsDeleted: { $exists: false },
+  //       },
+  //     },
+  //     {
+  //       $group: {
+  //         _id: '$PaymentType.Account',
+  //         msum: { $sum: '$Value' },
+  //         count: { $sum: 1 },
+
+  //       },
+  //     },
+  //   ]
+  // ).exec(function(err, results) {
+  //   if (err) {
+  //     next(err);
+  //   }
+
+  // });
+}
 
 function update_get(req, res, next) {
   Account.findById(req.params.id).exec(function(err, result) {
@@ -76,7 +134,6 @@ function createAccountFromRequest(req, isUpdate) {
   var account = new Account({
     Name: req.body.Name_frm,
     LocalId: req.body.LocalId_frm,
-    Balance: req.body.Balance_frm,
   });
   if (isUpdate) {
     account._id = req.params.id;
@@ -107,14 +164,12 @@ let update_post_array = [
   sanitizeBody('Name_frm')
     .trim()
     .escape(),
-  sanitizeBody('Balance_frm')
-    .trim()
-    .escape(),
   (req, res, next) => update_post(req, res, next),
 ];
 
 exports.create_get = create_get;
 exports.create_post = create_post_array;
 exports.list = list;
+exports.aggregatedList = aggregatedList;
 exports.update_get = update_get;
 exports.update_post = update_post_array;

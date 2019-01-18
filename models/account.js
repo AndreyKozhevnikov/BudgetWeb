@@ -4,7 +4,6 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let AccountSchema = new Schema({
-  Balance: { type: Number, required: true },
   Name: { type: String, required: true },
   LocalId: { type: Number, required: true },
 });

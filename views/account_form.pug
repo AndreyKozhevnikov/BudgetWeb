@@ -6,8 +6,6 @@ block content
     div.form-group
       label(for='txName') Name:
       input#txName.form-control(type='text' required='true' placeholder='Enter a new tag name' name='Name_frm' value=(undefined===account_frm ? '' : account_frm.Name))
-      label(for='txBalance') Balance:
-      input#txBalance.form-control(type='number' required='true'  name='Balance_frm' value=(undefined===account_frm ? '' : account_frm.Balance))
       label(for='txLocalId') LocalId:
       input#txLocalId.form-control(type='number' required='true'  name='LocalId_frm' value=(undefined===account_frm ? '' : account_frm.LocalId))
     button.btn.btn-primary(type='submit') Submit

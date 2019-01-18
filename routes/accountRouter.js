@@ -9,5 +9,7 @@ router.post('/create', account_controller.create_post);
 router.get('/:id/update', account_controller.update_get);
 router.post('/:id/update', account_controller.update_post);
 router.get('/list', account_controller.list);
+router.get('/aggregatedList', account_controller.aggregatedList);
+
 // router.get('/:id', account_controller.order_detail);
 module.exports = router;
