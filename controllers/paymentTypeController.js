@@ -1,11 +1,13 @@
 'use strict';
 let PaymentType = require('../models/paymentType.js');
+let Account = require('../models/account.js');
+let accountList;
 
 const { validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 function paymentType_create_get(req, res, next) {
-  res.render('paymentType_form', { title: 'Create PaymentType' });
+  res.render('paymentType_form', { title: 'Create PaymentType', account_list: accountList });
 };
 
 function createPaymentTypeFromRequest(req, isUpdate) {
@@ -13,11 +15,12 @@ function createPaymentTypeFromRequest(req, isUpdate) {
     Name: req.body.fName,
     IsYandex: Boolean(req.body.fIsYandex),
     LocalId: req.body.fLocalId,
+    Account: req.body.fAccount,
   });
   if (isUpdate) {
     paymentType._id = req.params.id;
     paymentType.CurrentCount = req.body.fCurrentCount;
-  } else {
+  } else { // tofix
     paymentType.CurrentCount = 0;
   }
   return paymentType;
@@ -72,6 +75,7 @@ function paymentType_update_get(req, res, next) {
     res.render('paymentType_form', {
       title: 'Update paymentType',
       fpaymentType: paymentType,
+      account_list: accountList,
     });
   });
 };
@@ -142,6 +146,17 @@ function createPaymentTypeFromBackup(paymentTypeFromBackup) {
   });
   return pType;
 };
+
+function populateAdditionalLists() {
+  Account.find().exec(function(err, accList) {
+    if (err) {
+      console.dir(err);
+    }
+    accountList = accList;
+  });
+}
+
+populateAdditionalLists();
 
 exports.paymentType_create_get = paymentType_create_get;
 exports.paymentType_create_post = paymentType_create_post_array;

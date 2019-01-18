@@ -14,7 +14,12 @@ block content
       input#chIsYandex.form-control(type='checkbox', name='fIsYandex', checked=(undefined===fpaymentType ? '' : fpaymentType.IsYandex))
       label(for='inLocalId') LocalId:
       input#input1.form-control(type='text', placeholder='Enter a LocalId' name='fLocalId' value=(undefined===fpaymentType ? '' : fpaymentType.LocalId))
-
+      select#cmbAccount.form-control(type='select', placeholder='Account' name='fAccount')
+        for acc in account_list
+          if acc
+            option(value=acc._id selected=(fpaymentType.Account && fpaymentType.Account.toString()==acc._id.toString() ? 'selected' : false)) #{acc.Name}
+          else
+            option(value=acc._id) #{acc.Name}
     button.btn.btn-primary(type='submit') Submit
 
   if errors 
