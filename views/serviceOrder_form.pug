@@ -32,7 +32,7 @@ block content
           else
             option(value=account._id) #{account.Name} - #{account.Balance}
       label(for='txLocalId') LocalId:
-    input#txLocalId.form-control(type='number' required='true'  name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
+    input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul
