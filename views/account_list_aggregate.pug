@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+  
+  ul
+  each acc in list_account
+    p #{acc.myname.name} - #{acc.sumInSOrders} - #{acc.sumOutSOrders} - #{acc.sumPayments} - #{acc.result}
+  else
+    li There are no accounts.
+  
+  p CommonSum: #{commonSum}

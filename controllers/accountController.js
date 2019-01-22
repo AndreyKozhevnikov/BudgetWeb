@@ -71,30 +71,55 @@ function aggregatedList(req, res, next) {
           from: 'paymenttypes',
           localField: '_id',
           foreignField: 'Account',
-          as: 'myPT',
+          as: 'acPayments',
         },
-      },
-      {
-        $unwind: '$myPT',
       },
       {
         $lookup: {
           from: 'orders',
-          localField: 'myPT._id',
+          localField: 'acPayments._id',
           foreignField: 'PaymentType',
           as: 'myOrders',
         },
       },
       {
+        $lookup: {
+          from: 'serviceorders',
+          localField: '_id',
+          foreignField: 'AccountOut',
+          as: 'acOutSOrders',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          localField: '_id',
+          foreignField: 'AccountIn',
+          as: 'acInSOrders',
+        },
+      },
+      // {
+      //   $unwind: '$acPayments',
+      // },
+      {
         $project: {
-          myname: { name: '$Name' },
-          mysum: { $sum: '$myOrders.Value' },
-         // count: { $sum: 1 },
+          myname: { name: '$Name', myId: '$_id' },
+          sumPayments: { $sum: '$myOrders.Value' },
+          sumInSOrders: { $sum: '$acInSOrders.Value' },
+          sumOutSOrders: { $sum: '$acOutSOrders.Value' },
         },
       },
     ],
-    function(err, res) {
-
+    function(err, accList) {
+      if (err) {
+        next(err);
+      }
+      let commonSum = 0;
+      accList.forEach((item) => {
+        item.result = item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
+        commonSum = commonSum + item.result;
+      });
+      res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
     }
   );
   // Order.Populate('PaymentType').aggregate(
