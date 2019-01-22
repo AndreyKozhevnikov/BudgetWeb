@@ -7,6 +7,7 @@ let accountList;
 
 function createServiceOrderFromRequest(req, isUpdate) {
   var serviceOrder = new ServiceOrder({
+    DateOrder: req.body.DateOrder_frm,
     Type: req.body.Type_frm,
     LocalId: req.body.LocalId_frm,
     Value: req.body.Value_frm,
