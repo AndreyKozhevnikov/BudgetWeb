@@ -16,7 +16,7 @@ block content
       input#input1.form-control(type='text', placeholder='Enter a LocalId' name='fLocalId' value=(undefined===fpaymentType ? '' : fpaymentType.LocalId))
       select#cmbAccount.form-control(type='select', placeholder='Account' name='fAccount')
         for acc in account_list
-          if acc
+          if fpaymentType
             option(value=acc._id selected=(fpaymentType.Account && fpaymentType.Account.toString()==acc._id.toString() ? 'selected' : false)) #{acc.Name}
           else
             option(value=acc._id) #{acc.Name}
