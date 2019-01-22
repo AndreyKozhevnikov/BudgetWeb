@@ -12,9 +12,15 @@ function createServiceOrderFromRequest(req, isUpdate) {
     Value: req.body.Value_frm,
     Comment: req.body.Comment_frm,
     IsCashBack: Boolean(req.body.IsCashBack_frm),
-    AccountIn: req.body.AccountId_frm,
-    AccountOut: req.body.AccountOut_frm,
+    //  AccountIn: req.body.AccountIn_frm,
+    //  AccountOut: req.body.AccountOut_frm,
   });
+  if (req.body.AccountIn_frm !== '') {
+    serviceOrder.AccountIn = req.body.AccountIn_frm;
+  }
+  if (req.body.AccountOut_frm !== '') {
+    serviceOrder.AccountOut = req.body.AccountOut_frm;
+  }
   if (isUpdate) {
     serviceOrder._id = req.params.id;
   }

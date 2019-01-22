@@ -7,7 +7,7 @@ block content
   each sOrder in serviceOrders_list
     li 
       a(href=sOrder.url) #{sOrder.Type}  
-      | (#{sOrder._id})
+      | (#{sOrder._id} - #{sOrder.Type}- #{sOrder.Value}- #{sOrder.Comment})
 
   else
     li There are no service orders.
