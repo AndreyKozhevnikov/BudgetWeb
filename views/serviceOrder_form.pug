@@ -19,6 +19,7 @@ block content
       input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===serviceOrder_frm ? false :serviceOrder_frm.IsCashBack))
       label(for='cmbAccountIn') AccountIn:
       select#cmbAccountIn.form-control(type='select', name='AccountIn_frm')
+        option(value='') Please Select
         for account in account_list
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.Balance}
@@ -26,6 +27,7 @@ block content
             option(value=account._id) #{account.Name} - #{account.Balance}
       label(for='cmbAccountOut') AccountOut:
       select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
+        option(value='') Please Select
         for account in account_list
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.Balance}
