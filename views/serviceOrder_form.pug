@@ -23,8 +23,8 @@ block content
             option(value=tp) #{tp}      
       label(for='txValue') Value:
       input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Value))
-      label(for='txComment') Comment:
-      input#txComment.form-control(type='text' name='Comment_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Comment))      
+      label(for='txDescr') Description:
+      input#txDescr.form-control(type='text' name='Description_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Description))      
       label(for='chIsCashBack') IsCashBack:
       input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===serviceOrder_frm ? false :serviceOrder_frm.IsCashBack))
       label(for='cmbAccountIn') AccountIn:

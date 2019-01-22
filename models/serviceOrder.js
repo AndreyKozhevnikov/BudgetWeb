@@ -8,7 +8,7 @@ let ServiceOrderSchema = new Schema({
   DateOrder: { type: Date, required: true },
   Type: { type: String, required: true },
   Value: { type: Number, required: true },
-  Comment: { type: String },
+  Description: { type: String },
   IsCashBack: { type: Boolean },
   LocalId: { type: Number },
   AccountIn: { type: Schema.ObjectId, ref: 'Account' },

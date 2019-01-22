@@ -11,7 +11,7 @@ function createServiceOrderFromRequest(req, isUpdate) {
     Type: req.body.Type_frm,
     LocalId: req.body.LocalId_frm,
     Value: req.body.Value_frm,
-    Comment: req.body.Comment_frm,
+    Description: req.body.Description_frm,
     IsCashBack: Boolean(req.body.IsCashBack_frm),
   });
   if (req.body.AccountIn_frm !== '') {
@@ -71,7 +71,7 @@ let create_post_array = [
   sanitizeBody('Value_frm')
     .trim()
     .escape(),
-  sanitizeBody('Comment_frm')
+  sanitizeBody('Description_frm')
     .trim()
     .escape(),
   (req, res, next) => create_post(req, res, next),
