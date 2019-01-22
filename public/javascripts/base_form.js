@@ -7,9 +7,26 @@ function init() {
   handleSubmitButton();
   handleYesterDayButton();
   focusValueInput();
+  focusDescriptionAfterEnterNonNumberInValue();
 }
-
-function handleSubmitButton(){
+function focusDescriptionAfterEnterNonNumberInValue() {
+  valueInput.onkeydown = function(keyBoardEvent) {
+    let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
+    if (notHandledKeys.indexOf(keyBoardEvent.key) > -1) {
+      return true;
+    }
+    let isNumber = isFinite(keyBoardEvent.key);
+    let isSpace = keyBoardEvent.code === 'Space';
+    if (!isNumber || isSpace) {
+      let descriptionInput = document.getElementById('txDescr');
+      descriptionInput.focus();
+    }
+    if (isSpace) {
+      return false;
+    }
+  }
+}
+function handleSubmitButton() {
   let btn = document.getElementById('btnDisableAfterClick');
   btn.addEventListener('click', disableOnSubmit);
 }
@@ -18,7 +35,7 @@ function disableOnSubmit() {
   setTimeout(() => (this.disabled = true), 1);
   setTimeout(() => (this.disabled = false), 1000);
 }
-function handleYesterDayButton(){
+function handleYesterDayButton() {
   let btnYesterDay = document.getElementById('btnSetYesterday');
   btnYesterDay.addEventListener('click', setYesterday);
 }
@@ -40,7 +57,7 @@ function formatDate(date) {
   return [year, month, day].join('-');
 }
 
-function focusValueInput(){
+function focusValueInput() {
   valueInput = document.getElementById('txValue');
   valueInput.focus();
 }

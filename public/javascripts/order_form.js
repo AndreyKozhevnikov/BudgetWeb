@@ -7,24 +7,8 @@ window.onkeydown = processKeyDown;
 let cmbParent;
 function init() {
   focusInputAfterTagSelection();
-  valueInput.onkeydown = focusDescriptionAfterEnterNonNumberInValue;
 }
 
-function focusDescriptionAfterEnterNonNumberInValue(keyBoardEvent){
-  let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
-  if (notHandledKeys.indexOf(keyBoardEvent.key) > -1) {
-    return true;
-  }
-  let isNumber = isFinite(keyBoardEvent.key);
-  let isSpace = keyBoardEvent.code === 'Space';
-  if (!isNumber || isSpace) {
-    let descriptionInput = document.getElementById('txDescr');
-    descriptionInput.focus();
-  }
-  if (isSpace) {
-    return false;
-  }
-}
 
 function focusInputAfterTagSelection(){
   cmbParent = document.getElementById('cmbParentTag');
