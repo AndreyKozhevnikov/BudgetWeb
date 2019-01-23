@@ -88,12 +88,16 @@ function populateLists() {
 }
 
 function list(req, res, next) {
-  ServiceOrder.find().exec(function(err, list_serviceOrders) {
-    if (err) {
-      return next(err);
-    }
-    res.render('serviceOrder_list', { title: 'Service Order List', serviceOrders_list: list_serviceOrders });
-  });
+  ServiceOrder
+    .find()
+    .populate('AccountOut')
+    .populate('AccountIn')
+    .exec(function(err, list_serviceOrders) {
+      if (err) {
+        return next(err);
+      }
+      res.render('serviceOrder_list', { title: 'Service Order List', serviceOrders_list: list_serviceOrders });
+    });
 };
 
 populateLists();

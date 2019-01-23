@@ -9,7 +9,6 @@ function init() {
   focusInputAfterTagSelection();
 }
 
-
 function focusInputAfterTagSelection(){
   cmbParent = document.getElementById('cmbParentTag');
   cmbParent.addEventListener('change', () => { valueInput.focus(); });
