@@ -28,12 +28,24 @@ function createServiceOrderFromRequest(req, isUpdate) {
 }
 
 function create_get(req, res, next) {
-  res.render('serviceOrder_form', {
-    title: 'Create ServiceOrder',
+  let objToShow = objectToShowForm('Create ServiceOrder');
+  res.render('serviceOrder_form', objToShow);
+};
+
+function objectToShowForm(mTitle, serviceOrder, errors) {
+  let obj = {
+    title: mTitle,
     account_list: accountList,
     type_list: typesList,
-  });
-};
+  };
+  if (serviceOrder) {
+    obj.serviceOrder_frm = serviceOrder;
+  }
+  if (errors) {
+    obj.errors = errors;
+  }
+  return obj;
+}
 
 function create_post(req, res, next) {
   const errors = validationResult(req);
@@ -41,11 +53,8 @@ function create_post(req, res, next) {
   let serviceOrder = createServiceOrderFromRequest(req, false);
 
   if (!errors.isEmpty()) {
-    res.render('serviceOrder_form', {
-      title: 'Create ServiceOrder(error)',
-      serviceOrder_frm: serviceOrder,
-      errors: errors.array(),
-    });
+    let objToShow = objectToShowForm('Create ServiceOrder(error)', serviceOrder, errors.array());
+    res.render('serviceOrder_form', objToShow);
     return;
   } else {
     serviceOrder.save(function(err) {
@@ -106,24 +115,16 @@ function update_get(req, res, next) {
       if (err) {
         return next(err);
       }
-      res.render('serviceOrder_form', {
-        title: 'Update SOrder',
-        serviceOrder_frm: sOrder,
-        account_list: accountList,
-        type_list: typesList,
-      });
+      let objToShow = objectToShowForm('Update SOrder', sOrder);
+      res.render('serviceOrder_form', objToShow);
     });
 }; function update_post(req, res, next) {
   let serviceOrder = createServiceOrderFromRequest(req, true);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    // There are errors. Render form again with sanitized values/errors messages.
-    res.render('serviceOrder_form', {
-      title: 'Create ServiceOrder(error)',
-      serviceOrder_frm: serviceOrder,
-      errors: errors.array(),
-    });
+    let objToShow = objectToShowForm('Create ServiceOrder(error)', serviceOrder, errors.array());
+    res.render('serviceOrder_form', objToShow);
     return;
   } else {
     // Data from form is valid.
