@@ -28,6 +28,14 @@ window.onload = function() {
         },
         {
           dataField: 'Description',
+          cellTemplate: (container, options) => {
+            let a = document.createElement('a');
+            a.classList.add('dx-link');
+            a.text = options.data.Description;
+            a.href = '/serviceOrder/' + options.data._id + '/update';
+            a.style.wordWrap = 'break-word';
+            container[0].appendChild(a);
+          },
         },
         {
           dataField: 'IsCashBack',
