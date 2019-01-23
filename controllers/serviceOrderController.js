@@ -159,10 +159,17 @@ let update_post_array = [
     .escape(),
   (req, res, next) => update_post(req, res, next),
 ];
+
+function updateLists(){
+  populateLists();
+}
+
 populateLists();
+
 
 exports.create_get = create_get;
 exports.create_post = create_post_array;
 exports.list = list;
+exports.updateLists = updateLists;
 exports.update_get = update_get;
 exports.update_post = update_post_array;

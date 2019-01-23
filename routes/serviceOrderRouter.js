@@ -9,5 +9,6 @@ router.post('/create', serviceOrder_controller.create_post);
 router.get('/:id/update', serviceOrder_controller.update_get);
 router.post('/:id/update', serviceOrder_controller.update_post);
 router.get('/list', serviceOrder_controller.list);
+router.get('/updatelists', serviceOrder_controller.updateLists);
 // router.get('/:id', account_controller.order_detail);
 module.exports = router;
