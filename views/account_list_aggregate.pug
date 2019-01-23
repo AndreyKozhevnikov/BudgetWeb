@@ -2,11 +2,26 @@ extends layout
 
 block content
   h1= title
-  
+  div
+    table.statisticTable
+      tr
+        th Name
+        th Input
+        th Output
+        th Payments
+        th Balance
+      each acc in list_account
+        tr
+          td
+            label #{acc.myname.name}
+          td
+            label #{acc.sumInSOrders}
+          td
+            label #{acc.sumOutSOrders}
+          td
+            label #{acc.sumPayments}
+          td
+            label #{acc.result}
   ul
-  each acc in list_account
-    p #{acc.myname.name} - #{acc.sumInSOrders} - #{acc.sumOutSOrders} - #{acc.sumPayments} - #{acc.result}
-  else
-    li There are no accounts.
-  
-  p CommonSum: #{commonSum}
+  p
+    label.commonSum CommonSum: #{commonSum}

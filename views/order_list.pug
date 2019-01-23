@@ -1,11 +1,4 @@
 extends layout
-block mystyles
-   style(type="text/css").
-      table,tr,td,th{
-        border: 1px solid black;}
-      td,th{
-        text-align:center
-      }
 block scripts
    script.
      var order_list=!{JSON.stringify(order_list)}; 

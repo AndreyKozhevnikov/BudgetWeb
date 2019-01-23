@@ -46,6 +46,14 @@ text-decoration: none;
 {
   width: 100%;
 }
+.statisticTable tr, .statisticTable td, .statisticTable  th
+{
+  border: 1px solid black;
+}
+.statisticTable td, .statisticTable  th
+{
+  text-align:center
+}
 .spentLabel
 {
   color:rgb(153, 211, 66);
