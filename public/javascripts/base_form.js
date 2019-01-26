@@ -8,7 +8,16 @@ function init() {
   handleYesterDayButton();
   focusValueInput();
   focusDescriptionAfterEnterNonNumberInValue();
+  window.addEventListener('keydown', processKeyDown);
 }
+
+function processKeyDown() {
+  if (event.ctrlKey && event.keyCode === 13) {
+    let form = document.querySelector('#detail_form');
+    form.submit();
+  }
+}
+
 function focusDescriptionAfterEnterNonNumberInValue() {
   valueInput.onkeydown = function(keyBoardEvent) {
     let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace', '-', 'Home', 'End'];

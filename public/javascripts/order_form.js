@@ -3,7 +3,6 @@
 'use strict';
 window.addEventListener('load', init);
 
-window.onkeydown = processKeyDown;
 let cmbParent;
 function init() {
   focusInputAfterTagSelection();
@@ -12,13 +11,6 @@ function init() {
 function focusInputAfterTagSelection(){
   cmbParent = document.getElementById('cmbParentTag');
   cmbParent.addEventListener('change', () => { valueInput.focus(); });
-}
-
-function processKeyDown() {
-  if (event.ctrlKey && event.keyCode === 13) {
-    let form = document.querySelector('#order_form');
-    form.submit();
-  }
 }
 
 /* eslint-disable */

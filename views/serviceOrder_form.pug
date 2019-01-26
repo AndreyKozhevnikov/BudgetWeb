@@ -3,7 +3,7 @@ block scripts
   script(src='/javascripts/base_form.js')
 block content
   h1 #{title}
-  form(method='POST' action='')
+  form#detail_form(method='POST' action='')
     div.form-group
       label(for='dtDateOrder') Date order:
       table(style='width:100%')
