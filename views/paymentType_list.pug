@@ -27,5 +27,8 @@ block content
               a(href=paymentType.url) #{paymentType.Name}
             td #{paymentType.CurrentCount}
             td #{paymentType.IsYandex}
-            td #{paymentType.Account.Name}
+            if (paymentType.Account)
+              td   #{paymentType.Account.Name}
+            else
+              td  not account
             td #{paymentType.LocalId}
