@@ -144,6 +144,7 @@ function aggregatedList(req, res, next) {
       if (err) {
         next(err);
       }
+      accList.sort();
       let commonSum = 0;
       accList.forEach((item) => {
         item.result = item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
