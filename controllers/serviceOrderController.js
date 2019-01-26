@@ -100,6 +100,7 @@ function list(req, res, next) {
     .find()
     .populate('AccountOut')
     .populate('AccountIn')
+    .sort({ DateOrder: -1, _id: -1 })
     .exec(function(err, list_serviceOrders) {
       if (err) {
         return next(err);
