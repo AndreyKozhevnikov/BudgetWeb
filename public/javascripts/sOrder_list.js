@@ -39,7 +39,7 @@ window.onload = function() {
           cellTemplate: (container, options) => {
             let a = document.createElement('a');
             a.classList.add('dx-link');
-            if (options.data.Type === 'between') {
+            if (options.data.Type === 'between' && options.data.Description === '') {
               a.text = 'between';
             } else {
               a.text = options.data.Description;
