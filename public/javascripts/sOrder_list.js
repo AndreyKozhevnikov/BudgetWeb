@@ -39,7 +39,11 @@ window.onload = function() {
           cellTemplate: (container, options) => {
             let a = document.createElement('a');
             a.classList.add('dx-link');
-            a.text = options.data.Description;
+            if (options.data.Type === 'between') {
+              a.text = 'between';
+            } else {
+              a.text = options.data.Description;
+            }
             a.href = '/serviceOrder/' + options.data._id + '/update';
             a.style.wordWrap = 'break-word';
             container[0].appendChild(a);
