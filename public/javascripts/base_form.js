@@ -11,7 +11,7 @@ function init() {
 }
 function focusDescriptionAfterEnterNonNumberInValue() {
   valueInput.onkeydown = function(keyBoardEvent) {
-    let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'];
+    let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace', '-', 'Home', 'End'];
     if (notHandledKeys.indexOf(keyBoardEvent.key) > -1) {
       return true;
     }
