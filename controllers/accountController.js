@@ -76,6 +76,7 @@ function aggregatedList(req, res, next) {
       {
         $unwind: {
           path: '$acPayments',
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
