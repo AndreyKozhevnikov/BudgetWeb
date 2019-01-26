@@ -1,6 +1,5 @@
 'use strict';
 let Account = require('../models/account.js');
-let Order = require('../models/order.js');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -75,11 +74,43 @@ function aggregatedList(req, res, next) {
         },
       },
       {
+        $unwind: {
+          path: '$acPayments',
+        },
+      },
+      {
         $lookup: {
           from: 'orders',
-          localField: 'acPayments._id',
-          foreignField: 'PaymentType',
-          as: 'myOrders',
+          let: { ptId: '$acPayments._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $and: [
+                    { $eq: ['$PaymentType', '$$ptId'] },
+                    { $gte: ['$DateOrder', new Date('2019-01-23')] },
+                  ],
+
+                },
+              },
+            },
+          ],
+          as: 'filteredOrders',
+        },
+      },
+      {
+        $project: {
+          name: '$Name',
+          _id: '$_id',
+          sumfOrders: { $sum: '$filteredOrders.Value' },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          fOrders: { $sum: '$sumfOrders' },
         },
       },
       {
@@ -98,13 +129,11 @@ function aggregatedList(req, res, next) {
           as: 'acInSOrders',
         },
       },
-      // {
-      //   $unwind: '$acPayments',
-      // },
       {
         $project: {
-          myname: { name: '$Name', myId: '$_id' },
-          sumPayments: { $sum: '$myOrders.Value' },
+          name: '$name',
+          _id: '$_id',
+          sumPayments: { $sum: '$fOrders' },
           sumInSOrders: { $sum: '$acInSOrders.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
         },
