@@ -24,7 +24,7 @@ function focusDescriptionAfterEnterNonNumberInValue() {
     if (isSpace) {
       return false;
     }
-  }
+  };
 }
 function handleSubmitButton() {
   let btn = document.getElementById('btnDisableAfterClick');
