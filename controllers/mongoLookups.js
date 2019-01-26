@@ -1,3 +1,7 @@
+// this is for help only. will be deleted after 'refactor account_aggregate list'
+/* eslint-disable */
+/*global aggregatedList Account*/
+'use strict';
 function aggregatedList(req, res, next) {
   Account.aggregate(
     [
@@ -118,3 +122,4 @@ function aggregatedList(req, res, next) {
       res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
     }
   );
+}
