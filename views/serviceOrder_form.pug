@@ -32,7 +32,7 @@ block content
         option(value='') Please Select
         for account in account_list
           if serviceOrder_frm
-            option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.Balance}
+            option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
             option(value=account._id) #{account.Name} - #{account.Balance}
       label(for='cmbAccountOut') AccountOut:
@@ -40,7 +40,7 @@ block content
         option(value='') Please Select
         for account in account_list
           if serviceOrder_frm
-            option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.Balance}
+            option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
             option(value=account._id) #{account.Name} - #{account.Balance}
       label(for='txLocalId') LocalId:
