@@ -120,12 +120,14 @@ let paymentType_update_post_array = [
 
 
 function paymentTypeList(req, res, next) {
-  PaymentType.find().exec((err, payment_list) => {
-    if (err) {
-      return next(err);
-    }
-    res.render('paymentType_list', { paymentType_list: payment_list });
-  });
+  PaymentType.find()
+    .populate('Account')
+    .exec((err, payment_list) => {
+      if (err) {
+        return next(err);
+      }
+      res.render('paymentType_list', { paymentType_list: payment_list });
+    });
 }
 
 function deleteTypes(req, res, next) {
