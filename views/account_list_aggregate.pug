@@ -13,7 +13,7 @@ block content
       each acc in list_account
         tr
           td
-            label #{acc.name}
+            a(href=acc.url) #{acc.name}
           td
             label #{acc.sumInSOrders}
           td

@@ -158,6 +158,7 @@ function aggregatedList(req, res, next) {
       let commonSum = 0;
       accList.forEach((item) => {
         item.result = item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
+        item.url = '/account/' + item._id + '/update';
         commonSum = commonSum + item.result;
       });
       res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
