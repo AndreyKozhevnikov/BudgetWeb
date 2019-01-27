@@ -7,7 +7,9 @@ block content
       label(for='txName') Name:
       input#txName.form-control(type='text' required='true' placeholder='Enter a new tag name' name='Name_frm' value=(undefined===account_frm ? '' : account_frm.Name))
       label(for='txLocalId') LocalId:
-      input#txLocalId.form-control(type='number' required='true'  name='LocalId_frm' value=(undefined===account_frm ? '' : account_frm.LocalId))
+      input#txLocalId.form-control(type='number' required='true' name='LocalId_frm' value=(undefined===account_frm ? '' : account_frm.LocalId))
+      label(for='txOrderNumber') OrderNumber:
+      input#txOrderNumber.form-control(type='number' name='OrderNumber_frm' value=(undefined===account_frm ? '' : account_frm.OrderNumber))
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul

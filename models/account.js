@@ -6,6 +6,7 @@ let Schema = mongoose.Schema;
 let AccountSchema = new Schema({
   Name: { type: String, required: true },
   LocalId: { type: Number, required: true },
+  OrderNumber: { type: Number },
 });
 
 AccountSchema.virtual('url').get(function() {

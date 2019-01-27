@@ -200,6 +200,7 @@ function createAccountFromRequest(req, isUpdate) {
   var account = new Account({
     Name: req.body.Name_frm,
     LocalId: req.body.LocalId_frm,
+    OrderNumber: req.body.OrderNumber_frm,
   });
   if (isUpdate) {
     account._id = req.params.id;
