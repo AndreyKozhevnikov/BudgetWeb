@@ -10,6 +10,7 @@ block content
         th Output
         th Payments
         th Balance
+        th OrderNumber
       each acc in list_account
         tr
           td
@@ -22,6 +23,8 @@ block content
             label #{acc.sumPayments}
           td
             label #{acc.result}
+          td
+            label #{acc.ordernumber}
   ul
   p
     label.commonSum CommonSum: #{commonSum}

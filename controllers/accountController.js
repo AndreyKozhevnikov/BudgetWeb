@@ -103,6 +103,7 @@ function aggregatedList(req, res, next) {
       {
         $project: {
           name: '$Name',
+          ordernumber: '$OrderNumber',
           _id: '$_id',
           sumfOrders: { $sum: '$filteredOrders.Value' },
         },
@@ -111,6 +112,7 @@ function aggregatedList(req, res, next) {
         $group: {
           _id: '$_id',
           name: { $first: '$name' },
+          ordernumber: { $first: '$ordernumber' },
           fOrders: { $sum: '$sumfOrders' },
         },
       },
@@ -137,6 +139,7 @@ function aggregatedList(req, res, next) {
           sumPayments: { $sum: '$fOrders' },
           sumInSOrders: { $sum: '$acInSOrders.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
+          ordernumber: '$ordernumber',
         },
       },
     ],
@@ -145,15 +148,13 @@ function aggregatedList(req, res, next) {
         next(err);
       }
       accList.sort(function(a, b) {
-        var nameA = a.name.toUpperCase();
-        var nameB = b.name.toUpperCase();
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        return 0;
+        let aNumber = a.ordernumber;
+        let bNumber = b.ordernumber;
+        if (aNumber === null)
+          aNumber = 999;
+        if (bNumber === null)
+          bNumber = 999;
+        return aNumber - bNumber;
       });
       let commonSum = 0;
       accList.forEach((item) => {
