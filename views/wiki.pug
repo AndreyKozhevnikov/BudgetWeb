@@ -2,6 +2,8 @@ extends layout
 
 block content
   p 
+    a(class='mainLink' href='/account/aggregatedList') Accounts aggregatedList
+  p 
     a(class='mainLink' href='/backup') Backup
   p 
     form#uploadForm(action="/restore" enctype="multipart/form-data" method="post")
@@ -25,7 +27,5 @@ block content
     a(class='mainLink' href='/serviceOrder/list') SOrder list
   p 
     a(class='mainLink' href='/account/create') Account create
-  p 
-    a(class='mainLink' href='/account/aggregatedList') Accounts aggregatedList
   
   
