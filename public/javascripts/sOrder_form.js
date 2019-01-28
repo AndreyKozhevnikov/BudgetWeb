@@ -2,20 +2,37 @@
 window.addEventListener('load', init);
 console.log('sorder load00');
 let cmbParent;
-function init() {
-  console.log('sorder load0');
-  disableAccComboWhenTypeChanged();
-  console.log('sorder load1');
-}
+let inCombo;
+let outCombo;
 
-function disableAccComboWhenTypeChanged() {
+function init() {
+  inCombo = document.getElementById('cmbAccountIn');
+  outCombo = document.getElementById('cmbAccountOut');
   cmbParent = document.getElementById('cmbType');
   cmbParent.addEventListener('change', disableCombos);
+  updateCombos(cmbParent.value);
 }
 
-function disableCombos() {
-  console.log('mtest333');
-  console.dir(arguments);
+function disableCombos(event) {
+  let vl = event.srcElement.value;
+  updateCombos(vl);
+}
+
+function updateCombos(value) {
+  switch (value) {
+    case 'in':
+      outCombo.disabled = true;
+      inCombo.disabled = false;
+      break;
+    case 'out':
+      outCombo.disabled = false;
+      inCombo.disabled = true;
+      break;
+    case 'between':
+      outCombo.disabled = false;
+      inCombo.disabled = false;
+      break;
+  }
 }
 
 disableCombos();
