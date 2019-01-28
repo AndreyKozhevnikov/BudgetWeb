@@ -221,7 +221,7 @@ function update_post(req, res, next) {
       if (err) {
         return next(err);
       }
-      res.redirect('/account/list');
+      res.redirect('/account/aggregatedList');
     });
   }
 }
