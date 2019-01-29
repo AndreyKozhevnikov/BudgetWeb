@@ -35,7 +35,7 @@ block content
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name} - #{account.Balance}
+            option(value=account._id) #{account.Name}
       label(for='cmbAccountOut') AccountOut:
       select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
         option(value='') Please Select
@@ -43,7 +43,7 @@ block content
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name} - #{account.Balance}
+            option(value=account._id) #{account.Name}
       label(for='txLocalId') LocalId:
     input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
     button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
