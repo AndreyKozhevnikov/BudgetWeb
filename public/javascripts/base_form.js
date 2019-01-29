@@ -4,6 +4,7 @@ window.addEventListener('load', init);
 
 
 function init() {
+  valueInput = document.getElementById('txValue');
   handleSubmitButton();
   handleYesterDayButton();
   focusValueInput();
@@ -54,6 +55,7 @@ function setYesterday() {
   let stValue = dtInput.valueAsDate;
   stValue.setDate(stValue.getDate() - 1);
   dtInput.value = formatDate(stValue);
+  focusValueInput();
 }
 
 function formatDate(date) {
@@ -67,6 +69,5 @@ function formatDate(date) {
 }
 
 function focusValueInput() {
-  valueInput = document.getElementById('txValue');
   valueInput.focus();
 }
