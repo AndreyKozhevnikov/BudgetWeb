@@ -46,7 +46,7 @@ function getStaticObject(order_list) {
     return accumulator;
   }, 0);
   let monthDayCount = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  let leftDayCount = monthDayCount - dayCount;
+  let leftDayCount = monthDayCount - dayCount + 1;
   if (leftDayCount < 1)
     leftDayCount = 1;
   let desiredAllSumForMonth = normAllPerDay * monthDayCount;
