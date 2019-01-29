@@ -4,11 +4,14 @@ console.log('sorder load00');
 let cmbParent;
 let inCombo;
 let outCombo;
+let cashBackCheckbox;
 
 function init() {
   inCombo = document.getElementById('cmbAccountIn');
   outCombo = document.getElementById('cmbAccountOut');
   cmbParent = document.getElementById('cmbType');
+  cashBackCheckbox = document.getElementById('chIsCashBack');
+
   cmbParent.addEventListener('change', disableCombos);
   updateCombos(cmbParent.value);
 }
@@ -23,14 +26,17 @@ function updateCombos(value) {
     case 'in':
       outCombo.disabled = true;
       inCombo.disabled = false;
+      cashBackCheckbox.disabled = false;
       break;
     case 'out':
       outCombo.disabled = false;
       inCombo.disabled = true;
+      cashBackCheckbox.disabled = true;
       break;
     case 'between':
       outCombo.disabled = false;
       inCombo.disabled = false;
+      cashBackCheckbox.disabled = true;
       break;
   }
 }
