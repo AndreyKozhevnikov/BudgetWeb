@@ -1,7 +1,7 @@
 'use strict';
 let valueInput;
 window.addEventListener('load', init);
-
+let cmbParent;
 
 function init() {
   valueInput = document.getElementById('txValue');
@@ -9,7 +9,13 @@ function init() {
   handleYesterDayButton();
   focusValueInput();
   focusDescriptionAfterEnterNonNumberInValue();
+  focusInputAfterTypeSelection();
   window.addEventListener('keydown', processKeyDown);
+}
+
+function focusInputAfterTypeSelection(){
+  cmbParent = document.getElementById('cmbType');
+  cmbParent.addEventListener('change', () => { valueInput.focus(); });
 }
 
 function processKeyDown() {

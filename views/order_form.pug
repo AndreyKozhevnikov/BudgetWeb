@@ -15,8 +15,8 @@ block content
           td
             button#btnSetYesterday.btn-primary(type='button' style='width:100%') Yesterday
 
-      label(for='cmbParentTag') Parent tag:
-      select#cmbParentTag.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
+      label(for='cmbType') Parent tag:
+      select#cmbType.form-control(type='select', placeholder='Parent Tag' name='fParentTag' required='true')
         for tag in tag_list
           if fOrder
             option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name} - #{tag.MyNumber}
