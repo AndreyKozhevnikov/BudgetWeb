@@ -4,7 +4,7 @@ let Account = require('../models/account.js');
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 let accountList;
-let typesList = ['in', 'out', 'between'];
+let typesList = ['between', 'in', 'out'];
 
 function createServiceOrderFromRequest(req, isUpdate) {
   var serviceOrder = new ServiceOrder({
@@ -161,7 +161,7 @@ let update_post_array = [
   (req, res, next) => update_post(req, res, next),
 ];
 
-function updateLists(){
+function updateLists() {
   populateLists();
 }
 
