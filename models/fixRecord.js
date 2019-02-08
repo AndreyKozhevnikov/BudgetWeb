@@ -8,7 +8,7 @@ let FixRecordSchema = new Schema({
   DateTime: { type: Date, required: true },
   Account: { type: Schema.ObjectId, ref: 'Account' },
   Value: { type: Number, required: true },
-  LocalId: { type: Number, required: true },
+  LocalId: { type: Number },
 });
 
-module.exports = mongoose.model('Account', FixRecordSchema);
+module.exports = mongoose.model('FixRecord', FixRecordSchema);
