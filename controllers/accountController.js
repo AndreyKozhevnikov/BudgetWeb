@@ -27,7 +27,7 @@ function create_post(req, res, next) {
     });
     return;
   } else {
-    Account.findOne({ Name: req.body.Name_frm }).exec(function (err, found_acc) {
+    Account.findOne({ Name: req.body.Name_frm }).exec(function(err, found_acc) {
       if (err) {
         return next(err);
       }
@@ -35,7 +35,7 @@ function create_post(req, res, next) {
         res.redirect(found_acc.url);
       } else {
 
-        account.save(function (err, acc) {
+        account.save(function(err, acc) {
           if (err) {
             return next(err);
           }
@@ -66,7 +66,7 @@ let create_post_array = [
 ];
 
 function list(req, res, next) {
-  Account.find().exec(function (err, list_account) {
+  Account.find().exec(function(err, list_account) {
     if (err) {
       return next(err);
     }
@@ -188,14 +188,14 @@ function createFOrdersForFeb19(req, res, next) {
         },
       },
     ],
-    function (err, accList) {
+    function(err, accList) {
       if (err) {
         next(err);
       }
       let commonSum = 0;
       accList.forEach((item) => {
         item.result = item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-        Account.findById(item._id).exec(function (err, acc) {
+        Account.findById(item._id).exec(function(err, acc) {
           if (err) {
 
           } else {
@@ -239,10 +239,10 @@ function aggregatedList(req, res, next) {
     } else {
       secondDayOfTargetMonth.setDate(firstDayOfCurrMonth.getDate() + 1);
       async.parallel({
-        accounts: function (callback) {
+        accounts: function(callback) {
           Account.find(callback);
         },
-        fixRecords: function (callback) {
+        fixRecords: function(callback) {
           FixRecord
             .aggregate(
               [
@@ -251,7 +251,7 @@ function aggregatedList(req, res, next) {
                   {
                     $and: [
                       { Type: FRecordTypes.StartMonth },
-                      { DateTime: { "$gte": firstDayOfCurrMonth, "$lt": secondDayOfTargetMonth } },
+                      { DateTime: { $gte: firstDayOfCurrMonth, $lt: secondDayOfTargetMonth } },
                     ],
                   },
                 },
@@ -269,12 +269,17 @@ function aggregatedList(req, res, next) {
               ]
             ).exec(callback);
         },
-        sOrdersIn: function (callback) {
+        sOrdersIn: function(callback) {
           ServiceOrder
             .aggregate(
               [
                 {
-                  $match: { AccountIn: { $exists: true } },
+                  $match: {
+                    $and: [
+                      { AccountIn: { $exists: true } },
+                      { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
+                    ],
+                  },
                 },
                 {
                   $group: {
@@ -292,12 +297,17 @@ function aggregatedList(req, res, next) {
               ]
             ).exec(callback);
         },
-        sOrdersOut: function (callback) {
+        sOrdersOut: function(callback) {
           ServiceOrder
             .aggregate(
               [
                 {
-                  $match: { AccountOut: { $exists: true } },
+                  $match: {
+                    $and: [
+                      { AccountOut: { $exists: true } },
+                      { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
+                    ],
+                  },
                 },
                 {
                   $group: {
@@ -451,7 +461,7 @@ function aggregatedList(req, res, next) {
 }
 
 function update_get(req, res, next) {
-  Account.findById(req.params.id).exec(function (err, result) {
+  Account.findById(req.params.id).exec(function(err, result) {
     if (err) {
       next(err);
     }
@@ -478,7 +488,7 @@ function update_post(req, res, next) {
   if (!errors.isEmpty()) {
     res.render('account_form', { title: 'Update Account', account_frm: account });
   } else {
-    Account.findByIdAndUpdate(req.params.id, account, [], function (err, theAcc) {
+    Account.findByIdAndUpdate(req.params.id, account, [], function(err, theAcc) {
       if (err) {
         return next(err);
       }
