@@ -6,6 +6,7 @@ block content
     table.statisticTable
       tr
         th Name
+        th StartSum
         th Input
         th Output
         th Payments
@@ -15,6 +16,8 @@ block content
         tr
           td
             a(href=acc.url) #{acc.name}
+          td
+            label #{acc.startSum}
           td
             label #{acc.sumInSOrders}
           td
