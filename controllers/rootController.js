@@ -3,9 +3,9 @@ let Tag = require('../models/tag.js');
 let Order = require('../models/order.js');
 let PaymentType = require('../models/paymentType.js');
 
-let TestParent = require('../MyTest/testparent.js');
-let TestIntermediate = require('../MyTest/testintermediate.js');
-let TestChild = require('../MyTest/testchild.js');
+// let TestParent = require('../MyTest/testparent.js');
+// let TestIntermediate = require('../MyTest/testintermediate.js');
+// let TestChild = require('../MyTest/testchild.js');
 
 let async = require('async');
 let formidable = require('formidable');
@@ -67,6 +67,131 @@ function restore(req, res, next) {
   });
 }
 
+const assert = require('assert');
+const mongoose = require('mongoose');
+mongoose.set('debug', true);
+
+const GITHUB_ISSUE = `gh7489`;
+const connectionString = `mongodb://localhost:27017/${GITHUB_ISSUE}`;
+const { Schema } = mongoose;
+
+run().then(() => console.log('done')).catch(error => console.error(error.stack));
+
+async function run() {
+  await mongoose.connect(connectionString);
+  await mongoose.connection.dropDatabase();
+
+  let TestParentSchema = new mongoose.Schema({
+    Name: { type: String },
+  });
+  const TestParent = mongoose.model('TestParent', TestParentSchema);
+  
+  let TestIntermediateSchema = new mongoose.Schema({
+    Name: { type: String },
+    Parent: { type: Schema.ObjectId, ref: 'TestParent' },
+  });
+  const TestIntermediate = mongoose.model('TestIntermediate', TestIntermediateSchema);
+
+  let TestChildSchema = new mongoose.Schema({
+    Name: { type: String },
+    Value: { type: Number, required: true },
+    Intermediate: { type: Schema.ObjectId, ref: 'TestIntermediate' },
+  });
+  const TestChild = mongoose.model('TestChild', TestChildSchema);
+ 
+  let parent1 = new TestParent({ Name: 'parent1' });
+  let parent2 = new TestParent({ Name: 'parent2' });
+  await parent1.save();
+  await parent2.save();
+
+  let inter11 = new TestIntermediate({ Name: 'inter1-1', Parent: parent1 });
+  let inter21 = new TestIntermediate({ Name: 'inter2-1', Parent: parent2 });
+  await inter11.save();
+  await inter21.save();
+
+  let child111 = new TestChild({ Name: 'child1-1-1', Intermediate: inter11, Value: 5 });
+  let child112 = new TestChild({ Name: 'child1-1-2', Intermediate: inter11, Value: 60 });
+  let child211 = new TestChild({ Name: 'child2-1-1', Intermediate: inter21, Value: 10 });
+  let child212 = new TestChild({ Name: 'child2-1-2', Intermediate: inter21, Value: 70 });
+
+  await child111.save();
+  await child112.save();
+  await child211.save();
+  await child212.save();
+
+
+  TestParent.aggregate(
+    [
+      {
+        $lookup: {
+          from: 'testintermediates',
+          localField: '_id',
+          foreignField: 'Parent',
+          as: 'myIntermediates',
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: 'testchildren',
+      //     localField: 'myIntermediates._id',
+      //     foreignField: 'Intermediate',
+      //     as: 'myChildren',
+      //   },
+      // },
+      // { //to check whether this approach works with the first level (it works)
+      //   $lookup: {
+      //     from: 'testintermediates',
+      //     let: { myid: '$_id' },
+      //     pipeline: [
+      //       {
+      //         $match:
+      //         {
+      //           $expr: {
+      //             $eq: ['$Parent', '$$myid'],
+      //             // $eq: ['$LocalId', 55],
+
+      //           },
+      //         },
+      //       },
+      //     ],
+      //     as: 'myIntermediates',
+      //   },
+      // },
+      {
+        $lookup: {
+          from: 'testchildren',
+          let: { intermedId: '$myIntermediates._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                   $eq: ['$Intermediate', '$$intermedId'], //it doesn't work (
+                  // $eq: ['$Value', 60], //it works
+                },
+              },
+            },
+          ],
+          as: 'myChildren',
+        },
+      },
+      {
+        $project: {
+          myName: '$Name',
+          sumChildren: { $sum: '$myChildren.Value' },
+        },
+      },
+    ],
+    function(err, results) {
+      let expectedResult0 = results[0].sumChildren === 5;
+      let expectedResult1 = results[1].sumChildren === 10;
+      console.log(expectedResult0);
+      console.log(expectedResult1);
+    }
+  );
+}
+
+
 function index(req, res) {
   async.parallel(
     {
@@ -95,99 +220,99 @@ function index(req, res) {
       });
     }
   );
-  test();
+  //test();
 }
 
-function test() {
-  let parent1 = new TestParent({ Name: 'parent1' });
-  let parent2 = new TestParent({ Name: 'parent2' });
-  parent1.save();
-  parent2.save();
+// function test() {
+//   let parent1 = new TestParent({ Name: 'parent1' });
+//   let parent2 = new TestParent({ Name: 'parent2' });
+//   parent1.save();
+//   parent2.save();
 
-  let inter11 = new TestIntermediate({ Name: 'inter1-1', Parent: parent1 });
-  let inter21 = new TestIntermediate({ Name: 'inter2-1', Parent: parent2 });
-  inter11.save();
-  inter21.save();
+//   let inter11 = new TestIntermediate({ Name: 'inter1-1', Parent: parent1 });
+//   let inter21 = new TestIntermediate({ Name: 'inter2-1', Parent: parent2 });
+//   inter11.save();
+//   inter21.save();
 
-  let child111 = new TestChild({ Name: 'child1-1-1', Intermediate: inter11, Value: 5 });
-  let child112 = new TestChild({ Name: 'child1-1-2', Intermediate: inter11, Value: 60 });
-  let child211 = new TestChild({ Name: 'child2-1-1', Intermediate: inter21, Value: 10 });
-  let child212 = new TestChild({ Name: 'child2-1-2', Intermediate: inter21, Value: 70 });
+//   let child111 = new TestChild({ Name: 'child1-1-1', Intermediate: inter11, Value: 5 });
+//   let child112 = new TestChild({ Name: 'child1-1-2', Intermediate: inter11, Value: 60 });
+//   let child211 = new TestChild({ Name: 'child2-1-1', Intermediate: inter21, Value: 10 });
+//   let child212 = new TestChild({ Name: 'child2-1-2', Intermediate: inter21, Value: 70 });
 
-  child111.save();
-  child112.save();
-  child211.save();
-  child212.save();
-  TestParent.aggregate(
-    [
-      {
-        $lookup: {
-          from: 'testintermediates',
-          localField: '_id',
-          foreignField: 'Parent',
-          as: 'myIntermediates',
-        },
-      },
-      // {
-      //   $lookup: {
-      //     from: 'testchildren',
-      //     localField: 'myIntermediates._id',
-      //     foreignField: 'Intermediate',
-      //     as: 'myChildren',
-      //   },
-      // },
-      // { //to check if this approach works with the first level
-      //   $lookup: {
-      //     from: 'testintermediates',
-      //     let: { myid: '$_id' },
-      //     pipeline: [
-      //       {
-      //         $match:
-      //         {
-      //           $expr: {
-      //             $eq: ['$Parent', '$$myid'],
-      //             // $eq: ['$LocalId', 55],
+//   child111.save();
+//   child112.save();
+//   child211.save();
+//   child212.save();
+//   TestParent.aggregate(
+//     [
+//       {
+//         $lookup: {
+//           from: 'testintermediates',
+//           localField: '_id',
+//           foreignField: 'Parent',
+//           as: 'myIntermediates',
+//         },
+//       },
+//       // {
+//       //   $lookup: {
+//       //     from: 'testchildren',
+//       //     localField: 'myIntermediates._id',
+//       //     foreignField: 'Intermediate',
+//       //     as: 'myChildren',
+//       //   },
+//       // },
+//       // { //to check if this approach works with the first level
+//       //   $lookup: {
+//       //     from: 'testintermediates',
+//       //     let: { myid: '$_id' },
+//       //     pipeline: [
+//       //       {
+//       //         $match:
+//       //         {
+//       //           $expr: {
+//       //             $eq: ['$Parent', '$$myid'],
+//       //             // $eq: ['$LocalId', 55],
 
-      //           },
-      //         },
-      //       },
-      //     ],
-      //     as: 'myIntermediates',
-      //   },
-      // },
-      {
-        $lookup: {
-          from: 'testchildren',
-          let: { intermedId: '$myIntermediates._id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $expr: {
-                   $eq: ['$Intermediate', '$$intermedId'],
-                  // $eq: ['$Value', 60], //it works
-                },
-              },
-            },
-          ],
-          as: 'myChildren',
-        },
-      },
-      {
-        $project: {
-          myName: '$Name',
-          sumChildren: { $sum: '$myChildren.Value' },
-        },
-      },
-    ],
-    function(err, results) {
-      let res1 = results[0].sumChildren === 5;
-      let res2 = results[1].sumChildren === 10;
-    }
-  );
+//       //           },
+//       //         },
+//       //       },
+//       //     ],
+//       //     as: 'myIntermediates',
+//       //   },
+//       // },
+//       {
+//         $lookup: {
+//           from: 'testchildren',
+//           let: { intermedId: '$myIntermediates._id' },
+//           pipeline: [
+//             {
+//               $match:
+//               {
+//                 $expr: {
+//                   $eq: ['$Intermediate', '$$intermedId'],
+//                   // $eq: ['$Value', 60], //it works
+//                 },
+//               },
+//             },
+//           ],
+//           as: 'myChildren',
+//         },
+//       },
+//       {
+//         $project: {
+//           myName: '$Name',
+//           sumChildren: { $sum: '$myChildren.Value' },
+//         },
+//       },
+//     ],
+//     function(err, results) {
+//       let res1 = results[0].sumChildren === 5;
+//       let res2 = results[1].sumChildren === 10;
+//     }
+//   );
 
 
-}
+// }
 
 function deleteAll(req, res, next) {
   if (!canDeleteEntities()) {
