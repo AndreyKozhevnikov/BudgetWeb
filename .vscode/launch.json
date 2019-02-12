@@ -12,6 +12,7 @@
       "env": {
         "CANCREATEUSER": "TRUE",
         "CANDELETEENTITIES": "TRUE",
+        "NODE_ENV": "development",
       },
       "restart": true,
       "runtimeExecutable": "nodemon",
