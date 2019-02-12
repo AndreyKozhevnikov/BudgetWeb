@@ -8,5 +8,8 @@
     "extends": "strongloop",
     "rules":{
         "max-len":[2,120,4,{"ignoreStrings":true,"ignoreComments":true}]
-    }
+    },
+    "parserOptions": {
+      "ecmaVersion": 2017
+    } 
 }
