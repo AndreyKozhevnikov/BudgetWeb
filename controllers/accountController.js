@@ -1,8 +1,6 @@
 'use strict';
 let Account = require('../models/account.js');
 let FixRecord = require('../models/fixRecord.js');
-let ServiceOrder = require('../models/serviceOrder.js');
-let async = require('async');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -222,397 +220,176 @@ function handlerError(next, err) {
     next(err);
   }
 }
-function aggregatedList(req, res, next) {
-  // FixRecord.find(null, (err, list) => {
-  //   handlerError(next, err);
-  //   let maxfOrderDate = Math.max.apply(null, list.map((a) => { return a.DateTime; }));
-  //   let maxfOrderDate2 = new Date(maxfOrderDate);
-  // });
-  FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime').exec((err, fRec) => {
-    handlerError(next, err);
-    let lastFOrderTime = fRec.DateTime;
-    let dNow = new Date();
-    let firstDayOfCurrMonth = new Date(dNow.getFullYear(), dNow.getMonth(), 1);
-    let secondDayOfTargetMonth = new Date();
-    if (lastFOrderTime < firstDayOfCurrMonth) {
-
-    } else {
-      secondDayOfTargetMonth.setDate(firstDayOfCurrMonth.getDate() + 1);
-      Account.aggregate(
-        [
-          {
-            $lookup: {
-              from: 'paymenttypes',
-              localField: '_id',
-              foreignField: 'Account',
-              as: 'acPayments',
-            },
-          },
-          {
-            $unwind: {
-              path: '$acPayments',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'orders',
-              let: { ptId: '$acPayments._id' },
-              pipeline: [
-                {
-                  $match:
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$PaymentType', '$$ptId']
-                        }
-                      },
-                      { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-                    ],
-                  },
-                },
-              ],
-              as: 'filteredOrders',
-            },
-          },
-          {
-            $project: {
-              name: '$Name',
-              ordernumber: '$OrderNumber',
-              _id: '$_id',
-              sumfOrders: { $sum: '$filteredOrders.Value' },
-            },
-          },
-          {
-            $group: {
-              _id: '$_id',
-              name: { $first: '$name' },
-              ordernumber: { $first: '$ordernumber' },
-              fOrders: { $sum: '$sumfOrders' },
-            },
-          },
-          {
-            $lookup: {
-              from: 'serviceorders',
-              let: { myid: '$_id' },
-              pipeline: [
-                {
-                  $match:
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$AccountOut', '$$myid']
-                        }
-                      },
-                      { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-                    ],
-                  }
-                }
-              ],
-              as: 'acOutSOrders',
-            },
-          },
-          {
-            $lookup: {
-              from: 'serviceorders',
-              let: { myid: '$_id' },
-              pipeline: [
-                {
-                  $match:
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$AccountIn', '$$myid']
-                        }
-                      },
-                      { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-                    ],
-                  }
-                }
-              ],
-              as: 'acInSOrders',
-            },
-          },
-          {
-            $lookup: {
-              from: 'fixrecords',
-              let: { myid: '$_id' },
-              pipeline: [
-                {
-                  $match:
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$Account', '$$myid']
-                        }
-                      },
-                      { Type: FRecordTypes.StartMonth },
-                      { DateTime: { $gte: firstDayOfCurrMonth, $lt: secondDayOfTargetMonth } },
-                    ],
-                  }
-                }
-              ],
-              as: 'fixRecords',
-            },
-          },
-          {
-            $project: {
-              name: '$name',
-              _id: '$_id',
-              startSum: { $sum: '$fixRecords.Value' },
-              sumPayments: { $sum: '$fOrders' },
-              sumInSOrders: { $sum: '$acInSOrders.Value' },
-              sumOutSOrders: { $sum: '$acOutSOrders.Value' },
-              ordernumber: '$ordernumber',
-            },
-          },
-        ],
-        function(err, accList) {
-          if (err) {
-            next(err);
-          }
-          accList.sort(function(a, b) {
-            let aNumber = a.ordernumber;
-            let bNumber = b.ordernumber;
-            if (aNumber === null)
-              aNumber = 999;
-            if (bNumber === null)
-              bNumber = 999;
-            return aNumber - bNumber;
-          });
-          let commonSum = 0;
-          accList.forEach((item) => {
-            item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-            item.url = '/account/' + item._id + '/update';
-            commonSum = commonSum + item.result;
-          });
-          res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
-        }
-      );
-      // async.parallel({
-      //   accounts: function(callback) {
-      //     Account.find(callback);
-      //   },
-      //   fixRecords: function(callback) {
-      //     FixRecord
-      //       .aggregate(
-      //         [
-      //           {
-      //             $match:
-      //             {
-      //               $and: [
-      //                 { Type: FRecordTypes.StartMonth },
-      //                 { DateTime: { $gte: firstDayOfCurrMonth, $lt: secondDayOfTargetMonth } },
-      //               ],
-      //             },
-      //           },
-      //           {
-      //             $group: {
-      //               _id: '$Account',
-      //               fRecords: {
-      //                 $push: {
-      //                   dateTime: '$DateTime',
-      //                   value: '$Value',
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         ]
-      //       ).exec(callback);
-      //   },
-      //   sOrdersIn: function(callback) {
-      //     ServiceOrder
-      //       .aggregate(
-      //         [
-      //           {
-      //             $match: {
-      //               $and: [
-      //                 { AccountIn: { $exists: true } },
-      //                 { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-      //               ],
-      //             },
-      //           },
-      //           {
-      //             $group: {
-      //               _id: '$AccountIn',
-      //               // name: { $first: '$AccountIn' },
-      //               fRecords: {
-      //                 $push: {
-      //                   DateOrder: '$DateOrder',
-      //                   Value: '$Value',
-      //                   Description: '$Description',
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         ]
-      //       ).exec(callback);
-      //   },
-      //   sOrdersOut: function(callback) {
-      //     ServiceOrder
-      //       .aggregate(
-      //         [
-      //           {
-      //             $match: {
-      //               $and: [
-      //                 { AccountOut: { $exists: true } },
-      //                 { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-      //               ],
-      //             },
-      //           },
-      //           {
-      //             $group: {
-      //               _id: '$AccountOut',
-      //               // name: { $first: '$AccountIn' },
-      //               fRecords: {
-      //                 $push: {
-      //                   DateOrder: '$DateOrder',
-      //                   Value: '$Value',
-      //                   Description: '$Description',
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         ]
-      //       ).exec(callback);
-      //   },
-
-      // }, (err, result) => {
-      //   if (err) {
-      //     next(err);
-      //   }
-      //   let r = result;
-      // });
-    }
-
-  });
-
-
-
-
-
-  // Account.find((err, _accList) => {
-  //   if (err) {
-  //     next(err);
-  //   }
-  //   _accList.forEach((acc) => {
-  //     FixRecord.find({ Account: acc }).exec((err, list) => {
-  //       if (err) {
-  //         next(err);
-  //       }
-  //       let maxDate = Math.max.apply(null, list.map((a) => { return a.DateTime; }));
-  //       let maxDate2 = Math.max(list.map((a) => { return a.DateTime; }));
-  //     });
+async function aggregatedList(req, res, next) {
+  // FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime')
+  //   .then((fRec) => {
+  //     let lastFOrderTime = fRec.DateTime;
+  //     console.dir(arguments);
   //   });
-  // });
+  let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
+  let lastFOrderTime = lastFRecord.DateTime;
+  let dNow = new Date();
+  let firstDayOfCurrMonth = new Date(dNow.getFullYear(), dNow.getMonth(), 1);
+  let secondDayOfTargetMonth = new Date();
 
+  if (lastFOrderTime < firstDayOfCurrMonth) {
 
-  // Account.aggregate(
-  //   [
-  //     {
-  //       $lookup: {
-  //         from: 'paymenttypes',
-  //         localField: '_id',
-  //         foreignField: 'Account',
-  //         as: 'acPayments',
-  //       },
-  //     },
-  //     {
-  //       $unwind: {
-  //         path: '$acPayments',
-  //         preserveNullAndEmptyArrays: true,
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: 'orders',
-  //         let: { ptId: '$acPayments._id' },
-  //         pipeline: [
-  //           {
-  //             $match:
-  //             {
-  //               $expr: {
-  //                 $and: [
-  //                   { $eq: ['$PaymentType', '$$ptId'] },
-  //                   { $gte: ['$DateOrder', new Date('2019-01-23')] },
-  //                 ],
-
-  //               },
-  //             },
-  //           },
-  //         ],
-  //         as: 'filteredOrders',
-  //       },
-  //     },
-  //     {
-  //       $project: {
-  //         name: '$Name',
-  //         ordernumber: '$OrderNumber',
-  //         _id: '$_id',
-  //         sumfOrders: { $sum: '$filteredOrders.Value' },
-  //       },
-  //     },
-  //     {
-  //       $group: {
-  //         _id: '$_id',
-  //         name: { $first: '$name' },
-  //         ordernumber: { $first: '$ordernumber' },
-  //         fOrders: { $sum: '$sumfOrders' },
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: 'serviceorders',
-  //         localField: '_id',
-  //         foreignField: 'AccountOut',
-  //         as: 'acOutSOrders',
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: 'serviceorders',
-  //         localField: '_id',
-  //         foreignField: 'AccountIn',
-  //         as: 'acInSOrders',
-  //       },
-  //     },
-  //     {
-  //       $project: {
-  //         name: '$name',
-  //         _id: '$_id',
-  //         sumPayments: { $sum: '$fOrders' },
-  //         sumInSOrders: { $sum: '$acInSOrders.Value' },
-  //         sumOutSOrders: { $sum: '$acOutSOrders.Value' },
-  //         ordernumber: '$ordernumber',
-  //       },
-  //     },
-  //   ],
-  //   function(err, accList) {
-  //     if (err) {
-  //       next(err);
-  //     }
-  //     accList.sort(function(a, b) {
-  //       let aNumber = a.ordernumber;
-  //       let bNumber = b.ordernumber;
-  //       if (aNumber === null)
-  //         aNumber = 999;
-  //       if (bNumber === null)
-  //         bNumber = 999;
-  //       return aNumber - bNumber;
-  //     });
-  //     let commonSum = 0;
-  //     accList.forEach((item) => {
-  //       item.result = item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-  //       item.url = '/account/' + item._id + '/update';
-  //       commonSum = commonSum + item.result;
-  //     });
-  //     res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
-  //   }
-  // );
+  } else {
+    secondDayOfTargetMonth.setDate(firstDayOfCurrMonth.getDate() + 1);
+    let accList = await Account.aggregate(
+      [
+        {
+          $lookup: {
+            from: 'paymenttypes',
+            localField: '_id',
+            foreignField: 'Account',
+            as: 'acPayments',
+          },
+        },
+        {
+          $unwind: {
+            path: '$acPayments',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: 'orders',
+            let: { ptId: '$acPayments._id' },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$PaymentType', '$$ptId'],
+                      },
+                    },
+                    { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
+                  ],
+                },
+              },
+            ],
+            as: 'filteredOrders',
+          },
+        },
+        {
+          $project: {
+            name: '$Name',
+            ordernumber: '$OrderNumber',
+            _id: '$_id',
+            sumfOrders: { $sum: '$filteredOrders.Value' },
+          },
+        },
+        {
+          $group: {
+            _id: '$_id',
+            name: { $first: '$name' },
+            ordernumber: { $first: '$ordernumber' },
+            fOrders: { $sum: '$sumfOrders' },
+          },
+        },
+        {
+          $lookup: {
+            from: 'serviceorders',
+            let: { myid: '$_id' },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$AccountOut', '$$myid'],
+                      },
+                    },
+                    { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
+                  ],
+                },
+              },
+            ],
+            as: 'acOutSOrders',
+          },
+        },
+        {
+          $lookup: {
+            from: 'serviceorders',
+            let: { myid: '$_id' },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$AccountIn', '$$myid'],
+                      },
+                    },
+                    { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
+                  ],
+                },
+              },
+            ],
+            as: 'acInSOrders',
+          },
+        },
+        {
+          $lookup: {
+            from: 'fixrecords',
+            let: { myid: '$_id' },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$Account', '$$myid'],
+                      },
+                    },
+                    { Type: FRecordTypes.StartMonth },
+                    { DateTime: { $gte: firstDayOfCurrMonth, $lt: secondDayOfTargetMonth } },
+                  ],
+                },
+              },
+            ],
+            as: 'fixRecords',
+          },
+        },
+        {
+          $project: {
+            name: '$name',
+            _id: '$_id',
+            startSum: { $sum: '$fixRecords.Value' },
+            sumPayments: { $sum: '$fOrders' },
+            sumInSOrders: { $sum: '$acInSOrders.Value' },
+            sumOutSOrders: { $sum: '$acOutSOrders.Value' },
+            ordernumber: '$ordernumber',
+          },
+        },
+      ]);
+    // function(err, accList) {
+    //   if (err) {
+    //     next(err);
+    //   }
+    accList.sort(function(a, b) {
+      let aNumber = a.ordernumber;
+      let bNumber = b.ordernumber;
+      if (aNumber === null)
+        aNumber = 999;
+      if (bNumber === null)
+        bNumber = 999;
+      return aNumber - bNumber;
+    });
+    let commonSum = 0;
+    accList.forEach((item) => {
+      item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
+      item.url = '/account/' + item._id + '/update';
+      commonSum = commonSum + item.result;
+    });
+    res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
+  }
 }
 
 function update_get(req, res, next) {
