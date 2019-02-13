@@ -373,34 +373,42 @@ async function getAggregatedAccList(startDate, finishDate) {
   });
   return { accList: accList, commonSum: commonSum };
 }
-
-
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+  //https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+}
 async function aggregatedList(req, res, next) {
   // FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime')
   //   .then((fRec) => {
   //     let lastFOrderTime = fRec.DateTime;
   //     console.dir(arguments);
   //   });
+
   let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
   let lastFOrderTime = lastFRecord.DateTime;
-  //  let currentDate = new Date('2019-03-03');
-  let currentDate = new Date();
+  let currentDate = new Date('2019-03-03');
+  // let currentDate = new Date();
 
   let firstDayOfCurrMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-
-  let secondDayOfTargetMonth;
-
   if (lastFOrderTime < firstDayOfCurrMonth) {
-
-  } else {
-    secondDayOfTargetMonth = new Date(firstDayOfCurrMonth.getTime());
-    secondDayOfTargetMonth.setDate(2);
-    let accListObject = await getAggregatedAccList(firstDayOfCurrMonth, currentDate);
-    // accListObject.then((accListObject) => {
-    res.render('account_list_aggregate', { title: 'Account List', list_account: accListObject.accList, commonSum: accListObject.commonSum });
-    //});
-
+    let accListObject = await getAggregatedAccList(lastFOrderTime, firstDayOfCurrMonth);
+    let start = async () => {
+      await asyncForEach(accListObject.accList, async (accRecord) => {
+        let fRec = new FixRecord({
+          Type: FRecordTypes.StartMonth,
+          DateTime: firstDayOfCurrMonth,
+          Account: accRecord._id,
+          Value: accRecord.result,
+        });
+        await fRec.save();
+      });
+    };
+    await start();
   }
+  let accListObject = await getAggregatedAccList(firstDayOfCurrMonth, currentDate);
+  res.render('account_list_aggregate', { title: 'Account List', list_account: accListObject.accList, commonSum: accListObject.commonSum });
 }
 
 function update_get(req, res, next) {
