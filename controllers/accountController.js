@@ -215,11 +215,166 @@ function createFOrdersForFeb19(req, res, next) {
     }
   );
 }
-function handlerError(next, err) {
-  if (err) {
-    next(err);
-  }
+// function handlerError(next, err) {
+//   if (err) {
+//     next(err);
+//   }
+// }
+
+async function getAggregatedAccList(startDate, finishDate) {
+  let accList = await Account.aggregate(
+    [
+      {
+        $lookup: {
+          from: 'paymenttypes',
+          localField: '_id',
+          foreignField: 'Account',
+          as: 'acPayments',
+        },
+      },
+      {
+        $unwind: {
+          path: '$acPayments',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'orders',
+          let: { ptId: '$acPayments._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$PaymentType', '$$ptId'],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'filteredOrders',
+        },
+      },
+      {
+        $project: {
+          name: '$Name',
+          ordernumber: '$OrderNumber',
+          _id: '$_id',
+          sumfOrders: { $sum: '$filteredOrders.Value' },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          ordernumber: { $first: '$ordernumber' },
+          fOrders: { $sum: '$sumfOrders' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$AccountOut', '$$myid'],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'acOutSOrders',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$AccountIn', '$$myid'],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'acInSOrders',
+        },
+      },
+      {
+        $lookup: {
+          from: 'fixrecords',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$Account', '$$myid'],
+                    },
+                  },
+                  { Type: FRecordTypes.StartMonth },
+                  { DateTime: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'fixRecords',
+        },
+      },
+      {
+        $project: {
+          name: '$name',
+          _id: '$_id',
+          startSum: { $sum: '$fixRecords.Value' },
+          sumPayments: { $sum: '$fOrders' },
+          sumInSOrders: { $sum: '$acInSOrders.Value' },
+          sumOutSOrders: { $sum: '$acOutSOrders.Value' },
+          ordernumber: '$ordernumber',
+        },
+      },
+    ]
+  );
+  accList.sort(function(a, b) {
+    let aNumber = a.ordernumber;
+    let bNumber = b.ordernumber;
+    if (aNumber === null)
+      aNumber = 999;
+    if (bNumber === null)
+      bNumber = 999;
+    return aNumber - bNumber;
+  });
+  let commonSum = 0;
+  accList.forEach((item) => {
+    item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
+    item.url = '/account/' + item._id + '/update';
+    commonSum = commonSum + item.result;
+  });
+  return { accList: accList, commonSum: commonSum };
 }
+
+
 async function aggregatedList(req, res, next) {
   // FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime')
   //   .then((fRec) => {
@@ -228,167 +383,23 @@ async function aggregatedList(req, res, next) {
   //   });
   let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
   let lastFOrderTime = lastFRecord.DateTime;
-  let dNow = new Date();
-  let firstDayOfCurrMonth = new Date(dNow.getFullYear(), dNow.getMonth(), 1);
-  let secondDayOfTargetMonth = new Date();
+  //  let currentDate = new Date('2019-03-03');
+  let currentDate = new Date();
+
+  let firstDayOfCurrMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+  let secondDayOfTargetMonth;
 
   if (lastFOrderTime < firstDayOfCurrMonth) {
 
   } else {
-    secondDayOfTargetMonth.setDate(firstDayOfCurrMonth.getDate() + 1);
-    let accList = await Account.aggregate(
-      [
-        {
-          $lookup: {
-            from: 'paymenttypes',
-            localField: '_id',
-            foreignField: 'Account',
-            as: 'acPayments',
-          },
-        },
-        {
-          $unwind: {
-            path: '$acPayments',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $lookup: {
-            from: 'orders',
-            let: { ptId: '$acPayments._id' },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$PaymentType', '$$ptId'],
-                      },
-                    },
-                    { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-                  ],
-                },
-              },
-            ],
-            as: 'filteredOrders',
-          },
-        },
-        {
-          $project: {
-            name: '$Name',
-            ordernumber: '$OrderNumber',
-            _id: '$_id',
-            sumfOrders: { $sum: '$filteredOrders.Value' },
-          },
-        },
-        {
-          $group: {
-            _id: '$_id',
-            name: { $first: '$name' },
-            ordernumber: { $first: '$ordernumber' },
-            fOrders: { $sum: '$sumfOrders' },
-          },
-        },
-        {
-          $lookup: {
-            from: 'serviceorders',
-            let: { myid: '$_id' },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$AccountOut', '$$myid'],
-                      },
-                    },
-                    { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-                  ],
-                },
-              },
-            ],
-            as: 'acOutSOrders',
-          },
-        },
-        {
-          $lookup: {
-            from: 'serviceorders',
-            let: { myid: '$_id' },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$AccountIn', '$$myid'],
-                      },
-                    },
-                    { DateOrder: { $gte: firstDayOfCurrMonth, $lt: new Date() } },
-                  ],
-                },
-              },
-            ],
-            as: 'acInSOrders',
-          },
-        },
-        {
-          $lookup: {
-            from: 'fixrecords',
-            let: { myid: '$_id' },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$Account', '$$myid'],
-                      },
-                    },
-                    { Type: FRecordTypes.StartMonth },
-                    { DateTime: { $gte: firstDayOfCurrMonth, $lt: secondDayOfTargetMonth } },
-                  ],
-                },
-              },
-            ],
-            as: 'fixRecords',
-          },
-        },
-        {
-          $project: {
-            name: '$name',
-            _id: '$_id',
-            startSum: { $sum: '$fixRecords.Value' },
-            sumPayments: { $sum: '$fOrders' },
-            sumInSOrders: { $sum: '$acInSOrders.Value' },
-            sumOutSOrders: { $sum: '$acOutSOrders.Value' },
-            ordernumber: '$ordernumber',
-          },
-        },
-      ]);
-    // function(err, accList) {
-    //   if (err) {
-    //     next(err);
-    //   }
-    accList.sort(function(a, b) {
-      let aNumber = a.ordernumber;
-      let bNumber = b.ordernumber;
-      if (aNumber === null)
-        aNumber = 999;
-      if (bNumber === null)
-        bNumber = 999;
-      return aNumber - bNumber;
-    });
-    let commonSum = 0;
-    accList.forEach((item) => {
-      item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-      item.url = '/account/' + item._id + '/update';
-      commonSum = commonSum + item.result;
-    });
-    res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
+    secondDayOfTargetMonth = new Date(firstDayOfCurrMonth.getTime());
+    secondDayOfTargetMonth.setDate(2);
+    let accListObject = await getAggregatedAccList(firstDayOfCurrMonth, currentDate);
+    // accListObject.then((accListObject) => {
+    res.render('account_list_aggregate', { title: 'Account List', list_account: accListObject.accList, commonSum: accListObject.commonSum });
+    //});
+
   }
 }
 
