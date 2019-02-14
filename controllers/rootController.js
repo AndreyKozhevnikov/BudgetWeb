@@ -80,7 +80,7 @@ function index(req, res) {
       // add a zero in front of numbers<10
       m = checkTime(m);
       s = checkTime(s);
-      let tms = h + ':' + m + ':' + s;
+      let tms = h + ':' + m + ':' + s + ' -- ' + today;
       // res.send('test');
       res.render('index', {
         title: 'My budget web application',
