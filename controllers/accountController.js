@@ -383,8 +383,8 @@ async function aggregatedList(req, res, next) {
 
   let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
   let lastFOrderTime = lastFRecord.DateTime;
-  let currentDate = new Date('2019-03-03');
-  // let currentDate = new Date();
+  //let currentDate = new Date('2019-03-03');
+  let currentDate = new Date();
 
   let firstDayOfCurrMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1));
   if (lastFOrderTime < firstDayOfCurrMonth) {
@@ -459,4 +459,4 @@ exports.list = list;
 exports.aggregatedList = aggregatedList;
 exports.update_get = update_get;
 exports.update_post = update_post_array;
-//exports.createFOrdersForFeb19 = createFOrdersForFeb19;
+exports.createFOrdersForFeb19 = createFOrdersForFeb19;
