@@ -190,7 +190,6 @@ function createFOrdersForFeb19(req, res, next) {
       if (err) {
         next(err);
       }
-      let commonSum = 0;
       accList.forEach((item) => {
         item.result = item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
         Account.findById(item._id).exec(function(err, acc) {
@@ -206,12 +205,8 @@ function createFOrdersForFeb19(req, res, next) {
             fRec.save();
           }
         });
-
-
-        // item.url = '/account/' + item._id + '/update';
-        // commonSum = commonSum + item.result;
       });
-      res.render('account_list_aggregate', { title: 'Account List', list_account: accList, commonSum: commonSum });
+      res.redirect('/wiki');
     }
   );
 }
@@ -391,7 +386,7 @@ async function aggregatedList(req, res, next) {
   let currentDate = new Date('2019-03-03');
   // let currentDate = new Date();
 
-  let firstDayOfCurrMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  let firstDayOfCurrMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1));
   if (lastFOrderTime < firstDayOfCurrMonth) {
     let accListObject = await getAggregatedAccList(lastFOrderTime, firstDayOfCurrMonth);
     let start = async () => {
