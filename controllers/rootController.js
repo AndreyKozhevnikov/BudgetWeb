@@ -1,7 +1,11 @@
 'use strict';
 let Tag = require('../models/tag.js');
+let Account = require('../models/account.js');
 let Order = require('../models/order.js');
 let PaymentType = require('../models/paymentType.js');
+let FixRecord = require('../models/fixRecord.js');
+let ServiceOrder = require('../models/serviceOrder.js');
+
 let async = require('async');
 let formidable = require('formidable');
 let fs = require('fs');
@@ -9,12 +13,49 @@ let order_controller = require('../controllers/orderController.js');
 let tag_controller = require('../controllers/tagController.js');
 let paymentType_controller = require('../controllers/paymentTypeController.js');
 let User = require('../models/user.js');
+let stream = require('stream');
 
 function checkTime(i) {
   if (i < 10) {
     i = '0' + i;
   }
   return i;
+}
+
+function formatDate(date) {
+  let d = new Date(date);
+  let month = '' + (d.getMonth() + 1);
+  let day = '' + d.getDate();
+  let year = d.getFullYear();
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+  return [year, month, day].join('-');
+}
+
+async function full_backup(req, res, next) {
+  let ordersList = await Order.find();
+  let accList = await Account.find();
+  let fRecordsList = await FixRecord.find();
+  let pTypesList = await PaymentType.find();
+  let sOrdersList = await ServiceOrder.find();
+  let tagsList = await Tag.find();
+
+  let backupObject = {
+    orders: ordersList,
+    accounts: accList,
+    fixRecords: fRecordsList,
+    paymentTypes: pTypesList,
+    serviceOrders: sOrdersList,
+    tags: tagsList,
+  };
+
+  let fileContents = Buffer.from(JSON.stringify(backupObject));
+  let readStream = new stream.PassThrough();
+  readStream.end(fileContents);
+  let backupFileName = 'BWbackup-' + formatDate(new Date()) + '.txt';
+  res.set('Content-disposition', 'attachment; filename=' + backupFileName);
+  res.set('Content-Type', 'text/plain');
+  readStream.pipe(res);
 }
 
 function restore(req, res, next) {
@@ -108,9 +149,6 @@ function wiki(req, res) {
 function wikiAbout(req, res) {
   res.send('About this wikitttt');
 }
-function orders_backup(req, res, next) {
-  order_controller.orders_backup(req, res, next);
-}
 function canCreateUser() {
   return process.env.CANCREATEUSER === 'TRUE';
 }
@@ -177,8 +215,8 @@ exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
 exports.deleteAll = deleteAll;
-exports.orders_backup = orders_backup;
 exports.createUserGet = createUserGet;
 exports.createUserPost = createUserPost;
 exports.update_localid = update_localid;
+exports.full_backup = full_backup;
 
