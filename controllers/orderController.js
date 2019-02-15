@@ -3,7 +3,6 @@ let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
 let async = require('async');
-let stream = require('stream');
 let tagList;
 let popularTagList;
 let paymentTypeList;
@@ -298,35 +297,6 @@ function orders_exportWithEmptyLocalId(req, res, next) {
     });
 };
 
-function orders_backup(req, res, next) {
-  Order.find()
-    .populate('ParentTag')
-    .populate('PaymentType')
-    .exec(function(err, list_orders) {
-      if (err) {
-        return next(err);
-      }
-      // res.json(list_orders);
-      var fileContents = Buffer.from(JSON.stringify(list_orders));
-      var readStream = new stream.PassThrough();
-      readStream.end(fileContents);
-      let backupFileName = 'BWbackup-' + formatDate(new Date()) + '.txt';
-      res.set('Content-disposition', 'attachment; filename=' + backupFileName);
-      res.set('Content-Type', 'text/plain');
-      readStream.pipe(res);
-    });
-};
-
-function formatDate(date) {
-  let d = new Date(date);
-  let month = '' + (d.getMonth() + 1);
-  let day = '' + d.getDate();
-  let year = d.getFullYear();
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-  return [year, month, day].join('-');
-}
-
 function deleteOrders(req, res, next) {
   Order.remove({}, function(err) {
     if (err) {
@@ -438,6 +408,5 @@ exports.order_delete_post = order_delete_post;
 exports.order_update_get = order_update_get;
 exports.order_update_post = order_update_post_array;
 exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
-exports.orders_backup = orders_backup;
 exports.deleteOrders = deleteOrders;
 exports.createOrderFromBackup = createOrderFromBackup;
