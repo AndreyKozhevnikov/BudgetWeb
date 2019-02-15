@@ -16,7 +16,7 @@ router.get('/wiki', root_controller.wiki);
 
 router.get('/wiki/about', root_controller.wikiAbout);
 
-router.post('/restore', root_controller.restore);
+router.post('/restore', root_controller.full_Restore);
 
 router.get('/createuser', root_controller.createUserGet);
 
