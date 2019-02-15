@@ -1,7 +1,8 @@
+/*global  cmbParent*/
+
 'use strict';
 window.addEventListener('load', init);
 console.log('sorder load00');
-let cmbParent;
 let inCombo;
 let outCombo;
 let cashBackCheckbox;
@@ -9,9 +10,7 @@ let cashBackCheckbox;
 function init() {
   inCombo = document.getElementById('cmbAccountIn');
   outCombo = document.getElementById('cmbAccountOut');
-  cmbParent = document.getElementById('cmbType');
   cashBackCheckbox = document.getElementById('chIsCashBack');
-
   cmbParent.addEventListener('change', disableCombos);
   updateCombos(cmbParent.value);
 }
