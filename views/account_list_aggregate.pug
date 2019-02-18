@@ -6,16 +6,18 @@ block content
     table.statisticTable
       tr
         th Name
+        th Balance
         th StartSum
         th Input
         th Output
         th Payments
-        th Balance
         th OrderNumber
       each acc in list_account
         tr
           td
             a(href=acc.url) #{acc.name}
+          td
+            label #{acc.result}            
           td
             label #{acc.startSum}
           td
@@ -24,8 +26,6 @@ block content
             label #{acc.sumOutSOrders}
           td
             label #{acc.sumPayments}
-          td
-            label #{acc.result}
           td
             label #{acc.ordernumber}
   ul
