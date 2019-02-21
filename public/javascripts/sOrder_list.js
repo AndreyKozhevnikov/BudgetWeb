@@ -22,9 +22,11 @@ window.onload = function() {
           dataType: 'date',
           format: 'dd-MMM-yy EEE',
           caption: 'Date',
+          width: '29%',
         },
         {
           dataField: 'Value',
+          width: '19%',
           cellTemplate: (container, options) => {
             let a = document.createElement('a');
             a.classList.add('dx-link');
@@ -35,7 +37,7 @@ window.onload = function() {
           },
         },
         {
-          dataField: 'Description',
+          dataField: 'Descr',
           cellTemplate: (container, options) => {
             let a = document.createElement('a');
             a.classList.add('dx-link');
@@ -50,13 +52,30 @@ window.onload = function() {
           },
         },
         {
-          dataField: 'IsCashBack',
-        },
-        {
-          dataField: 'AccountIn.Name',
-        },
-        {
-          dataField: 'AccountOut.Name',
+          dataField: 'Data',
+          cellTemplate: (container, options) => {
+            if (options.data.AccountIn) {
+              let lblInAccount = this.document.createElement('label');
+              lblInAccount.classList.add('InAccountLabel');
+              lblInAccount.classList.add('plainLabel');
+              let labelString = options.data.AccountIn.Name;
+              if (options.data.IsCashBack) {
+                labelString = '**' + labelString;
+              }
+              lblInAccount.innerHTML = labelString;
+              container[0].appendChild(lblInAccount);
+
+              let br = this.document.createElement('br');
+              container[0].appendChild(br);
+            }
+            if (options.data.AccountOut) {
+              let lblOutAccount = this.document.createElement('label');
+              lblOutAccount.classList.add('OutAccountLabel');
+              lblOutAccount.classList.add('plainLabel');
+              lblOutAccount.innerHTML = options.data.AccountOut.Name;
+              container[0].appendChild(lblOutAccount);
+            }
+          },
         },
       ],
       wordWrapEnabled: true,
