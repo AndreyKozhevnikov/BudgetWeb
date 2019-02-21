@@ -15,13 +15,20 @@ html(lang='en')
     block scripts
   body
     div(class='col-lg-5')
-      table(style='width:100%')
+      table(style='width:100%; height:10px;')
         tr
           td(class='tdLinkHolder')
-            a(class='mainLink' href='/order/create') Create new
+            a(class='mainLink' href='/order/create') Order
           td(class='tdLinkHolder')
-            a(class='mainLink' href='/order/list') All orders
+            a(class='mainLink' href='/order/list') OList
           td(class='tdLinkHolder')
-            a(class='mainLink' href='/wiki') Wiki            
+            a(class='mainLink' href='/wiki') Wiki
+        tr
+          td(class='tdLinkHolder')
+            a(class='mainLink' href='/serviceOrder/create') SOrder
+          td(class='tdLinkHolder')
+            a(class='mainLink' href='/serviceOrder/list') SOList
+          td(class='tdLinkHolder')
+            a(class='mainLink' href='/account/aggregatedList') Accs
     div(class='col-lg-5')
       block content
