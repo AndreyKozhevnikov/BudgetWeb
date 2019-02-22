@@ -1,4 +1,15 @@
 'use strict';
+
+exports.paymentType_create_get = paymentType_create_get;
+exports.paymentType_create_post = paymentType_create_post_array;
+exports.deletePaymentTypes = deletePaymentTypes;
+exports.paymentType_list = paymentTypeList;
+exports.updatelists = populateAdditionalLists;
+exports.paymentType_update_get = paymentType_update_get;
+exports.paymentType_update_post = paymentType_update_post_array;
+exports.deleteTypes = deleteTypes;
+exports.createPaymentTypeFromBackup = createPaymentTypeFromBackup;
+
 let PaymentType = require('../models/paymentType.js');
 let Account = require('../models/account.js');
 let accountList;
@@ -161,13 +172,3 @@ function populateAdditionalLists() {
 }
 
 populateAdditionalLists();
-
-exports.paymentType_create_get = paymentType_create_get;
-exports.paymentType_create_post = paymentType_create_post_array;
-exports.deletePaymentTypes = deletePaymentTypes;
-exports.paymentType_list = paymentTypeList;
-exports.updatelists = populateAdditionalLists;
-exports.paymentType_update_get = paymentType_update_get;
-exports.paymentType_update_post = paymentType_update_post_array;
-exports.deleteTypes = deleteTypes;
-exports.createPaymentTypeFromBackup = createPaymentTypeFromBackup;

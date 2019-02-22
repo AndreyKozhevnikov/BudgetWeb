@@ -1,4 +1,13 @@
 'use strict';
+
+exports.create_get = create_get;
+exports.create_post = create_post_array;
+exports.list = list;
+exports.aggregatedList = aggregatedList;
+exports.update_get = update_get;
+exports.update_post = update_post_array;
+exports.createFOrdersForFeb19 = createFOrdersForFeb19;
+
 let Account = require('../models/account.js');
 let FixRecord = require('../models/fixRecord.js');
 let Order = require('../models/order.js');
@@ -513,11 +522,3 @@ let update_post_array = [
     .escape(),
   (req, res, next) => update_post(req, res, next),
 ];
-
-exports.create_get = create_get;
-exports.create_post = create_post_array;
-exports.list = list;
-exports.aggregatedList = aggregatedList;
-exports.update_get = update_get;
-exports.update_post = update_post_array;
-exports.createFOrdersForFeb19 = createFOrdersForFeb19;

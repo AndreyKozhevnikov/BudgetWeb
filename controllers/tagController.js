@@ -1,4 +1,13 @@
 'use strict';
+exports.tag_list = tag_list;
+exports.tag_detail = tag_detail;
+exports.tag_create_get = tag_create_get;
+exports.tag_create_post = tag_create_post_array;
+exports.tag_update_get = tag_update_get;
+exports.tag_update_post = tag_update_post_array;
+exports.deleteTags = deleteTags;
+exports.createTagFromBackup = createTagFromBackup;
+
 let Tag = require('../models/tag.js');
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -145,11 +154,3 @@ function createTagFromBackup(tagFromBackup) {
   return tag;
 };
 
-exports.tag_list = tag_list;
-exports.tag_detail = tag_detail;
-exports.tag_create_get = tag_create_get;
-exports.tag_create_post = tag_create_post_array;
-exports.tag_update_get = tag_update_get;
-exports.tag_update_post = tag_update_post_array;
-exports.deleteTags = deleteTags;
-exports.createTagFromBackup = createTagFromBackup;

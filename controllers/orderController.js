@@ -1,4 +1,18 @@
 'use strict';
+
+exports.order_detail = order_detail;
+exports.order_list = order_list;
+exports.order_create_get = order_create_get;
+exports.order_create_get_withNewTag = order_create_get_withNewTag;
+exports.order_create_post = order_create_post_array;
+exports.order_delete_get = order_delete_get;
+exports.order_delete_post = order_delete_post;
+exports.order_update_get = order_update_get;
+exports.order_update_post = order_update_post_array;
+exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
+exports.deleteOrders = deleteOrders;
+exports.createOrderFromBackup = createOrderFromBackup;
+
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
@@ -335,16 +349,3 @@ function sortEntities(listToSort, groupedList, obj, countOfPopular) {
 }
 
 populateAdditionalLists();
-
-exports.order_detail = order_detail;
-exports.order_list = order_list;
-exports.order_create_get = order_create_get;
-exports.order_create_get_withNewTag = order_create_get_withNewTag;
-exports.order_create_post = order_create_post_array;
-exports.order_delete_get = order_delete_get;
-exports.order_delete_post = order_delete_post;
-exports.order_update_get = order_update_get;
-exports.order_update_post = order_update_post_array;
-exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
-exports.deleteOrders = deleteOrders;
-exports.createOrderFromBackup = createOrderFromBackup;

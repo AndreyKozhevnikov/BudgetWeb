@@ -1,4 +1,15 @@
 'use strict';
+
+exports.index = index;
+exports.wikiAbout = wikiAbout;
+exports.wiki = wiki;
+exports.deleteAll = deleteAll;
+exports.createUserGet = createUserGet;
+exports.createUserPost = createUserPost;
+exports.update_localid = updatelocalid;
+exports.full_backup = fullbackup;
+exports.full_Restore = fullRestore;
+
 let Order = require('../models/order.js');
 let Account = require('../models/account.js');
 let Tag = require('../models/tag.js');
@@ -220,14 +231,4 @@ function updatelocalid(req, res, next) {
     });
   });
 };
-
-exports.index = index;
-exports.wikiAbout = wikiAbout;
-exports.wiki = wiki;
-exports.deleteAll = deleteAll;
-exports.createUserGet = createUserGet;
-exports.createUserPost = createUserPost;
-exports.update_localid = updatelocalid;
-exports.full_backup = fullbackup;
-exports.full_Restore = fullRestore;
 

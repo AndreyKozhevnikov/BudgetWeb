@@ -1,4 +1,12 @@
 'use strict';
+
+exports.create_get = create_get;
+exports.create_post = create_post_array;
+exports.list = list;
+exports.updateLists = updateLists;
+exports.update_get = update_get;
+exports.update_post = update_post_array;
+
 let ServiceOrder = require('../models/serviceOrder.js');
 let Account = require('../models/account.js');
 const { body, validationResult } = require('express-validator/check');
@@ -167,10 +175,3 @@ function updateLists() {
 
 populateLists();
 
-
-exports.create_get = create_get;
-exports.create_post = create_post_array;
-exports.list = list;
-exports.updateLists = updateLists;
-exports.update_get = update_get;
-exports.update_post = update_post_array;
