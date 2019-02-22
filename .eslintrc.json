@@ -7,7 +7,12 @@
     },
     "extends": "strongloop",
     "rules":{
-        "max-len":[2,120,4,{"ignoreStrings":true,"ignoreComments":true}]
+        "max-len":[2,120,4,{"ignoreStrings":true,"ignoreComments":true}],
+        "space-before-function-paren": ["error", {
+          "anonymous": "never",
+          "named": "never",
+          "asyncArrow": "always"
+      }]
     },
     "parserOptions": {
       "ecmaVersion": 2017
