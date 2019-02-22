@@ -105,14 +105,18 @@ async function run() {
   await parent2.save();
 
   let inter11 = new TestIntermediate({ Name: 'inter1-1', Parent: parent1 });
+  let inter12 = new TestIntermediate({ Name: 'inter1-2', Parent: parent1 });
   let inter21 = new TestIntermediate({ Name: 'inter2-1', Parent: parent2 });
+  let inter22 = new TestIntermediate({ Name: 'inter2-2', Parent: parent2 });
   await inter11.save();
   await inter21.save();
+  await inter12.save();
+  await inter22.save();
 
   let child111 = new TestChild({ Name: 'child1-1-1', Intermediate: inter11, Value: 5 });
-  let child112 = new TestChild({ Name: 'child1-1-2', Intermediate: inter11, Value: 60 });
+  let child112 = new TestChild({ Name: 'child1-1-2', Intermediate: inter12, Value: 60 });
   let child211 = new TestChild({ Name: 'child2-1-1', Intermediate: inter21, Value: 10 });
-  let child212 = new TestChild({ Name: 'child2-1-2', Intermediate: inter21, Value: 70 });
+  let child212 = new TestChild({ Name: 'child2-1-2', Intermediate: inter22, Value: 70 });
 
   await child111.save();
   await child112.save();
@@ -157,6 +161,9 @@ async function run() {
       //     as: 'myIntermediates',
       //   },
       // },
+      {
+        $unwind: '$myIntermediates'
+      },
       {
         $lookup: {
           from: 'testchildren',
