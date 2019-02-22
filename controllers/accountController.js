@@ -1,6 +1,8 @@
 'use strict';
 let Account = require('../models/account.js');
 let FixRecord = require('../models/fixRecord.js');
+let Order = require('../models/order.js');
+let PaymentType = require('../models/paymentType.js');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -388,8 +390,8 @@ async function aggregatedList(req, res, next) {
   let firstDayOfCurrMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1));
   if (lastFOrderTime < firstDayOfCurrMonth) {
     let accListObject = await getAggregatedAccList(lastFOrderTime, firstDayOfCurrMonth);
-    let start = async() => {
-      await asyncForEach(accListObject.accList, async(accRecord) => {
+    let start = async () => {
+      await asyncForEach(accListObject.accList, async (accRecord) => {
         let fRec = new FixRecord({
           Type: FRecordTypes.StartMonth,
           DateTime: firstDayOfCurrMonth,
@@ -402,7 +404,65 @@ async function aggregatedList(req, res, next) {
     await start();
   }
   let accListObject = await getAggregatedAccList(firstDayOfCurrMonth, currentDate);
-  res.render('account_list_aggregate', { title: 'Account List', list_account: accListObject.accList, commonSum: accListObject.commonSum });
+  let statisticObject = await getStaticObject();
+  res.render('account_list_aggregate', { title: 'Account List', list_account: accListObject.accList, commonSum: accListObject.commonSum, statObject: statisticObject });
+}
+async function getStaticObject() {
+  const normEatPerDay = 500;
+  const normAllPerDay = 1500;
+  let paymentTypeList = await PaymentType.find();
+  let today = new Date();
+  let dayCount = today.getDate();
+  let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  let thisMonthsorders = await Order.find({ DateOrder: { $gte: firstDay } })
+    .populate('ParentTag');
+  // let thisMonthsorders = order_list.filter(function(order) {
+  //   return order.DateOrder >= firstDay;
+  // });
+  let sumAllOrders = thisMonthsorders.reduce(function(accumulator, order) {
+    return accumulator + order.Value;
+  }, 0);
+  let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
+    if (order.ParentTag.LocalId === 1) {
+      accumulator = accumulator + order.Value;
+    }
+    return accumulator;
+  }, 0);
+  let monthDayCount = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  let leftDayCount = monthDayCount - dayCount + 1;
+  if (leftDayCount < 1)
+    leftDayCount = 1;
+  let desiredAllSumForMonth = normAllPerDay * monthDayCount;
+  let desiredEatSumForMonth = normEatPerDay * monthDayCount;
+
+  let statisticObject =
+  {
+    spendEat: sumEatOrders,
+    normEat: normEatPerDay * dayCount,
+    normEatMonth: desiredEatSumForMonth,
+    spendAll: sumAllOrders,
+    normAll: normAllPerDay * dayCount,
+    normAllMonth: desiredAllSumForMonth,
+  };
+  statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
+  statisticObject.diffEatMonth = statisticObject.normEatMonth - statisticObject.spendEat;
+  statisticObject.moneyLeftEat = Math.round(statisticObject.diffEatMonth / leftDayCount);
+  statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
+  statisticObject.diffAllMonth = statisticObject.normAllMonth - statisticObject.spendAll;
+  statisticObject.moneyLeftAll = Math.round(statisticObject.diffAllMonth / leftDayCount);
+
+  statisticObject.allColorAttribute = statisticObject.diffAll < 0;
+  statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
+
+  let allYaPaymentTypes = paymentTypeList.filter(p => p.IsYandex);
+  let yandexMappedList = allYaPaymentTypes.map(function(p) {
+    let newObj = { value: p.Name + '-' + p.CurrentCount, isFourth: p.CurrentCount === 4 };
+    return newObj;
+  });
+  statisticObject.yaList = yandexMappedList;
+
+
+  return statisticObject;
 }
 
 function update_get(req, res, next) {

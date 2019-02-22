@@ -11,75 +11,13 @@ let popularPaymentTypeList;
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 // Display list of all orders.
-function order_list(req, res, next) {
-  Order.find({ IsDeleted: { $exists: false } })
+async function order_list(req, res, next) {
+  let order_list = await Order.find({ IsDeleted: { $exists: false } })
     .populate('ParentTag')
     .populate('PaymentType')
-    .sort({ DateOrder: -1, _id: -1 })
-    .exec(function(err, order_list) {
-      if (err) {
-        return next(err);
-      }
-      let statisticObject = getStaticObject(order_list);
-      // Successful, so render
-      res.render('order_list', { order_list: order_list, statObject: statisticObject });
-    });
+    .sort({ DateOrder: -1, _id: -1 });
+  res.render('order_list', { order_list: order_list});
 };
-
-function getStaticObject(order_list) {
-  const normEatPerDay = 500;
-  const normAllPerDay = 1500;
-  let today = new Date();
-  let dayCount = today.getDate();
-  let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  let thisMonthsorders = order_list.filter(function(order) {
-    return order.DateOrder >= firstDay;
-  });
-  let sumAllOrders = thisMonthsorders.reduce(function(accumulator, order) {
-    return accumulator + order.Value;
-  }, 0);
-  let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.ParentTag.LocalId === 1) {
-      accumulator = accumulator + order.Value;
-    }
-    return accumulator;
-  }, 0);
-  let monthDayCount = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  let leftDayCount = monthDayCount - dayCount + 1;
-  if (leftDayCount < 1)
-    leftDayCount = 1;
-  let desiredAllSumForMonth = normAllPerDay * monthDayCount;
-  let desiredEatSumForMonth = normEatPerDay * monthDayCount;
-
-  let statisticObject =
-  {
-    spendEat: sumEatOrders,
-    normEat: normEatPerDay * dayCount,
-    normEatMonth: desiredEatSumForMonth,
-    spendAll: sumAllOrders,
-    normAll: normAllPerDay * dayCount,
-    normAllMonth: desiredAllSumForMonth,
-  };
-  statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
-  statisticObject.diffEatMonth = statisticObject.normEatMonth - statisticObject.spendEat;
-  statisticObject.moneyLeftEat = Math.round(statisticObject.diffEatMonth / leftDayCount);
-  statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
-  statisticObject.diffAllMonth = statisticObject.normAllMonth - statisticObject.spendAll;
-  statisticObject.moneyLeftAll = Math.round(statisticObject.diffAllMonth / leftDayCount);
-
-  statisticObject.allColorAttribute = statisticObject.diffAll < 0;
-  statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
-
-  let allYaPaymentTypes = paymentTypeList.filter(p => p.IsYandex);
-  let yandexMappedList = allYaPaymentTypes.map(function(p) {
-    let newObj = { value: p.Name + '-' + p.CurrentCount, isFourth: p.CurrentCount === 4 };
-    return newObj;
-  });
-  statisticObject.yaList = yandexMappedList;
-
-
-  return statisticObject;
-}
 
 // Display detail page for a specific order.
 function order_detail(req, res, next) {

@@ -39,7 +39,7 @@ app.use(
     saveUninitialized: false,
   })
 );
-app.use('/', requestLogin);
+//app.use('/', requestLogin);
 app.use('/', rootRouter);
 app.use('/tag', tagRouter);
 app.use('/order', orderRouter);

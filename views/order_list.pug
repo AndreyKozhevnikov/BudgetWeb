@@ -4,47 +4,6 @@ block scripts
      var order_list=!{JSON.stringify(order_list)}; 
    script(src='/javascripts/order_list.js')
 block content
-
-
-  div
-    table.statisticTable
-      tr
-        td 
-          label Eat
-        td
-          label #{statObject.normEat}
-        td 
-          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.spendEat}   
-        td 
-          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.diffEat}
-        td
-          label #{statObject.normEatMonth}  
-        td
-          label #{statObject.diffEatMonth}  
-        td
-          label #{statObject.moneyLeftEat}                       
-      tr
-        td
-          label All
-        td
-          label #{statObject.normAll}
-        td 
-          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.spendAll}            
-        td 
-          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.diffAll}            
-        td
-          label #{statObject.normAllMonth}  
-        td
-          label #{statObject.diffAllMonth}  
-        td
-          label #{statObject.moneyLeftAll}
-      table.statisticTable
-        tr
-          each yaPayment in statObject.yaList
-            td.yaCell(isFourth = yaPayment.isFourth) #{yaPayment.value}
-            
-        
-
   div#orderListContainer
    
             
