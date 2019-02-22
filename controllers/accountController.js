@@ -363,12 +363,14 @@ async function getAggregatedAccList(startDate, finishDate) {
     return aNumber - bNumber;
   });
   let commonSum = 0;
+  let paymentsSum = 0;
   accList.forEach((item) => {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     item.url = '/account/' + item._id + '/update';
     commonSum = commonSum + item.result;
+    paymentsSum = paymentsSum + item.sumPayments;
   });
-  return { accList: accList, commonSum: commonSum };
+  return { accList: accList, commonSum: commonSum, paymentsSum: paymentsSum };
 }
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
@@ -405,7 +407,7 @@ async function aggregatedList(req, res, next) {
   }
   let accListObject = await getAggregatedAccList(firstDayOfCurrMonth, currentDate);
   let statisticObject = await getStaticObject();
-  res.render('account_list_aggregate', { title: 'Account List', list_account: accListObject.accList, commonSum: accListObject.commonSum, statObject: statisticObject });
+  res.render('account_list_aggregate', { title: 'Account List', accListObject: accListObject, statObject: statisticObject });
 }
 async function getStaticObject() {
   const normEatPerDay = 500;

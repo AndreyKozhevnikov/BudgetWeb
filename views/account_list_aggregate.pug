@@ -12,7 +12,7 @@ block content
         th Output
         th Payments
         th OrderNumber
-      each acc in list_account
+      each acc in accListObject.accList
         tr
           td
             a(href=acc.url) #{acc.name}
@@ -28,9 +28,19 @@ block content
             label #{acc.sumPayments}
           td
             label #{acc.ordernumber}
+      tr
+        td
+        td
+          label #{accListObject.commonSum} 
+        td       
+        td       
+        td       
+        td     
+          label #{accListObject.paymentsSum}           
+        td
   ul
   p
-    label.commonSum CommonSum: #{commonSum}
+    label.commonSum CommonSum: #{accListObject.commonSum}
 
 
   div
