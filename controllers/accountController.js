@@ -481,6 +481,7 @@ function createAccountFromRequest(req, isUpdate) {
     Name: req.body.Name_frm,
     LocalId: req.body.LocalId_frm,
     OrderNumber: req.body.OrderNumber_frm,
+    IsUntouchable: Boolean(req.body.IsUntouchable_frm),
   });
   if (isUpdate) {
     account._id = req.params.id;
