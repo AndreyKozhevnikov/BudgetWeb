@@ -308,6 +308,29 @@ async function getAggregatedAccList(startDate, finishDate) {
                 $and: [
                   {
                     $expr: {
+                      $eq: ['$AccountOut', '$$myid'],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                  { Type: { $ne: 'between'} },
+                ],
+              },
+            },
+          ],
+          as: 'acOutSOrdersClean',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
                       $eq: ['$AccountIn', '$$myid'],
                     },
                   },
@@ -317,6 +340,29 @@ async function getAggregatedAccList(startDate, finishDate) {
             },
           ],
           as: 'acInSOrders',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$AccountIn', '$$myid'],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                  { Type: { $ne: 'between'} },
+                ],
+              },
+            },
+          ],
+          as: 'acInSOrdersClean',
         },
       },
       {
@@ -350,7 +396,9 @@ async function getAggregatedAccList(startDate, finishDate) {
           startSum: { $sum: '$fixRecords.Value' },
           sumPayments: { $sum: '$fOrders' },
           sumInSOrders: { $sum: '$acInSOrders.Value' },
+          sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
+          sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
           ordernumber: '$ordernumber',
         },
       },
