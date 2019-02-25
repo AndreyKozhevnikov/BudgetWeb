@@ -21,6 +21,7 @@ let async = require('async');
 let formidable = require('formidable');
 let fs = require('fs');
 let order_controller = require('../controllers/orderController.js');
+let sOrder_controller = require('../controllers/serviceOrderController.js');
 let tag_controller = require('../controllers/tagController.js');
 let paymentType_controller = require('../controllers/paymentTypeController.js');
 let stream = require('stream');
@@ -221,6 +222,12 @@ function updatelocalid(req, res, next) {
   });
 };
 
+function updateLists(req, res, next) {
+  order_controller.populateAdditionalLists();
+  sOrder_controller.populateLists();
+  res.send('update is Successful');
+}
+
 exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
@@ -230,4 +237,5 @@ exports.createUserPost = createUserPost;
 exports.update_localid = updatelocalid;
 exports.full_backup = fullbackup;
 exports.full_Restore = fullRestore;
+exports.updateLists = updateLists;
 

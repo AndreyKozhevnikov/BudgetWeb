@@ -348,3 +348,4 @@ exports.order_update_post = order_update_post_array;
 exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
 exports.deleteOrders = deleteOrders;
 exports.createOrderFromBackup = createOrderFromBackup;
+exports.populateAdditionalLists = populateAdditionalLists;
