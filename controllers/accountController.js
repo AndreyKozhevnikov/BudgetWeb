@@ -370,7 +370,7 @@ async function getAggregatedAccList(startDate, finishDate) {
   accList.forEach((item) => {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     item.url = '/account/' + item._id + '/update';
-    if (item.isuntouchable !== false) {
+    if (item.isuntouchable !== true) {
       commonSum = commonSum + item.result;
     }
     paymentsSum = paymentsSum + item.sumPayments;
