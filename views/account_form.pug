@@ -11,7 +11,7 @@ block content
       label(for='txOrderNumber') OrderNumber:
       input#txOrderNumber.form-control(type='number' name='OrderNumber_frm' value=(undefined===account_frm ? '' : account_frm.OrderNumber))
       label(for='chIsUntouchable') IsUntouchable:
-      input#txOrderNumber.form-control(type='checkbox' name='IsUntouchable_frm' value=(undefined===account_frm ? '' : account_frm.IsUntouchable))
+      input#txOrderNumber.form-control(type='checkbox' name='IsUntouchable_frm' checked=(undefined===account_frm ? false : account_frm.IsUntouchable))
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul
