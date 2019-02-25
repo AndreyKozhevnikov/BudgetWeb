@@ -312,7 +312,7 @@ async function getAggregatedAccList(startDate, finishDate) {
                     },
                   },
                   { DateOrder: { $gte: startDate, $lt: finishDate } },
-                  { Type: { $ne: 'between'} },
+                  { Type: { $ne: 'between' } },
                 ],
               },
             },
@@ -357,7 +357,7 @@ async function getAggregatedAccList(startDate, finishDate) {
                     },
                   },
                   { DateOrder: { $gte: startDate, $lt: finishDate } },
-                  { Type: { $ne: 'between'} },
+                  { Type: { $ne: 'between' } },
                 ],
               },
             },
@@ -413,17 +413,25 @@ async function getAggregatedAccList(startDate, finishDate) {
       bNumber = 999;
     return aNumber - bNumber;
   });
-  let commonSum = 0;
-  let paymentsSum = 0;
+  let sumObject = {
+    commonSum: 0,
+    startSum: 0,
+    paymentsSum: 0,
+    inputSum: 0,
+    outputSum: 0,
+  };
   accList.forEach((item) => {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     item.url = '/account/' + item._id + '/update';
     if (item.isuntouchable !== true) {
-      commonSum = commonSum + item.result;
+      sumObject.commonSum = sumObject.commonSum + item.result;
+      sumObject.startSum = sumObject.startSum + item.startSum;
+      sumObject.paymentsSum = sumObject.paymentsSum + item.sumPayments;
+      sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersClean;
+      sumObject.outputSum = sumObject.outputSum + item.sumOutSOrdersClean;
     }
-    paymentsSum = paymentsSum + item.sumPayments;
   });
-  return { accList: accList, commonSum: commonSum, paymentsSum: paymentsSum };
+  return { accList: accList, sumObject: sumObject };
 }
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
