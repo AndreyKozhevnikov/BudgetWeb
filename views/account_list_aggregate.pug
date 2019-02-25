@@ -13,7 +13,7 @@ block content
         th Payments
         th OrderNumber
       each acc in accListObject.accList
-        tr
+        tr(class=acc.isuntouchable?'untouch':null)
           td
             a(href=acc.url) #{acc.name}
           td
