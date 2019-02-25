@@ -260,6 +260,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       {
         $project: {
           name: '$Name',
+          isuntouchable: '$IsUntouchable',
           ordernumber: '$OrderNumber',
           _id: '$_id',
           sumfOrders: { $sum: '$filteredOrders.Value' },
@@ -269,6 +270,7 @@ async function getAggregatedAccList(startDate, finishDate) {
         $group: {
           _id: '$_id',
           name: { $first: '$name' },
+          isuntouchable: { $first: '$isuntouchable' },
           ordernumber: { $first: '$ordernumber' },
           fOrders: { $sum: '$sumfOrders' },
         },
@@ -343,6 +345,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       {
         $project: {
           name: '$name',
+          isuntouchable: '$isuntouchable',
           _id: '$_id',
           startSum: { $sum: '$fixRecords.Value' },
           sumPayments: { $sum: '$fOrders' },
@@ -367,7 +370,9 @@ async function getAggregatedAccList(startDate, finishDate) {
   accList.forEach((item) => {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     item.url = '/account/' + item._id + '/update';
-    commonSum = commonSum + item.result;
+    if (item.isuntouchable !== false) {
+      commonSum = commonSum + item.result;
+    }
     paymentsSum = paymentsSum + item.sumPayments;
   });
   return { accList: accList, commonSum: commonSum, paymentsSum: paymentsSum };
