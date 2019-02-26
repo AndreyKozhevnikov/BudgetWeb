@@ -161,6 +161,11 @@ let update_post_array = [
   (req, res, next) => update_post(req, res, next),
 ];
 
+async function getList(){
+  let list = await ServiceOrder.find();
+  return list;
+}
+
 function updateLists() {
   populateLists();
 }
@@ -175,3 +180,4 @@ exports.updateLists = updateLists;
 exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.populateLists = populateLists;
+exports.getList = getList;

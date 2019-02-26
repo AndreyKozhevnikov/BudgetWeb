@@ -15,6 +15,7 @@ let accountRouter = require('./routes/accountRouter.js');
 let serviceOrderRouter = require('./routes/serviceOrderRouter.js');
 let paymentTypeRouter = require('./routes/paymentTypeRouter.js');
 let rootRouter = require('./routes/rootRouter.js');
+let mixOrdersRouter = require('./routes/mixOrdersRouter.js');
 
 let app = express();
 app.locals.moment = require('moment');
@@ -46,6 +47,7 @@ app.use('/order', orderRouter);
 app.use('/account', accountRouter);
 app.use('/serviceOrder', serviceOrderRouter);
 app.use('/paymentType', paymentTypeRouter);
+app.use('/mixOrders', mixOrdersRouter);
 
 // Set up mongoose connection
 let mongoose = require('mongoose');
