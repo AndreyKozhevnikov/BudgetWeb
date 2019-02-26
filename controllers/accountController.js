@@ -367,6 +367,29 @@ async function getAggregatedAccList(startDate, finishDate) {
       },
       {
         $lookup: {
+          from: 'serviceorders',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$AccountIn', '$$myid'],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                  { IsCashBack: true },
+                ],
+              },
+            },
+          ],
+          as: 'acInSOrdersCashback',
+        },
+      },
+      {
+        $lookup: {
           from: 'fixrecords',
           let: { myid: '$_id' },
           pipeline: [
@@ -397,6 +420,7 @@ async function getAggregatedAccList(startDate, finishDate) {
           sumPayments: { $sum: '$fOrders' },
           sumInSOrders: { $sum: '$acInSOrders.Value' },
           sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
+          sumacInSOrdersCashback: { $sum: '$acInSOrdersCashback.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
           sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
           ordernumber: '$ordernumber',
@@ -419,6 +443,7 @@ async function getAggregatedAccList(startDate, finishDate) {
     paymentsSum: 0,
     inputSum: 0,
     outputSum: 0,
+    cashBackSum: 0,
   };
   accList.forEach((item) => {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
@@ -429,6 +454,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       sumObject.paymentsSum = sumObject.paymentsSum + item.sumPayments;
       sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersClean;
       sumObject.outputSum = sumObject.outputSum + item.sumOutSOrdersClean;
+      sumObject.cashBackSum = sumObject.cashBackSum + item.sumacInSOrdersCashback;
     }
   });
   return { accList: accList, sumObject: sumObject };
