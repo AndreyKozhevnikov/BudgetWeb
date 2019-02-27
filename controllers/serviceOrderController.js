@@ -1,6 +1,8 @@
 'use strict';
 let ServiceOrder = require('../models/serviceOrder.js');
 let Account = require('../models/account.js');
+let Helper = require('../controllers/helperController.js');
+
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 let accountList;
@@ -161,8 +163,8 @@ let update_post_array = [
   (req, res, next) => update_post(req, res, next),
 ];
 
-async function getList(){
-  let list = await ServiceOrder.find();
+async function getList(startDate, finishDate) {
+  let list = Helper.getListByDates(ServiceOrder, startDate, finishDate);
   return list;
 }
 

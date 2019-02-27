@@ -2,6 +2,8 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
+let Helper = require('../controllers/helperController.js');
+
 let async = require('async');
 let tagList;
 let popularTagList;
@@ -16,7 +18,7 @@ async function order_list(req, res, next) {
     .populate('ParentTag')
     .populate('PaymentType')
     .sort({ DateOrder: -1, _id: -1 });
-  res.render('order_list', { order_list: order_list});
+  res.render('order_list', { order_list: order_list });
 };
 
 // Display detail page for a specific order.
@@ -334,6 +336,11 @@ function sortEntities(listToSort, groupedList, obj, countOfPopular) {
   obj.popularList = listToSort.slice(1, countOfPopular);
 }
 
+async function getList(startDate, finishDate) {
+  let list = Helper.getListByDates(Order, startDate, finishDate);
+  return list;
+}
+
 populateAdditionalLists();
 
 exports.order_detail = order_detail;
@@ -349,3 +356,4 @@ exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
 exports.deleteOrders = deleteOrders;
 exports.createOrderFromBackup = createOrderFromBackup;
 exports.populateAdditionalLists = populateAdditionalLists;
+exports.getList = getList;

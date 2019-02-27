@@ -4,6 +4,8 @@ let FixRecord = require('../models/fixRecord.js');
 let Order = require('../models/order.js');
 let PaymentType = require('../models/paymentType.js');
 
+let Helper = require('../controllers/helperController.js');
+
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check' };
@@ -219,6 +221,9 @@ function createFOrdersForFeb19(req, res, next) {
 // }
 
 async function getAggregatedAccList(startDate, finishDate) {
+  if (finishDate == null) {
+    finishDate = new Date();
+  }
   let accList = await Account.aggregate(
     [
       {
@@ -474,9 +479,8 @@ async function aggregatedList(req, res, next) {
 
   let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
   let lastFOrderTime = lastFRecord.DateTime;
-  let currentDate = new Date();
 
-  let firstDayOfCurrMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1));
+  let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
   if (lastFOrderTime < firstDayOfCurrMonth) {
     let accListObject = await getAggregatedAccList(lastFOrderTime, firstDayOfCurrMonth);
     let start = async () => {
@@ -492,7 +496,7 @@ async function aggregatedList(req, res, next) {
     };
     await start();
   }
-  let accListObject = await getAggregatedAccList(firstDayOfCurrMonth, currentDate);
+  let accListObject = await getAggregatedAccList(firstDayOfCurrMonth);
   let statisticObject = await getStaticObject();
   res.render('account_list_aggregate', { title: 'Account List', accListObject: accListObject, statObject: statisticObject });
 }

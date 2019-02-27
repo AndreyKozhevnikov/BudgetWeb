@@ -1,0 +1,7 @@
+extends layout
+block scripts
+  script.
+     var mixOrders_list=!{JSON.stringify(mixOrders_list)}; 
+  script(src='/javascripts/mixOrder_list.js')
+block content
+  div#listContainer
