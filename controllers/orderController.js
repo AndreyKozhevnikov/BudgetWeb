@@ -338,6 +338,7 @@ function sortEntities(listToSort, groupedList, obj, countOfPopular) {
 
 async function getList(startDate, finishDate) {
   let list = Helper.getListByDates(Order, startDate, finishDate);
+  list.populate('ParentTag');
   return list;
 }
 

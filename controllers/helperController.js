@@ -6,11 +6,11 @@ function getFirstDateOfCurrentMonth() {
   return firstDayOfCurrMonth;
 }
 
-async function getListByDates(entity, startDate, finishDate) {
+function getListByDates(entity, startDate, finishDate) {
   if (finishDate == null) {
     finishDate = new Date();
   }
-  let list = await entity.find({ DateOrder: { $gte: startDate, $lt: finishDate } });
+  let list = entity.find({ DateOrder: { $gte: startDate, $lt: finishDate } });
   return list;
 }
 

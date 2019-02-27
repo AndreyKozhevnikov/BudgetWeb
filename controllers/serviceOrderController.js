@@ -165,6 +165,8 @@ let update_post_array = [
 
 async function getList(startDate, finishDate) {
   let list = Helper.getListByDates(ServiceOrder, startDate, finishDate);
+  list.populate('AccountOut')
+    .populate('AccountIn');
   return list;
 }
 
