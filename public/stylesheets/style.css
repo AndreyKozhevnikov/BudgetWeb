@@ -77,6 +77,14 @@ text-decoration: none;
 {
   color: green;
 }
+.dx-datagrid .dx-row-alt > td.tdSOrder
+{
+  background-color: #f5f5cb;
+}
+td.tdSOrder
+{
+  background-color: #f5f5cb;
+}
 .yaLabel {
   background: aquamarine;
 }

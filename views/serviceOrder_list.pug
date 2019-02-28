@@ -2,6 +2,7 @@ extends layout
 block scripts
   script.
      var serviceOrders_list=!{JSON.stringify(serviceOrders_list)}; 
+  script(src='/javascripts/base_list.js')     
   script(src='/javascripts/sOrder_list.js')
 block content
   div#listContainer

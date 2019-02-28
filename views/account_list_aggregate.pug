@@ -15,7 +15,7 @@ block content
       each acc in accListObject.accList
         tr(class=acc.isuntouchable?'untouch':null)
           td
-            a(href=acc.url) #{acc.name}
+            a(href=acc.getOrdsUrl) #{acc.name}
           td
             label #{acc.result}            
           td

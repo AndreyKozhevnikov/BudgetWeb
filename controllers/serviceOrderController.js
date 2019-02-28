@@ -1,6 +1,8 @@
 'use strict';
 let ServiceOrder = require('../models/serviceOrder.js');
 let Account = require('../models/account.js');
+let Helper = require('../controllers/helperController.js');
+
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 let accountList;
@@ -161,10 +163,22 @@ let update_post_array = [
   (req, res, next) => update_post(req, res, next),
 ];
 
+async function getList(startDate, finishDate) {
+  let list = Helper.getListByDates(ServiceOrder, startDate, finishDate);
+  list.populate('AccountOut')
+    .populate('AccountIn');
+  return list;
+}
+
 function updateLists() {
   populateLists();
 }
-
+async function getAccountOrders(id) {
+  let sords = ServiceOrder.find({ $or: [{ AccountIn: id }, { AccountOut: id }] });
+  sords.populate('AccountOut')
+    .populate('AccountIn');
+  return sords;
+}
 populateLists();
 
 
@@ -175,3 +189,5 @@ exports.updateLists = updateLists;
 exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.populateLists = populateLists;
+exports.getList = getList;
+exports.getAccountOrders = getAccountOrders;

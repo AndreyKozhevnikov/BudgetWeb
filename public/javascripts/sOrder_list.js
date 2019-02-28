@@ -1,4 +1,4 @@
-/*global DevExpress serviceOrders_list*/
+/*global DevExpress serviceOrders_list buildContainerForSOrder*/
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -54,27 +54,7 @@ window.onload = function() {
         {
           dataField: 'Data',
           cellTemplate: (container, options) => {
-            if (options.data.AccountIn) {
-              let lblInAccount = this.document.createElement('label');
-              lblInAccount.classList.add('InAccountLabel');
-              lblInAccount.classList.add('plainLabel');
-              let labelString = options.data.AccountIn.Name;
-              if (options.data.IsCashBack) {
-                labelString = '**' + labelString;
-              }
-              lblInAccount.innerHTML = labelString;
-              container[0].appendChild(lblInAccount);
-
-              let br = this.document.createElement('br');
-              container[0].appendChild(br);
-            }
-            if (options.data.AccountOut) {
-              let lblOutAccount = this.document.createElement('label');
-              lblOutAccount.classList.add('OutAccountLabel');
-              lblOutAccount.classList.add('plainLabel');
-              lblOutAccount.innerHTML = options.data.AccountOut.Name;
-              container[0].appendChild(lblOutAccount);
-            }
+            buildContainerForSOrder(container, options.data, this.document);
           },
         },
       ],
