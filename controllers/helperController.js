@@ -1,4 +1,5 @@
 'use strict';
+let mongoose = require('mongoose');
 
 function getFirstDateOfCurrentMonth() {
   let currentDate = new Date();
@@ -13,7 +14,12 @@ function getListByDates(entity, startDate, finishDate) {
   let list = entity.find({ DateOrder: { $gte: startDate, $lt: finishDate } });
   return list;
 }
+function createObjectId(id) {
+  var ObjectId = mongoose.Types.ObjectId;
+  return new ObjectId(id);
+}
 
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
+exports.createObjectId = createObjectId;
 
