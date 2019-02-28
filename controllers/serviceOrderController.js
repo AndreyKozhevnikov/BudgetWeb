@@ -173,8 +173,11 @@ async function getList(startDate, finishDate) {
 function updateLists() {
   populateLists();
 }
-function getAccountOrders(id){
-
+async function getAccountOrders(id) {
+  let sords = ServiceOrder.find({ $or: [{ AccountIn: id }, { AccountOut: id }] });
+  sords.populate('AccountOut')
+    .populate('AccountIn');
+  return sords;
 }
 populateLists();
 

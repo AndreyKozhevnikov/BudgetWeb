@@ -1,7 +1,6 @@
 'use strict';
 let serviceOrderController = require('../controllers/serviceOrderController.js');
 let orderController = require('../controllers/orderController.js');
-let accountController = require('../controllers/accountController.js');
 let Helper = require('../controllers/helperController.js');
 
 
@@ -11,20 +10,25 @@ async function list(req, res, next) {
 
   let sOrders = await serviceOrderController.getList(firstDayOfCurrMonth);
   let orders = await orderController.getList(firstDayOfCurrMonth);
-  let mixSOrders = getMixList(sOrders, 'sorder');
-  let mixOrders = getMixList(orders, 'order');
+  createAndShowMixOrdersList(orders, sOrders, res);
+}
+
+function createAndShowMixOrdersList(orderList, sOrderList, res) {
+  let mixSOrders = getMixList(sOrderList, 'sorder');
+  let mixOrders = getMixList(orderList, 'order');
 
   mixOrders = mixOrders.concat(mixSOrders);
   mixOrders.sort((a, b) => { return new Date(b.date) - new Date(a.date); });
-
   res.render('mixOrder_list', { title: 'Mix Order List', mixOrders_list: mixOrders });
+
 }
 
 async function listByAcc(req, res, next) {
   let accId = req.params.accountId;
   try {
-    let ords = await orderController.getAccountOrders(accId);
-    let sOrds = serviceOrderController.getAccountOrders(accId);
+    let orders = await orderController.getAccountOrders(accId);
+    let sOrders = await serviceOrderController.getAccountOrders(accId);
+    createAndShowMixOrdersList(orders, sOrders, res);
   } catch (err) {
     console.log(err);
   }
