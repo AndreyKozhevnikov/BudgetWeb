@@ -173,7 +173,9 @@ async function getList(startDate, finishDate) {
 function updateLists() {
   populateLists();
 }
+function getAccountOrders(id){
 
+}
 populateLists();
 
 
@@ -185,3 +187,4 @@ exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.populateLists = populateLists;
 exports.getList = getList;
+exports.getAccountOrders = getAccountOrders;

@@ -452,7 +452,8 @@ async function getAggregatedAccList(startDate, finishDate) {
   };
   accList.forEach((item) => {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-    item.url = '/account/' + item._id + '/update';
+    // item.url = '/account/' + item._id + '/update';
+    item.getOrdsUrl = '/mixorders/account/' + item._id;
     if (item.isuntouchable !== true) {
       sumObject.commonSum = sumObject.commonSum + item.result;
       sumObject.startSum = sumObject.startSum + item.startSum;
@@ -613,3 +614,4 @@ exports.aggregatedList = aggregatedList;
 exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.createFOrdersForFeb19 = createFOrdersForFeb19;
+

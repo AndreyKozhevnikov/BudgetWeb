@@ -341,7 +341,11 @@ async function getList(startDate, finishDate) {
   list.populate('ParentTag');
   return list;
 }
-
+async function getAccountOrders(id) {
+  let ords2 = await Order.find({ 'LocalId': 42447 });
+  let ords = Order.find({ 'ParentTag.Name': 'Eat' });
+  return ords;
+}
 populateAdditionalLists();
 
 exports.order_detail = order_detail;
@@ -358,3 +362,4 @@ exports.deleteOrders = deleteOrders;
 exports.createOrderFromBackup = createOrderFromBackup;
 exports.populateAdditionalLists = populateAdditionalLists;
 exports.getList = getList;
+exports.getAccountOrders = getAccountOrders;
