@@ -259,7 +259,7 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
 };
 
 function populateAdditionalLists(myCallBack, params) {
-  let cutDate = new Date();
+  let cutDate = Helper.getToday();
   cutDate.setDate(cutDate.getDate() - 60);
   async.parallel({
     tags: function(callback) {
