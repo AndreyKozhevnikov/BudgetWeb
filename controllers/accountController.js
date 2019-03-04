@@ -597,6 +597,11 @@ function update_post(req, res, next) {
   }
 }
 
+async function getAccountName(accId) {
+  let acc = await Account.findById(accId).select('Name');
+  return acc.Name;
+}
+
 let update_post_array = [
   sanitizeBody('LocalId_frm')
     .trim()
@@ -614,4 +619,5 @@ exports.aggregatedList = aggregatedList;
 exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.createFOrdersForFeb19 = createFOrdersForFeb19;
+exports.getAccountName = getAccountName;
 
