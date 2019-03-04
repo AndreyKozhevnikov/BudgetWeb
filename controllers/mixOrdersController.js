@@ -14,8 +14,8 @@ async function list(req, res, next) {
 }
 
 function createAndShowMixOrdersList(orderList, sOrderList, res) {
-  let mixSOrders = getMixList(sOrderList, 'sorder');
-  let mixOrders = getMixList(orderList, 'order');
+  let mixOrders = getMixList(orderList, Helper.mixOrderTypes.order);
+  let mixSOrders = getMixList(sOrderList, Helper.mixOrderTypes.sorder);
 
   mixOrders = mixOrders.concat(mixSOrders);
   mixOrders.sort((a, b) => { return new Date(b.date) - new Date(a.date); });
@@ -34,7 +34,7 @@ async function listByAcc(req, res, next) {
   }
 }
 
-function getMixList(list, name) {
+function getMixList(list, entityName) {
   let mixOrders = [];
   for (let i = 0; i < list.length; i++) {
     let ord = list[i];
@@ -43,8 +43,9 @@ function getMixList(list, name) {
       value: ord.Value,
       description: ord.Description,
       entity: ord,
-      type: name,
+      type: entityName,
     };
+    mOrder.url = '/' + entityName + '/' + ord._id + '/update';
     mixOrders.push(mOrder);
   }
   return mixOrders;

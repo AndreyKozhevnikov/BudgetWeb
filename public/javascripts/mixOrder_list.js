@@ -27,6 +27,14 @@ window.onload = function() {
         {
           dataField: 'value',
           width: '19%',
+          cellTemplate: (container, options) => {
+            let a = document.createElement('a');
+            a.classList.add('dx-link');
+            a.text = options.data.value;
+            a.href = options.data.url;
+            a.style.wordWrap = 'break-word';
+            container[0].appendChild(a);
+          },
         },
         {
           dataField: 'description',

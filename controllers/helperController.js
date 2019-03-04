@@ -1,6 +1,6 @@
 'use strict';
 let mongoose = require('mongoose');
-
+let mixOrderTypes = { order: 'order', sorder: 'serviceOrder' };
 function getFirstDateOfCurrentMonth() {
   let currentDate = new Date();
   let firstDayOfCurrMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1));
@@ -22,4 +22,5 @@ function createObjectId(id) {
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
 exports.createObjectId = createObjectId;
+exports.mixOrderTypes = mixOrderTypes;
 
