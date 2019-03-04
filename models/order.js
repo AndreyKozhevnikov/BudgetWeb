@@ -16,6 +16,7 @@ let OrderSchema = new Schema({
   PaymentType: { type: Schema.ObjectId, ref: 'PaymentType' },
   PaymentNumber: { type: Number },
   IsMonthCategory: { type: Boolean },
+  CreatedTime: { type: Date },
 });
 
 // OrderSchema.set('toJSON', { virtuals: true });

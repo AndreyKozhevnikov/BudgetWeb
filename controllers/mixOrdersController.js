@@ -19,7 +19,15 @@ function createAndShowMixOrdersList(orderList, sOrderList, res, title) {
   let mixSOrders = getMixList(sOrderList, Helper.mixOrderTypes.sorder);
 
   mixOrders = mixOrders.concat(mixSOrders);
-  mixOrders.sort((a, b) => { return new Date(b.date) - new Date(a.date); });
+  mixOrders.sort((a, b) => {
+    let aDate = new Date(a.date);
+    let bDate = new Date(b.date);
+    if (aDate.getTime() === bDate.getTime()) {
+      return new Date(b.entity.CreatedTime) - new Date(a.entity.CreatedTime);
+    } else {
+      return bDate - aDate;
+    }
+  });
   res.render('mixOrder_list', { title: title, mixOrders_list: mixOrders });
 
 }

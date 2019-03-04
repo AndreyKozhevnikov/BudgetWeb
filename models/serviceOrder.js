@@ -13,6 +13,7 @@ let ServiceOrderSchema = new Schema({
   LocalId: { type: Number },
   AccountIn: { type: Schema.ObjectId, ref: 'Account' },
   AccountOut: { type: Schema.ObjectId, ref: 'Account' },
+  CreatedTime: { type: Date },
 });
 
 ServiceOrderSchema.virtual('url').get(function() {

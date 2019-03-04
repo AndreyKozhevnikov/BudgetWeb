@@ -25,6 +25,8 @@ function createServiceOrderFromRequest(req, isUpdate) {
   }
   if (isUpdate) {
     serviceOrder._id = req.params.id;
+  } else {
+    serviceOrder.CreatedTime = new Date();
   }
   return serviceOrder;
 }
