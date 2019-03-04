@@ -7,7 +7,6 @@ function buildContainerForSOrder(container, sOrder, document) {
     lblOutAccount.classList.add('plainLabel');
     lblOutAccount.innerHTML = sOrder.AccountOut.Name;
     container[0].appendChild(lblOutAccount);
-    
     let br = document.createElement('br');
     container[0].appendChild(br);
   }

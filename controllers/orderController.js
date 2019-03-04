@@ -165,6 +165,8 @@ function createOrderFromRequest(req, isUpdate) {
   }
   if (isUpdate) {
     order._id = req.params.id;
+  } else {
+    order.CreatedTime = new Date();
   }
   return order;
 }
