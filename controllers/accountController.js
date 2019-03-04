@@ -222,7 +222,7 @@ function createFOrdersForFeb19(req, res, next) {
 
 async function getAggregatedAccList(startDate, finishDate) {
   if (finishDate == null) {
-    finishDate = new Date();
+    finishDate = Helper.getTomorrow();
   }
   let accList = await Account.aggregate(
     [
@@ -483,7 +483,8 @@ async function aggregatedList(req, res, next) {
 
   let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
   if (lastFOrderTime < firstDayOfCurrMonth) {
-    let accListObject = await getAggregatedAccList(lastFOrderTime, firstDayOfCurrMonth);
+    let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
+    let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDayOfCurrMonth);
     let start = async () => {
       await asyncForEach(accListObject.accList, async (accRecord) => {
         let fRec = new FixRecord({
@@ -505,9 +506,9 @@ async function getStaticObject() {
   const normEatPerDay = 500;
   const normAllPerDay = 1500;
   let paymentTypeList = await PaymentType.find();
-  let today = new Date();
+  let today = Helper.getToday();
   let dayCount = today.getDate();
-  let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  let firstDay = Helper.getFirstDateOfCurrentMonth();
   let thisMonthsorders = await Order.find({ DateOrder: { $gte: firstDay } })
     .populate('ParentTag');
   // let thisMonthsorders = order_list.filter(function(order) {
@@ -522,7 +523,7 @@ async function getStaticObject() {
     }
     return accumulator;
   }, 0);
-  let monthDayCount = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  let monthDayCount = Helper.getCurrentMonthDaysCount();
   let leftDayCount = monthDayCount - dayCount + 1;
   if (leftDayCount < 1)
     leftDayCount = 1;
