@@ -71,12 +71,6 @@ function create_post(req, res, next) {
 };
 
 let create_post_array = [
-  body('Type_frm', 'Type required')
-    .isLength({ min: 1 })
-    .trim(),
-  sanitizeBody('Type_frm')
-    .trim()
-    .escape(),
   sanitizeBody('LocalId_frm')
     .trim()
     .escape(),

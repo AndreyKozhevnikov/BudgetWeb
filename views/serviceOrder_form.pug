@@ -14,13 +14,16 @@ block content
           td
             button#btnSetYesterday.btn-primary(type='button' style='width:100%') Yesterday
     div.form-group
-      label(for='cmbType') Type:
-      select#cmbType.form-control(type='select', name='Type_frm')
-        for tp in type_list
-          if serviceOrder_frm
-            option(value=tp selected=(serviceOrder_frm.Type && serviceOrder_frm.Type.toString()==tp ? 'selected' : false)) #{tp}
-          else
-            option(value=tp) #{tp}      
+      table(style='width:100%')
+        tr
+        each tp, index in type_list
+          td(style='width:33%')
+            div
+              label.btn.btn-primary.btnForRB(for='rbType'+ tp style='width: 100%;' selected=(serviceOrder_frm? serviceOrder_frm.Type.toString()==tp:tp=='between')) #{tp}
+              input.hiddenRB(id='rbType'+ tp type='radio' name='Type_frm' value=tp checked=(serviceOrder_frm ? serviceOrder_frm.Type.toString()==tp:tp=='between'))
+          if (index < 2)
+            td(style="width:5px")
+      
       label(for='txValue') Value:
       input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Value))
       label(for='txDescr') Description:
