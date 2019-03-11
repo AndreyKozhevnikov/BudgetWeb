@@ -1,23 +1,54 @@
-/*global  cmbParent*/
+/*global*/
 
 'use strict';
 window.addEventListener('load', init);
-console.log('sorder load00');
 let inCombo;
 let outCombo;
 let cashBackCheckbox;
+
 
 function init() {
   inCombo = document.getElementById('cmbAccountIn');
   outCombo = document.getElementById('cmbAccountOut');
   cashBackCheckbox = document.getElementById('chIsCashBack');
-  cmbParent.addEventListener('change', disableCombos);
-  updateCombos(cmbParent.value);
+  handleTypeRButtons();
 }
 
-function disableCombos(event) {
-  let vl = event.srcElement.value;
-  updateCombos(vl);
+
+/* eslint-disable */
+function typeButtonClick(typeName) {
+  /* eslint-enable */
+  console.log('tet331');
+  console.log(typeName);
+
+  updateCombos();
+}
+
+function handleTypeRButtons() {
+  let rButtons = document.getElementsByName('Type_frm');
+  let value = null;
+  for (let i = 0; i < rButtons.length; i++) {
+    if (rButtons[i].checked) {
+      value = rButtons[i].value;
+    }
+    rButtons[i].addEventListener('change', function() {
+      updateCombos(this.value);
+      updateButtons(this.value);
+    });
+  }
+  updateCombos(value);
+}
+
+function updateButtons(value) {
+  let buttonsForRB = document.getElementsByClassName('btnForRB');
+  for (let i = 0; i < buttonsForRB.length; i++) {
+    let bt = buttonsForRB[i];
+    if (bt.htmlFor === 'rbType' + value) {
+      bt.setAttribute('selected', '');
+    } else {
+      bt.removeAttribute('selected');
+    }
+  }
 }
 
 function updateCombos(value) {
@@ -40,4 +71,3 @@ function updateCombos(value) {
   }
 }
 
-disableCombos();
