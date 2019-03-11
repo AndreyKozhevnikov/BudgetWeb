@@ -1,4 +1,4 @@
-/*global*/
+/*global valueInput*/
 
 'use strict';
 window.addEventListener('load', init);
@@ -34,6 +34,7 @@ function handleTypeRButtons() {
     rButtons[i].addEventListener('change', function() {
       updateCombos(this.value);
       updateButtons(this.value);
+      valueInput.focus();
     });
   }
   updateCombos(value);
