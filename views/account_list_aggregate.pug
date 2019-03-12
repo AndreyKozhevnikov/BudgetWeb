@@ -12,6 +12,7 @@ block content
         th Output
         th Payments
         th OrderNumber
+        th Check
       each acc in accListObject.accList
         tr(class=acc.isuntouchable?'untouch':null)
           td
@@ -28,6 +29,9 @@ block content
             label #{acc.sumPayments}
           td
             label #{acc.ordernumber}
+          td
+            div
+              a(href=acc.createCheckUrl) Check
       tr
         td
         td

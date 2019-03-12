@@ -454,6 +454,7 @@ async function getAggregatedAccList(startDate, finishDate) {
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     // item.url = '/account/' + item._id + '/update';
     item.getOrdsUrl = '/mixorders/account/' + item._id;
+    item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true) {
       sumObject.commonSum = sumObject.commonSum + item.result;
       sumObject.startSum = sumObject.startSum + item.startSum;
@@ -569,6 +570,20 @@ function update_get(req, res, next) {
   });
 };
 
+async function createCheck(req, res, next) {
+  let id = req.params.id;
+  let sum = req.params.sum;
+  let acc = await Account.findById(id);
+  let fRec = new FixRecord({
+    Type: FRecordTypes.Check,
+    DateTime: Helper.getToday(),
+    Account: acc,
+    Value: sum,
+  });
+  await fRec.save();
+  res.redirect('/account/aggregatedList');
+}
+
 function createAccountFromRequest(req, isUpdate) {
   var account = new Account({
     Name: req.body.Name_frm,
@@ -621,4 +636,5 @@ exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.createFOrdersForFeb19 = createFOrdersForFeb19;
 exports.getAccountName = getAccountName;
+exports.createCheck = createCheck;
 
