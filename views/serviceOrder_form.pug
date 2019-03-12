@@ -23,13 +23,16 @@ block content
               input.hiddenRB(id='rbType'+ tp type='radio' name='Type_frm' value=tp checked=(serviceOrder_frm ? serviceOrder_frm.Type.toString()==tp:tp=='between'))
           if (index < 2)
             td(style="width:5px")
-      
-      label(for='txValue') Value:
-      input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Value))
+      table
+        td
+          label(for='txValue') Value:
+          input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Value))
+        td
+          div#cashBackDv
+            label(for='chIsCashBack') IsCashBack:
+            input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===serviceOrder_frm ? false :serviceOrder_frm.IsCashBack))
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text' name='Description_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Description))      
-      label(for='chIsCashBack') IsCashBack:
-      input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===serviceOrder_frm ? false :serviceOrder_frm.IsCashBack))
       label(for='cmbAccountOut') AccountOut:
       select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
         option(value='') Please Select
@@ -46,9 +49,9 @@ block content
             option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
             option(value=account._id) #{account.Name}            
-      label(for='txLocalId') LocalId:
-    input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
     button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
+    label(for='txLocalId') LocalId:
+    input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
   if errors 
     ul
       for error in errors

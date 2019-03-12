@@ -116,3 +116,7 @@ label[selected]{
   position:absolute;
   left:-999em;
 }
+div#cashBackDv[hidden]{
+  visibility: collapse;
+  display: inherit;
+}

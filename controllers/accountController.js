@@ -1,4 +1,6 @@
 'use strict';
+let moment = require('moment');
+
 let Account = require('../models/account.js');
 let FixRecord = require('../models/fixRecord.js');
 let Order = require('../models/order.js');
@@ -413,7 +415,30 @@ async function getAggregatedAccList(startDate, finishDate) {
               },
             },
           ],
-          as: 'fixRecords',
+          as: 'fixRecordsStartMonth',
+        },
+      },
+      {
+        $lookup: {
+          from: 'fixrecords',
+          let: { myid: '$_id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$Account', '$$myid'],
+                    },
+                  },
+                  { Type: FRecordTypes.Check },
+                  { DateTime: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'fixRecordsLastCheck',
         },
       },
       {
@@ -421,7 +446,7 @@ async function getAggregatedAccList(startDate, finishDate) {
           name: '$name',
           isuntouchable: '$isuntouchable',
           _id: '$_id',
-          startSum: { $sum: '$fixRecords.Value' },
+          startSum: { $sum: '$fixRecordsStartMonth.Value' },
           sumPayments: { $sum: '$fOrders' },
           sumInSOrders: { $sum: '$acInSOrders.Value' },
           sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
@@ -429,6 +454,7 @@ async function getAggregatedAccList(startDate, finishDate) {
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
           sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
           ordernumber: '$ordernumber',
+          fixRecordsLastCheck: '$fixRecordsLastCheck',
         },
       },
     ]
@@ -451,9 +477,24 @@ async function getAggregatedAccList(startDate, finishDate) {
     cashBackSum: 0,
   };
   accList.forEach((item) => {
+    let lastCheckDate = new Date(-8640000000000000);
+    let lastCheckValue = 0;
+    if (item.fixRecordsLastCheck.length > 0) {
+      item.fixRecordsLastCheck.sort((a, b) => {
+        let aDate = new Date(a.DateTime);
+        let bDate = new Date(b.DateTime);
+        return bDate - aDate;
+      });
+      lastCheckDate = item.fixRecordsLastCheck[0].DateTime;
+      lastCheckValue = item.fixRecordsLastCheck[0].Value;
+    }
+    item.lastCheckDate = moment(lastCheckDate).format('DD MMMM YYYY ddd');
+    item.lastCheckValue = lastCheckValue;
+
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     // item.url = '/account/' + item._id + '/update';
     item.getOrdsUrl = '/mixorders/account/' + item._id;
+    item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true) {
       sumObject.commonSum = sumObject.commonSum + item.result;
       sumObject.startSum = sumObject.startSum + item.startSum;
@@ -569,6 +610,20 @@ function update_get(req, res, next) {
   });
 };
 
+async function createCheck(req, res, next) {
+  let id = req.params.id;
+  let sum = req.params.sum;
+  let acc = await Account.findById(id);
+  let fRec = new FixRecord({
+    Type: FRecordTypes.Check,
+    DateTime: Helper.getToday(),
+    Account: acc,
+    Value: sum,
+  });
+  await fRec.save();
+  res.redirect('/account/aggregatedList');
+}
+
 function createAccountFromRequest(req, isUpdate) {
   var account = new Account({
     Name: req.body.Name_frm,
@@ -621,4 +676,5 @@ exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.createFOrdersForFeb19 = createFOrdersForFeb19;
 exports.getAccountName = getAccountName;
+exports.createCheck = createCheck;
 
