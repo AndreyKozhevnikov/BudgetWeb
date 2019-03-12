@@ -31,7 +31,7 @@ block content
             label #{acc.ordernumber}
           td
             div
-              a(href=acc.createCheckUrl) Check
+              a(href=acc.createCheckUrl) #{acc.lastCheckDate}/#{acc.lastCheckValue}
       tr
         td
         td
