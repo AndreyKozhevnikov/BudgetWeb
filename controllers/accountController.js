@@ -2,15 +2,14 @@
 let moment = require('moment');
 
 let Account = require('../models/account.js');
-let FixRecord = require('../models/fixRecord.js');
 let Order = require('../models/order.js');
 let PaymentType = require('../models/paymentType.js');
 
 let Helper = require('../controllers/helperController.js');
+let FixRecordController = require('../controllers/fixRecordController.js');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
-let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check' };
 
 function create_get(req, res, next) {
   res.render('account_form', {
@@ -43,13 +42,11 @@ function create_post(req, res, next) {
           if (err) {
             return next(err);
           }
-          let fRec = new FixRecord({
-            Type: FRecordTypes.StartMonth,
-            DateTime: Date.now(),
-            Account: acc,
-            Value: 0,
-          });
-          fRec.save();
+          FixRecordController.createFixRecord(
+            FixRecordController.FRecordTypes.StartMonth,
+            Helper.getToday(),
+            acc,
+            0);
           res.redirect('/account/list');
         });
       }
@@ -202,13 +199,11 @@ function createFOrdersForFeb19(req, res, next) {
           if (err) {
 
           } else {
-            let fRec = new FixRecord({
-              Type: FRecordTypes.StartMonth,
-              DateTime: new Date('2019-02-01'),
-              Account: acc,
-              Value: item.result,
-            });
-            fRec.save();
+            FixRecordController.createFixRecord(
+              FixRecordController.FRecordTypes.StartMonth,
+              new Date('2019-02-01'),
+              acc,
+              item.result);
           }
         });
       });
@@ -409,7 +404,7 @@ async function getAggregatedAccList(startDate, finishDate) {
                       $eq: ['$Account', '$$myid'],
                     },
                   },
-                  { Type: FRecordTypes.StartMonth },
+                  { Type: FixRecordController.FRecordTypes.StartMonth },
                   { DateTime: { $gte: startDate, $lt: finishDate } },
                 ],
               },
@@ -432,7 +427,7 @@ async function getAggregatedAccList(startDate, finishDate) {
                       $eq: ['$Account', '$$myid'],
                     },
                   },
-                  { Type: FRecordTypes.Check },
+                  { Type: FixRecordController.FRecordTypes.Check },
                   { DateTime: { $gte: startDate, $lt: finishDate } },
                 ],
               },
@@ -519,8 +514,7 @@ async function aggregatedList(req, res, next) {
   //     console.dir(arguments);
   //   });
 
-  let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
-  let lastFOrderTime = lastFRecord.DateTime;
+  let lastFOrderTime = FixRecordController.getTheLastFixRecordsDate();
 
   let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
   if (lastFOrderTime < firstDayOfCurrMonth) {
@@ -528,13 +522,11 @@ async function aggregatedList(req, res, next) {
     let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDayOfCurrMonth);
     let start = async () => {
       await asyncForEach(accListObject.accList, async (accRecord) => {
-        let fRec = new FixRecord({
-          Type: FRecordTypes.StartMonth,
-          DateTime: firstDayOfCurrMonth,
-          Account: accRecord._id,
-          Value: accRecord.result,
-        });
-        await fRec.save();
+        await FixRecordController.createFixRecord(
+          FixRecordController.FRecordTypes.StartMonth,
+          firstDayOfCurrMonth,
+          accRecord._id,
+          accRecord.result);
       });
     };
     await start();
@@ -614,13 +606,12 @@ async function createCheck(req, res, next) {
   let id = req.params.id;
   let sum = req.params.sum;
   let acc = await Account.findById(id);
-  let fRec = new FixRecord({
-    Type: FRecordTypes.Check,
-    DateTime: Helper.getToday(),
-    Account: acc,
-    Value: sum,
-  });
-  await fRec.save();
+
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.Check,
+    Helper.getToday(),
+    acc,
+    sum);
   res.redirect('/account/aggregatedList');
 }
 
