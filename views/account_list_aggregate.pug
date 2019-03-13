@@ -11,7 +11,6 @@ block content
         th Input
         th Output
         th Payments
-        th OrderNumber
         th Check
       each acc in accListObject.accList
         tr(class=acc.isuntouchable?'untouch':null)
@@ -28,10 +27,8 @@ block content
           td
             label #{acc.sumPayments}
           td
-            label #{acc.ordernumber}
-          td
             div
-              a(href=acc.createCheckUrl) #{acc.lastCheckDate}/#{acc.lastCheckValue}
+              a.withoutWrap(href=acc.createCheckUrl) #{acc.lastCheckDate}/#{acc.lastCheckValue}
       tr
         td
         td

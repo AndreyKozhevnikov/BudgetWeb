@@ -120,3 +120,6 @@ div#cashBackDv[hidden]{
   visibility: collapse;
   display: inherit;
 }
+a.withoutWrap{
+  white-space: nowrap;
+}

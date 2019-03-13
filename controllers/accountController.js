@@ -488,7 +488,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       lastCheckDate = item.fixRecordsLastCheck[0].DateTime;
       lastCheckValue = item.fixRecordsLastCheck[0].Value;
     }
-    item.lastCheckDate = moment(lastCheckDate).format('DD MMMM YYYY ddd');
+    item.lastCheckDate = moment(lastCheckDate).format('DD-MM-YY');
     item.lastCheckValue = lastCheckValue;
 
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
