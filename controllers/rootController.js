@@ -71,7 +71,8 @@ const assert = require('assert');
 const mongoose = require('mongoose');
 mongoose.set('debug', true);
 
-const GITHUB_ISSUE = `gh7489`;
+//const GITHUB_ISSUE = `gh7489`;
+const GITHUB_ISSUE = `testOrders`;
 const connectionString = `mongodb://localhost:27017/${GITHUB_ISSUE}`;
 const { Schema } = mongoose;
 
@@ -81,11 +82,24 @@ async function run() {
   await mongoose.connect(connectionString);
   await mongoose.connection.dropDatabase();
 
+  let TestOrderSchema = new mongoose.Schema({
+    Name: { type: String },
+    OrderNumber: { type: Number },
+  });
+  const TestOrder = mongoose.model('TestOrder', TestOrderSchema);
+  let order1 = new TestOrder({ Name: 'order1', OrderNumber: 1 });
+  let order2 = new TestOrder({ Name: 'order2', OrderNumber: 2 });
+  await order1.save();
+  await order2.save();
+
+  let fOrder = await TestOrder.findOne().sort({ OrderNumber: -1 });
+
+
   let TestParentSchema = new mongoose.Schema({
     Name: { type: String },
   });
   const TestParent = mongoose.model('TestParent', TestParentSchema);
-  
+
   let TestIntermediateSchema = new mongoose.Schema({
     Name: { type: String },
     Parent: { type: Schema.ObjectId, ref: 'TestParent' },
@@ -98,7 +112,7 @@ async function run() {
     Intermediate: { type: Schema.ObjectId, ref: 'TestIntermediate' },
   });
   const TestChild = mongoose.model('TestChild', TestChildSchema);
- 
+
   let parent1 = new TestParent({ Name: 'parent1' });
   let parent2 = new TestParent({ Name: 'parent2' });
   await parent1.save();
@@ -173,7 +187,7 @@ async function run() {
               $match:
               {
                 $expr: {
-                   $eq: ['$Intermediate', '$$intermedId'], //it doesn't work (
+                  $eq: ['$Intermediate', '$$intermedId'], //it doesn't work (
                   // $eq: ['$Value', 60], //it works
                 },
               },
