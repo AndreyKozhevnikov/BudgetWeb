@@ -1,6 +1,7 @@
 'use strict';
 let mongoose = require('mongoose');
 let bcrypt = require('bcrypt');
+let Helper = require('../controllers/helperController.js');
 
 let UserSchema = new mongoose.Schema({
   username: {
@@ -15,6 +16,8 @@ let UserSchema = new mongoose.Schema({
   },
 });
 UserSchema.pre('save', function(next) {
+  if (Helper.isRestoreMode)
+    next();
   let user = this;
   bcrypt.hash(user.password, 10, function(err, hash) {
     if (err) {
@@ -25,7 +28,7 @@ UserSchema.pre('save', function(next) {
   });
 });
 UserSchema.statics.authenticate = function(username, password, callback, id) {
-  User.findOne({$or: [{username: username}, {_id: id}]})
+  User.findOne({ $or: [{ username: username }, { _id: id }] })
     // User.findOne({_id:id})
     .exec(function(err, user) {
       if (err) {
@@ -39,7 +42,7 @@ UserSchema.statics.authenticate = function(username, password, callback, id) {
         return callback(null, user);
       }
       bcrypt.compare(password, user.password, function(err, result) {
-        if (err){
+        if (err) {
           console.dir(err);
         }
         if (result === true) {

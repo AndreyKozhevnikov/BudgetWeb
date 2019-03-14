@@ -6,6 +6,7 @@ let PaymentType = require('../models/paymentType.js');
 let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
+let Helper = require('../controllers/helperController.js');
 
 let constructors = {
   Order: Order,
@@ -100,6 +101,7 @@ async function fullRestore(req, res, next) {
   if (data.length === 0)
     return;
   let backupObject = JSON.parse(data);
+  Helper.isRestoreMode = true;
   for (let entityCollectionProperty in backupObject) {
     let entityCollection = backupObject[entityCollectionProperty];
     for (let i = 0; i < entityCollection.length; i++) {
@@ -112,6 +114,7 @@ async function fullRestore(req, res, next) {
       }
     }
   }
+  Helper.isRestoreMode = false;
   res.redirect('/wiki');
 }
 
