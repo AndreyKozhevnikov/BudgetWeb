@@ -26,5 +26,5 @@ function focusInputAfterTypeSelection(){
 function popularPTypeButtonClick(ptypeId) {
   /* eslint-enable */
   let cmbPaymentType = document.getElementById('cmbPaymentType');
-  cmbPaymentType.dataset.value = ptypeId;
+  cmbPaymentType.value = ptypeId;
 };
