@@ -81,6 +81,10 @@ text-decoration: none;
 {
   background-color: #f5f5cb;
 }
+.dx-datagrid .dx-row-alt > td.tdFixRecord
+{
+  background-color: #75abf1;
+}
 td.tdSOrder
 {
   background-color: #f5f5cb;

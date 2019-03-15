@@ -1,4 +1,4 @@
-/*global DevExpress serviceOrders_list buildContainerForSOrder*/
+/*global DevExpress serviceOrders_list buildDataContainerForSOrder*/
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -54,7 +54,7 @@ window.onload = function() {
         {
           dataField: 'Data',
           cellTemplate: (container, options) => {
-            buildContainerForSOrder(container, options.data, this.document);
+            buildDataContainerForSOrder(container, options.data, this.document);
           },
         },
       ],

@@ -1,4 +1,4 @@
-/*global DevExpress mixOrders_list buildContainerForSOrder*/
+/*global DevExpress mixOrders_list buildDataContainerForSOrder buildValueContainerForOrder*/
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -32,6 +32,9 @@ window.onload = function() {
               case 'fixrecord':
                 container[0].innerHTML = '[' + options.data.value + ']';
                 break;
+              case 'order':
+                buildValueContainerForOrder(container, options.data.entity, this.document);
+                break;
               default:
                 let a = document.createElement('a');
                 a.classList.add('dx-link');
@@ -56,7 +59,7 @@ window.onload = function() {
                 container[0].appendChild(lb);
                 break;
               case 'serviceOrder':
-                buildContainerForSOrder(container, options.data.entity, this.document);
+                buildDataContainerForSOrder(container, options.data.entity, this.document);
                 container[0].classList.add('tdSOrder');
                 break;
               case 'fixrecord':

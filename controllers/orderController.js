@@ -346,7 +346,9 @@ async function getList(startDate, finishDate) {
 async function getAccountOrders(id) {
   let paymentTypes = await PaymentType.find({ Account: Helper.createObjectId(id) });
   let list = Order.find({ PaymentType: { $in: paymentTypes } });
-  list.populate('ParentTag');
+  list
+    .populate('ParentTag')
+    .populate('PaymentType');
   return list;
 }
 populateAdditionalLists();
