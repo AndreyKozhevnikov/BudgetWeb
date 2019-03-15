@@ -85,6 +85,10 @@ td.tdSOrder
 {
   background-color: #f5f5cb;
 }
+td.tdFixRecord
+{
+  background-color: #75abf1;
+}
 .yaLabel {
   background: aquamarine;
 }
