@@ -2,6 +2,7 @@
 let serviceOrderController = require('../controllers/serviceOrderController.js');
 let orderController = require('../controllers/orderController.js');
 let accountController = require('../controllers/accountController.js');
+let fixRecordController = require('../controllers/fixRecordController.js');
 let Helper = require('../controllers/helperController.js');
 
 
@@ -14,16 +15,18 @@ async function list(req, res, next) {
   createAndShowMixOrdersList(orders, sOrders, res, 'All');
 }
 
-function createAndShowMixOrdersList(orderList, sOrderList, res, title) {
+function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title) {
   let mixOrders = getMixList(orderList, Helper.mixOrderTypes.order);
   let mixSOrders = getMixList(sOrderList, Helper.mixOrderTypes.sorder);
-
-  mixOrders = mixOrders.concat(mixSOrders);
+  let mixFRecords = getMixList(fRecords, Helper.mixOrderTypes.fixrecord);
+  mixOrders = mixOrders.concat(mixSOrders).concat(mixFRecords);
   mixOrders.sort((a, b) => {
     let aDate = new Date(a.date);
     let bDate = new Date(b.date);
+    aDate.setHours(0, 0, 0, 0);
+    bDate.setHours(0, 0, 0, 0);
     if (aDate.getTime() === bDate.getTime()) {
-      return new Date(b.entity.CreatedTime) - new Date(a.entity.CreatedTime);
+      return new Date(b.createdtime) - new Date(a.createdtime);
     } else {
       return bDate - aDate;
     }
@@ -37,8 +40,9 @@ async function listByAcc(req, res, next) {
   try {
     let orders = await orderController.getAccountOrders(accId);
     let sOrders = await serviceOrderController.getAccountOrders(accId);
+    let fRecords = await fixRecordController.getAccountRecords(accId);
     let accName = await accountController.getAccountName(accId);
-    createAndShowMixOrdersList(orders, sOrders, res, accName);
+    createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName);
   } catch (err) {
     console.log(err);
   }
@@ -47,16 +51,32 @@ async function listByAcc(req, res, next) {
 function getMixList(list, entityName) {
   let mixOrders = [];
   for (let i = 0; i < list.length; i++) {
-    let ord = list[i];
-    let mOrder = {
-      date: ord.DateOrder,
-      value: ord.Value,
-      description: ord.Description,
-      entity: ord,
-      type: entityName,
-    };
-    mOrder.url = '/' + entityName + '/' + ord._id + '/update';
-    mixOrders.push(mOrder);
+    let mixRecord;
+    switch (entityName) {
+      case Helper.mixOrderTypes.fixrecord:
+        let fRec = list[i];
+        mixRecord = {
+          date: fRec.DateTime,
+          value: fRec.Value,
+          description: fRec.Type,
+          entity: fRec,
+          type: entityName,
+          createdtime: fRec.DateTime,
+        };
+        break;
+      default:
+        let ord = list[i];
+        mixRecord = {
+          date: ord.DateOrder,
+          value: ord.Value,
+          description: ord.Description,
+          entity: ord,
+          type: entityName,
+          createdtime: ord.CreatedTime,
+        };
+        mixRecord.url = '/' + entityName + '/' + ord._id + '/update';
+    }
+    mixOrders.push(mixRecord);
   }
   return mixOrders;
 }

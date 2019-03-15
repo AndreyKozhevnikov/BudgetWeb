@@ -20,6 +20,12 @@ async function getTheLastFixRecordsDate() {
   return lastFRecord.DateTime;
 }
 
+async function getAccountRecords(accId) {
+  let fRecs = FixRecord.find({ Account: accId });
+  return fRecs;
+}
+
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
+exports.getAccountRecords = getAccountRecords;

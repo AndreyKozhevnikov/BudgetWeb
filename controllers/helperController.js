@@ -1,6 +1,6 @@
 'use strict';
 let mongoose = require('mongoose');
-let mixOrderTypes = { order: 'order', sorder: 'serviceOrder' };
+let mixOrderTypes = { order: 'order', sorder: 'serviceOrder', fixrecord: 'fixrecord' };
 let isRestoreMode = false;
 function getFirstDateOfCurrentMonth() {
   let currentDate = getToday();
