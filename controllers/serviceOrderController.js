@@ -6,7 +6,7 @@ let Helper = require('../controllers/helperController.js');
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 let accountList;
-let typesList = ['between', 'in', 'out'];
+let typesList = [Helper.sOrderTypes.between, Helper.sOrderTypes.in, Helper.sOrderTypes.out];
 
 function createServiceOrderFromRequest(req, isUpdate) {
   var serviceOrder = new ServiceOrder({

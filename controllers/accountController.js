@@ -359,7 +359,7 @@ async function getAggregatedAccList(startDate, finishDate) {
                     },
                   },
                   { DateOrder: { $gte: startDate, $lt: finishDate } },
-                  { Type: { $ne: 'between' } },
+                  { Type: { $ne: Helper.sOrderTypes.between } },
                 ],
               },
             },

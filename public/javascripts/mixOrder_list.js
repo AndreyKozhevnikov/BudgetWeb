@@ -1,4 +1,4 @@
-/*global DevExpress mixOrders_list buildDataContainerForSOrder buildValueContainerForOrder*/
+/*global DevExpress mixOrders_list buildValueContainerForOrder*/
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -7,7 +7,7 @@ window.onload = function() {
   new DevExpress.ui.dxDataGrid(gridElement,
     {
       dataSource: mixOrders_list,
-      rowAlternationEnabled: true,
+      // rowAlternationEnabled: true,
       showRowLines: true,
       showColumnLines: true,
       paging: {
@@ -51,25 +51,11 @@ window.onload = function() {
         {
           dataField: 'data',
           cellTemplate: (container, options) => {
-            switch (options.data.type) {
-              case 'order':
-                let lb = this.document.createElement('label');
-                lb.innerHTML = options.data.entity.ParentTag.Name;
-                lb.classList.add('plainLabel');
-                container[0].appendChild(lb);
-                break;
-              case 'serviceOrder':
-                buildDataContainerForSOrder(container, options.data.entity, this.document);
-                container[0].classList.add('tdSOrder');
-                break;
-              case 'fixrecord':
-                let lbf = this.document.createElement('label');
-                lbf.innerHTML = options.data.description;
-                lbf.classList.add('plainLabel');
-                container[0].classList.add('tdFixRecord');
-                container[0].appendChild(lbf);
-                break;
-            }
+            let lb = this.document.createElement('label');
+            lb.innerHTML = options.data.viewData;
+            lb.classList.add('plainLabel');
+            container[0].appendChild(lb);
+            container[0].classList.add(options.data.viewType);
           },
         },
       ],

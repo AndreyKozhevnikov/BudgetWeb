@@ -77,21 +77,23 @@ text-decoration: none;
 {
   color: green;
 }
-.dx-datagrid .dx-row-alt > td.tdSOrder
-{
-  background-color: #f5f5cb;
+td.In{
+  background-color: lightgreen;
 }
-.dx-datagrid .dx-row-alt > td.tdFixRecord
-{
-  background-color: #75abf1;
+td.Out{
+  background-color: lightpink;
 }
-td.tdSOrder
-{
-  background-color: #f5f5cb;
+td.BetweenIn{
+  background-color: lightgreen;
 }
-td.tdFixRecord
-{
-  background-color: #75abf1;
+td.BetweenOut{
+  background-color: lightpink;
+}
+td.Check{
+  background-color: #eff587;
+}
+td.Order{
+  background-color:lightpink;
 }
 .yaLabel {
   background: aquamarine;

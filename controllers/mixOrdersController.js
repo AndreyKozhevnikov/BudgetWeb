@@ -41,10 +41,56 @@ async function listByAcc(req, res, next) {
     let orders = await orderController.getAccountOrders(accId);
     let sOrders = await serviceOrderController.getAccountOrders(accId);
     let fRecords = await fixRecordController.getAccountRecords(accId);
+    prepareSOrders(sOrders, accId);
+    prepareOrders(orders);
+    prepareOrdersFixRecords(fRecords);
     let accName = await accountController.getAccountName(accId);
     createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName);
   } catch (err) {
     console.log(err);
+  }
+}
+function prepareOrdersFixRecords(list) {
+  for (let i = 0; i < list.length; i++) {
+    let fRec = list[i];
+    fRec.ViewType = 'Check';
+    fRec.ViewData = fRec.Type;
+  }
+}
+function prepareOrders(list) {
+  for (let i = 0; i < list.length; i++) {
+    let ord = list[i];
+    ord.ViewType = 'Order';
+    ord.ViewData = ord.ParentTag.Name;
+  }
+}
+function prepareSOrders(list, accId) {
+  for (let i = 0; i < list.length; i++) {
+    let sord = list[i];
+    switch (sord.Type) {
+      case Helper.sOrderTypes.in:
+        sord.ViewType = 'In';
+        // sord.ViewData = sord.AccountOut.Name;
+        sord.ViewData = sord.Description;
+        if (sord.IsCashBack) {
+          sord.ViewData = '**' + sord.ViewData;
+        }
+        break;
+      case Helper.sOrderTypes.out:
+        sord.ViewType = 'Out';
+        // sord.ViewData = sord.AccountOut.Name;
+        sord.ViewData = sord.Description;
+        break;
+      case Helper.sOrderTypes.between:
+        if (sord.AccountIn.id === accId) {
+          sord.ViewType = 'BetweenIn';
+          sord.ViewData = sord.AccountOut.Name;
+        } else {
+          sord.ViewType = 'BetweenOut';
+          sord.ViewData = sord.AccountIn.Name;
+        }
+        break;
+    }
   }
 }
 
@@ -52,30 +98,31 @@ function getMixList(list, entityName) {
   let mixOrders = [];
   for (let i = 0; i < list.length; i++) {
     let mixRecord;
+    let entity = list[i];
     switch (entityName) {
       case Helper.mixOrderTypes.fixrecord:
-        let fRec = list[i];
         mixRecord = {
-          date: fRec.DateTime,
-          value: fRec.Value,
-          description: fRec.Type,
-          entity: fRec,
+          date: entity.DateTime,
+          value: entity.Value,
+          description: entity.Type,
+          entity: entity,
           type: entityName,
-          createdtime: fRec.DateTime,
+          createdtime: entity.DateTime,
         };
         break;
       default:
-        let ord = list[i];
         mixRecord = {
-          date: ord.DateOrder,
-          value: ord.Value,
-          description: ord.Description,
-          entity: ord,
+          date: entity.DateOrder,
+          value: entity.Value,
+          description: entity.Description,
+          entity: entity,
           type: entityName,
-          createdtime: ord.CreatedTime,
+          createdtime: entity.CreatedTime,
         };
-        mixRecord.url = '/' + entityName + '/' + ord._id + '/update';
+        mixRecord.url = '/' + entityName + '/' + entity._id + '/update';
     }
+    mixRecord.viewType = entity.ViewType;
+    mixRecord.viewData = entity.ViewData;
     mixOrders.push(mixRecord);
   }
   return mixOrders;
