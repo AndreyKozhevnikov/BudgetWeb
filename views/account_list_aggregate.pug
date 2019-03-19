@@ -7,17 +7,20 @@ block content
       tr
         th Name
         th Balance
+        th Check
         th StartSum
         th Input
         th Output
         th Payments
-        th Check
       each acc in accListObject.accList
         tr(class=acc.isuntouchable?'untouch':null)
           td
             a(href=acc.getOrdsUrl) #{acc.name}
           td
-            label #{acc.result}            
+            label #{acc.result}  
+          td
+            div
+              a.withoutWrap(href=acc.createCheckUrl) #{acc.lastCheckDate}/#{acc.lastCheckValue}                      
           td
             label #{acc.startSum}
           td
@@ -26,22 +29,19 @@ block content
             label #{acc.sumOutSOrdersClean}
           td
             label #{acc.sumPayments}
-          td
-            div
-              a.withoutWrap(href=acc.createCheckUrl) #{acc.lastCheckDate}/#{acc.lastCheckValue}
       tr
         td
         td
           label #{accListObject.sumObject.commonSum} 
+        td  
         td
-          label #{accListObject.sumObject.startSum}        
+          label #{accListObject.sumObject.startSum}    
         td    
           label #{accListObject.sumObject.inputSum}/#{accListObject.sumObject.cashBackSum}     
         td 
           label #{accListObject.sumObject.outputSum}        
         td     
           label #{accListObject.sumObject.paymentsSum}           
-        td
   ul
   p
     label.commonSum CommonSum: #{accListObject.commonSum}
