@@ -22,15 +22,15 @@ window.onload = function() {
           dataType: 'date',
           format: 'dd-MMM-yy EEE',
           caption: 'Date',
-          width: '29%',
+          width: '28%',
         },
         {
           dataField: 'value',
-          width: '19%',
+          width: '23%',
           cellTemplate: (container, options) => {
             switch (options.data.type) {
               case 'fixrecord':
-                container[0].innerHTML = '[' + options.data.value + ']';
+                container[0].innerHTML = options.data.value;
                 break;
               case 'order':
                 buildValueContainerForOrder(container, options.data.entity, this.document);
