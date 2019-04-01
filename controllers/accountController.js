@@ -539,7 +539,7 @@ async function aggregatedList(req, res, next) {
 }
 async function getStaticObject() {
   const normEatPerDay = 500;
-  const normAllPerDay = 1500;
+  const normAllPerDay = 2300;
   let paymentTypeList = await PaymentType.find();
   let today = Helper.getToday();
   let dayCount = today.getDate();
