@@ -221,6 +221,8 @@ async function getAggregatedAccList(startDate, finishDate) {
   if (finishDate == null) {
     finishDate = Helper.getTomorrow();
   }
+  let startDateExtractMonth = new Date();
+  startDateExtractMonth.setDate(startDate.getDate() - 30);
   let accList = await Account.aggregate(
     [
       {
@@ -428,7 +430,7 @@ async function getAggregatedAccList(startDate, finishDate) {
                     },
                   },
                   { Type: FixRecordController.FRecordTypes.Check },
-                  { DateTime: { $gte: startDate, $lt: finishDate } },
+                  { DateTime: { $gte: startDateExtractMonth, $lt: finishDate } },
                 ],
               },
             },
@@ -537,7 +539,7 @@ async function aggregatedList(req, res, next) {
 }
 async function getStaticObject() {
   const normEatPerDay = 500;
-  const normAllPerDay = 2300;
+  const normAllPerDay = 1500;
   let paymentTypeList = await PaymentType.find();
   let today = Helper.getToday();
   let dayCount = today.getDate();
