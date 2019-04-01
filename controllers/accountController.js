@@ -514,7 +514,7 @@ async function aggregatedList(req, res, next) {
   //     console.dir(arguments);
   //   });
 
-  let lastFOrderTime = FixRecordController.getTheLastFixRecordsDate();
+  let lastFOrderTime = await FixRecordController.getTheLastFixRecordsDate();
 
   let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
   if (lastFOrderTime < firstDayOfCurrMonth) {
