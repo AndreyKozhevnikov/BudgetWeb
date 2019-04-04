@@ -76,7 +76,7 @@ function order_create_post(req, res, next) {
       if (err) {
         next(err);
       }
-      res.redirect('/order/list');
+      res.redirect('/account/aggregatedList');
     });
   }
 };
