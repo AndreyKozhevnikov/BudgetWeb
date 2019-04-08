@@ -135,7 +135,7 @@ function update_get(req, res, next) {
         if (err) {
           return next(err);
         }
-        res.redirect('/serviceOrder/list');
+        res.redirect('/account/aggregatedList');
       });
   }
 };
