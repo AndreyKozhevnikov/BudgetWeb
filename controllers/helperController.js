@@ -10,6 +10,22 @@ function getFirstDateOfCurrentMonth() {
   return firstDayOfCurrMonth;
 }
 
+function getFirstDateOfShifterMonth(currMonthDate, shift) {
+  let dt = new Date(currMonthDate);
+  let mnt = dt.getMonth();
+  switch (shift) {
+    case 'prev':
+      mnt = mnt - 1;
+      break;
+    case 'next':
+      mnt = mnt + 1;
+      break;
+  }
+  dt.setMonth(mnt);
+  return dt;
+
+}
+
 function getListByDates(entity, startDate, finishDate) {
   if (finishDate == null) {
     finishDate = getToday();
@@ -48,7 +64,7 @@ function getCurrentMonthDaysCount() {
   return dt;
 }
 
-function getMonthName(date){
+function getMonthName(date) {
   let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   let monthName = months[date.getMonth()];
   return monthName;
@@ -65,5 +81,6 @@ exports.getTomorrow = getTomorrow;
 exports.isRestoreMode = isRestoreMode;
 exports.sOrderTypes = sOrderTypes;
 exports.getMonthName = getMonthName;
+exports.getFirstDateOfShifterMonth = getFirstDateOfShifterMonth;
 
 

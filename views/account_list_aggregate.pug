@@ -1,7 +1,10 @@
 extends layout
 
 block content
-  h1= title
+  div(style='display:flex; align-items: center;')
+    a(href='/account/aggregatedList/prev/' + currMonthData.Date,style='width:33%') Prev
+    h3(style='width:33%; text-align: center;') #{currMonthData.MonthName}
+    a(href='/account/aggregatedList/next/' + currMonthData.Date,style='width:33%; text-align: right;') Next
   div
     table.statisticTable
       tr

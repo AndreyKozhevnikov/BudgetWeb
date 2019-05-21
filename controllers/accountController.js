@@ -515,28 +515,37 @@ async function aggregatedList(req, res, next) {
   //     let lastFOrderTime = fRec.DateTime;
   //     console.dir(arguments);
   //   });
-
-  let lastFOrderTime = await FixRecordController.getTheLastFixRecordsDate();
-
-  let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
-  if (lastFOrderTime < firstDayOfCurrMonth) {
-    let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-    let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDayOfCurrMonth);
-    let start = async () => {
-      await asyncForEach(accListObject.accList, async (accRecord) => {
-        await FixRecordController.createFixRecord(
-          FixRecordController.FRecordTypes.StartMonth,
-          firstDayOfCurrMonth,
-          accRecord._id,
-          accRecord.result);
-      });
-    };
-    await start();
+  let firstDayOfTargetMonth;
+  let firstDayOfNextToTargetMonth = null;
+  if (req.params.hasOwnProperty('direction')) {
+    firstDayOfTargetMonth = Helper.getFirstDateOfShifterMonth(req.params.date, req.params.direction);
+    firstDayOfNextToTargetMonth = Helper.getFirstDateOfShifterMonth(firstDayOfTargetMonth, 'next');
+  } else {
+    let lastFOrderTime = await FixRecordController.getTheLastFixRecordsDate();
+    firstDayOfTargetMonth = Helper.getFirstDateOfCurrentMonth();
+    if (lastFOrderTime < firstDayOfTargetMonth) {
+      let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
+      let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDayOfTargetMonth);
+      let start = async () => {
+        await asyncForEach(accListObject.accList, async (accRecord) => {
+          await FixRecordController.createFixRecord(
+            FixRecordController.FRecordTypes.StartMonth,
+            firstDayOfTargetMonth,
+            accRecord._id,
+            accRecord.result);
+        });
+      };
+      await start();
+    }
   }
-  let accListObject = await getAggregatedAccList(firstDayOfCurrMonth);
+
+  let accListObject = await getAggregatedAccList(firstDayOfTargetMonth, firstDayOfNextToTargetMonth);
   let statisticObject = await getStaticObject();
-  let currMonthName = Helper.getMonthName(firstDayOfCurrMonth);
-  res.render('account_list_aggregate', { title: currMonthName, accListObject: accListObject, statObject: statisticObject });
+  let currMonthName = Helper.getMonthName(firstDayOfTargetMonth);
+  let targetMonthData = {};
+  targetMonthData.Date = firstDayOfTargetMonth.toISOString().substring(0, 10);
+  targetMonthData.MonthName = currMonthName;
+  res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 async function getStaticObject() {
   const normEatPerDay = 500;
