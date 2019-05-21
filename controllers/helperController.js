@@ -48,6 +48,12 @@ function getCurrentMonthDaysCount() {
   return dt;
 }
 
+function getMonthName(date){
+  let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  let monthName = months[date.getMonth()];
+  return monthName;
+}
+
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
 exports.createObjectId = createObjectId;
@@ -58,5 +64,6 @@ exports.getCurrentMonthDaysCount = getCurrentMonthDaysCount;
 exports.getTomorrow = getTomorrow;
 exports.isRestoreMode = isRestoreMode;
 exports.sOrderTypes = sOrderTypes;
+exports.getMonthName = getMonthName;
 
 

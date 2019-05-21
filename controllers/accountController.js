@@ -535,7 +535,8 @@ async function aggregatedList(req, res, next) {
   }
   let accListObject = await getAggregatedAccList(firstDayOfCurrMonth);
   let statisticObject = await getStaticObject();
-  res.render('account_list_aggregate', { title: 'Account List', accListObject: accListObject, statObject: statisticObject });
+  let currMonthName = Helper.getMonthName(firstDayOfCurrMonth);
+  res.render('account_list_aggregate', { title: currMonthName, accListObject: accListObject, statObject: statisticObject });
 }
 async function getStaticObject() {
   const normEatPerDay = 500;
