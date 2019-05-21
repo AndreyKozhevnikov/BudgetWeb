@@ -40,7 +40,9 @@ app.use(
     saveUninitialized: false,
   })
 );
-app.use('/', requestLogin);
+let isDevelopment = process.env.NODE_ENV === 'development';
+if (!isDevelopment)
+  app.use('/', requestLogin);
 app.use('/', rootRouter);
 app.use('/tag', tagRouter);
 app.use('/order', orderRouter);
@@ -56,7 +58,6 @@ let mongoDB =
   process.env.MONGODB_URI ||
   // 'mongodb://TestUser:TestPassword@testbudgetweb-shard-00-00-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-01-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-02-ppkcc.mongodb.net:27017/test?ssl=true&replicaSet=TestBudgetWeb-shard-0&authSource=admin&retryWrites=true';
   'mongodb://localhost:27017/budgetWebTest';
-let isDevelopment = process.env.NODE_ENV === 'development';
 if (isDevelopment)
   mongoose.set('debug', true);
 mongoose.connect(mongoDB, { useNewUrlParser: true });
