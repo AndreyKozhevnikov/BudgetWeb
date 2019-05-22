@@ -234,23 +234,16 @@ async function getAggregatedAccList(startDate, finishDate) {
         },
       },
       {
-        $unwind: {
-          path: '$acPayments',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $lookup: {
           from: 'orders',
           let: { ptId: '$acPayments._id' },
           pipeline: [
             {
-              $match:
-              {
+              $match: {
                 $and: [
                   {
                     $expr: {
-                      $eq: ['$PaymentType', '$$ptId'],
+                      $in: ['$PaymentType', '$$ptId'],
                     },
                   },
                   { DateOrder: { $gte: startDate, $lt: finishDate } },
@@ -259,24 +252,6 @@ async function getAggregatedAccList(startDate, finishDate) {
             },
           ],
           as: 'filteredOrders',
-        },
-      },
-      {
-        $project: {
-          name: '$Name',
-          isuntouchable: '$IsUntouchable',
-          ordernumber: '$OrderNumber',
-          _id: '$_id',
-          sumfOrders: { $sum: '$filteredOrders.Value' },
-        },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          name: { $first: '$name' },
-          isuntouchable: { $first: '$isuntouchable' },
-          ordernumber: { $first: '$ordernumber' },
-          fOrders: { $sum: '$sumfOrders' },
         },
       },
       {
@@ -440,17 +415,17 @@ async function getAggregatedAccList(startDate, finishDate) {
       },
       {
         $project: {
-          name: '$name',
-          isuntouchable: '$isuntouchable',
+          name: '$Name',
+          isuntouchable: '$IsUntouchable',
           _id: '$_id',
           startSum: { $sum: '$fixRecordsStartMonth.Value' },
-          sumPayments: { $sum: '$fOrders' },
+          sumPayments: { $sum: '$filteredOrders.Value' },
           sumInSOrders: { $sum: '$acInSOrders.Value' },
           sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
           sumacInSOrdersCashback: { $sum: '$acInSOrdersCashback.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
           sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
-          ordernumber: '$ordernumber',
+          ordernumber: '$OrderNumber',
           fixRecordsLastCheck: '$fixRecordsLastCheck',
         },
       },
