@@ -148,36 +148,7 @@ async function run() {
           as: 'myIntermediates',
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'testchildren',
-      //     localField: 'myIntermediates._id',
-      //     foreignField: 'Intermediate',
-      //     as: 'myChildren',
-      //   },
-      // },
-      // { //to check whether this approach works with the first level (it works)
-      //   $lookup: {
-      //     from: 'testintermediates',
-      //     let: { myid: '$_id' },
-      //     pipeline: [
-      //       {
-      //         $match:
-      //         {
-      //           $expr: {
-      //             $eq: ['$Parent', '$$myid'],
-      //             // $eq: ['$LocalId', 55],
 
-      //           },
-      //         },
-      //       },
-      //     ],
-      //     as: 'myIntermediates',
-      //   },
-      // },
-      {
-        $unwind: '$myIntermediates'
-      },
       {
         $lookup: {
           from: 'testchildren',
@@ -187,8 +158,10 @@ async function run() {
               $match:
               {
                 $expr: {
-                  $eq: ['$Intermediate', '$$intermedId'], //it doesn't work (
-                  // $eq: ['$Value', 60], //it works
+                  $and: [
+                    { $in: ['$Intermediate', '$$intermedId'], }, //it doesn't work (
+                    { $lt: ['$Value', 60], }//it works
+                  ]
                 },
               },
             },
@@ -204,10 +177,8 @@ async function run() {
       },
     ],
     function(err, results) {
-      let expectedResult0 = results[0].sumChildren === 5;
-      let expectedResult1 = results[1].sumChildren === 10;
-      console.log(expectedResult0);
-      console.log(expectedResult1);
+      let res1 = results[0].sumChildren === 5;
+      let res2 = results[1].sumChildren === 10;
     }
   );
 }
