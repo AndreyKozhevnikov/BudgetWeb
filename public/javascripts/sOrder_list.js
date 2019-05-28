@@ -1,4 +1,4 @@
-/*global DevExpress serviceOrders_list buildDataContainerForSOrder*/
+/*global DevExpress serviceOrders_list buildDataContainerForSOrder buildValueContainerForSOrder*/
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -28,12 +28,7 @@ window.onload = function() {
           dataField: 'Value',
           width: '19%',
           cellTemplate: (container, options) => {
-            let a = document.createElement('a');
-            a.classList.add('dx-link');
-            a.text = options.data.Value;
-            a.href = '/serviceOrder/' + options.data._id + '/update';
-            a.style.wordWrap = 'break-word';
-            container[0].appendChild(a);
+            buildValueContainerForSOrder(container, options.data, document);
           },
         },
         {

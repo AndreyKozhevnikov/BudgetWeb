@@ -1,4 +1,4 @@
-/*global DevExpress mixOrders_list buildValueContainerForOrder*/
+/*global DevExpress mixOrders_list buildValueContainerForOrder buildValueContainerForSOrder*/
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -35,13 +35,8 @@ window.onload = function() {
               case 'order':
                 buildValueContainerForOrder(container, options.data.entity, this.document);
                 break;
-              default:
-                let a = document.createElement('a');
-                a.classList.add('dx-link');
-                a.text = options.data.value;
-                a.href = options.data.url;
-                a.style.wordWrap = 'break-word';
-                container[0].appendChild(a);
+              case 'serviceOrder':
+                buildValueContainerForSOrder(container, options.data.entity, this.document);
             }
           },
         },

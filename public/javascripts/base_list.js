@@ -55,3 +55,11 @@ function buildValueContainerForOrder(container, order, document) {
   }
 }
 
+function buildValueContainerForSOrder(container, sOrder, document) {
+  let a = document.createElement('a');
+  a.classList.add('dx-link');
+  a.text = sOrder.Value;
+  a.href = '/serviceOrder/' + sOrder._id + '/update';
+  a.style.wordWrap = 'break-word';
+  container[0].appendChild(a);
+}
