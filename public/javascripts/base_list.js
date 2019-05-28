@@ -23,8 +23,6 @@ function buildDataContainerForSOrder(container, sOrder, document) {
   }
 }
 function buildValueContainerForOrder(container, order, document) {
-  let lblValue = document.createElement('label');
-  lblValue.classList.add('plainLabel');
   let valueString = order.Value;
   if (!order.LocalId) {
     valueString = valueString + '*';
@@ -32,8 +30,12 @@ function buildValueContainerForOrder(container, order, document) {
   if (order.IsMonthCategory) {
     valueString = valueString + '(m)';
   }
-  lblValue.innerHTML = valueString;
-  container[0].appendChild(lblValue);
+  let a = document.createElement('a');
+  a.classList.add('dx-link');
+  a.text = valueString;
+  a.href = '/order/' + order._id + '/update';
+  a.style.wordWrap = 'break-word';
+  container[0].appendChild(a);
   if (order.PaymentType) {
     let br = document.createElement('br');
     let lbl = document.createElement('label');
