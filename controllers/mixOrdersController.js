@@ -11,13 +11,13 @@ async function list(req, res, next) {
   let sOrders = await serviceOrderController.getList(firstDayOfCurrMonth);
   let orders = await orderController.getList(firstDayOfCurrMonth);
   let fRecords = await fixRecordController.getList(firstDayOfCurrMonth);
-  createAndShowMixOrdersList(orders, sOrders, fRecords, res, 'All');
+  createAndShowMixOrdersList(orders, sOrders, fRecords, res, 'All', null);
 }
 
-function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title) {
-  let mixOrders = getMixList(orderList, Helper.mixOrderTypes.order);
-  let mixSOrders = getMixList(sOrderList, Helper.mixOrderTypes.sorder);
-  let mixFRecords = getMixList(fRecords, Helper.mixOrderTypes.fixrecord);
+function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title, accId) {
+  let mixOrders = getMixListFromOrders(orderList);
+  let mixSOrders = getMixListFromSOrders(sOrderList, accId);
+  let mixFRecords = getMixListFromFixRecords(fRecords);
   mixOrders = mixOrders.concat(mixSOrders).concat(mixFRecords);
   mixOrders.sort((a, b) => {
     let aDate = new Date(a.date);
@@ -31,7 +31,6 @@ function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title)
     }
   });
   res.render('mixOrder_list', { title: title, mixOrders_list: mixOrders });
-
 }
 
 async function listByAcc(req, res, next) {
@@ -40,88 +39,82 @@ async function listByAcc(req, res, next) {
     let orders = await orderController.getAccountOrders(accId);
     let sOrders = await serviceOrderController.getAccountOrders(accId);
     let fRecords = await fixRecordController.getAccountRecords(accId);
-    prepareSOrders(sOrders, accId);
-    prepareOrders(orders);
-    prepareOrdersFixRecords(fRecords);
     let accName = await accountController.getAccountName(accId);
-    createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName);
+    createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName, accId);
   } catch (err) {
     console.log(err);
   }
 }
-function prepareOrdersFixRecords(list) {
-  for (let i = 0; i < list.length; i++) {
-    let fRec = list[i];
-    fRec.ViewType = 'Check';
-    fRec.ViewData = fRec.Type;
+
+function getMixListFromOrders(orderList) {
+  let mixOrders = [];
+  for (let i = 0; i < orderList.length; i++) {
+    let order = orderList[i];
+    let mixRecord = {
+      date: order.DateOrder,
+      description: order.Description,
+      createdtime: order.CreatedTime,
+      viewType: 'Order',
+      viewData: order.ParentTag.Name,
+    };
+    mixRecord.entity = order;
+    mixRecord.type = Helper.mixOrderTypes.order;
+    mixOrders.push(mixRecord);
   }
+  return mixOrders;
 }
-function prepareOrders(list) {
-  for (let i = 0; i < list.length; i++) {
-    let ord = list[i];
-    ord.ViewType = 'Order';
-    ord.ViewData = ord.ParentTag.Name;
-  }
-}
-function prepareSOrders(list, accId) {
-  for (let i = 0; i < list.length; i++) {
-    let sord = list[i];
-    switch (sord.Type) {
+
+function getMixListFromSOrders(sOrderList, accId) {
+  let mixOrders = [];
+  for (let i = 0; i < sOrderList.length; i++) {
+    let sOrder = sOrderList[i];
+    let mixRecord = {
+      date: sOrder.DateOrder,
+      description: sOrder.Description,
+      createdtime: sOrder.CreatedTime,
+    };
+    switch (sOrder.Type) {
       case Helper.sOrderTypes.in:
-        sord.ViewType = 'In';
-        // sord.ViewData = sord.AccountOut.Name;
-        sord.ViewData = sord.Description;
-        if (sord.IsCashBack) {
-          sord.ViewData = '**' + sord.ViewData;
+        sOrder.viewType = 'In';
+        mixRecord.viewData = sOrder.Description;
+        if (sOrder.IsCashBack) {
+          mixRecord.viewData = '**' + mixRecord.viewData;
         }
         break;
       case Helper.sOrderTypes.out:
-        sord.ViewType = 'Out';
-        // sord.ViewData = sord.AccountOut.Name;
-        sord.ViewData = sord.Description;
+        mixRecord.viewType = 'Out';
+        mixRecord.viewData = sOrder.Description;
         break;
       case Helper.sOrderTypes.between:
-        if (sord.AccountIn.id === accId) {
-          sord.ViewType = 'BetweenIn';
-          sord.ViewData = sord.AccountOut.Name;
+        if (sOrder.AccountIn.id === accId) {
+          mixRecord.viewType = 'BetweenIn';
+          mixRecord.viewData = sOrder.AccountOut.Name;
         } else {
-          sord.ViewType = 'BetweenOut';
-          sord.ViewData = sord.AccountIn.Name;
+          mixRecord.viewType = 'BetweenOut';
+          mixRecord.viewData = sOrder.AccountIn.Name;
         }
         break;
     }
+    mixRecord.entity = sOrder;
+    mixRecord.type = Helper.mixOrderTypes.sorder;
+    mixOrders.push(mixRecord);
   }
+  return mixOrders;
 }
 
-function getMixList(list, entityName) {
+function getMixListFromFixRecords(fixRecordsList) {
   let mixOrders = [];
-  for (let i = 0; i < list.length; i++) {
-    let mixRecord;
-    let entity = list[i];
-    switch (entityName) {
-      case Helper.mixOrderTypes.fixrecord:
-        mixRecord = {
-          date: entity.DateTime,
-          value: entity.Value,
-          description: entity.Type,
-          entity: entity,
-          type: entityName,
-          createdtime: entity.DateTime,
-        };
-        break;
-      default:
-        mixRecord = {
-          date: entity.DateOrder,
-          value: entity.Value,
-          description: entity.Description,
-          entity: entity,
-          type: entityName,
-          createdtime: entity.CreatedTime,
-        };
-        mixRecord.url = '/' + entityName + '/' + entity._id + '/update';
-    }
-    mixRecord.viewType = entity.ViewType;
-    mixRecord.viewData = entity.ViewData;
+  for (let i = 0; i < fixRecordsList.length; i++) {
+    let fRecord = fixRecordsList[i];
+    let mixRecord = {
+      date: fRecord.DateTime,
+      description: fRecord.Type,
+      createdtime: fRecord.DateTime,
+      viewType: 'Check',
+      viewData: fRecord.Type,
+    };
+    mixRecord.entity = fRecord;
+    mixRecord.type = Helper.mixOrderTypes.fixrecord;
     mixOrders.push(mixRecord);
   }
   return mixOrders;
