@@ -7,12 +7,11 @@ let Helper = require('../controllers/helperController.js');
 
 
 async function list(req, res, next) {
-
   let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
-
   let sOrders = await serviceOrderController.getList(firstDayOfCurrMonth);
   let orders = await orderController.getList(firstDayOfCurrMonth);
-  createAndShowMixOrdersList(orders, sOrders, res, 'All');
+  let fRecords = await fixRecordController.getList(firstDayOfCurrMonth);
+  createAndShowMixOrdersList(orders, sOrders, fRecords, res, 'All');
 }
 
 function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title) {

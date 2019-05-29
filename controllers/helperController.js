@@ -26,11 +26,16 @@ function getFirstDateOfShifterMonth(currMonthDate, shift) {
 
 }
 
-function getListByDates(entity, startDate, finishDate) {
+function getListByDates(entity, startDate, finishDate, propertyName) {
   if (finishDate == null) {
     finishDate = getToday();
   }
-  let list = entity.find({ DateOrder: { $gte: startDate, $lt: finishDate } });
+  if (propertyName == null) {
+    propertyName = 'DateOrder';
+  }
+  let findObject = {};
+  findObject[propertyName] = { $gte: startDate, $lt: finishDate };
+  let list = entity.find(findObject);
   return list;
 }
 function createObjectId(id) {

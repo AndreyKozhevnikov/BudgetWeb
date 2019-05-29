@@ -2,7 +2,7 @@
 
 let FixRecord = require('../models/fixRecord.js');
 let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check' };
-// let Helper = require('../controllers/helperController.js');
+let Helper = require('../controllers/helperController.js');
 
 async function createFixRecord(type, datetime, account, value) {
   let fRec = new FixRecord({
@@ -25,7 +25,13 @@ async function getAccountRecords(accId) {
   return fRecs;
 }
 
+async function getList(startDate, finishDate) {
+  let list = Helper.getListByDates(FixRecord, startDate, finishDate, 'DateTime');
+  return list;
+}
+
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
 exports.getAccountRecords = getAccountRecords;
+exports.getList = getList;
