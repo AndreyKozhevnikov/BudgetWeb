@@ -340,7 +340,9 @@ function sortEntities(listToSort, groupedList, obj, countOfPopular) {
 
 async function getList(startDate, finishDate) {
   let list = Helper.getListByDates(Order, startDate, finishDate);
-  list.populate('ParentTag');
+  list
+    .populate('ParentTag')
+    .populate('PaymentType');
   return list;
 }
 async function getAccountOrders(id) {
