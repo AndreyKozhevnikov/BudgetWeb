@@ -13,13 +13,21 @@ function init() {
   cashBackDv = document.getElementById('cashBackDv');
   handleTypeRButtons();
 }
-
-
+/* eslint-disable */
+function accoutOutClick(accId) {
+  /* eslint-enable */
+  outCombo.value = accId;
+}
+/* eslint-disable */
+function accoutInClick(accId) {
+  /* eslint-enable */
+  inCombo.value = accId;
+}
 /* eslint-disable */
 function typeButtonClick(typeName) {
   /* eslint-enable */
-  console.log('tet331');
-  console.log(typeName);
+  // console.log('tet331');
+  // console.log(typeName);
 
   updateCombos();
 }

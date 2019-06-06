@@ -41,6 +41,13 @@ block content
             option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
             option(value=account._id) #{account.Name}
+      table(style='width:100%')
+        tr
+        each acc, index in popularAccOutList
+          td
+            button.btn.btn-primary(type='button' style='width:100%' onclick='accoutOutClick(\'' + acc._id + '\')') #{acc.Name}
+          if (index < 2)
+            td(style="width:10px")            
       label(for='cmbAccountIn') AccountIn:
       select#cmbAccountIn.form-control(type='select', name='AccountIn_frm')
         option(value='') Please Select
@@ -48,7 +55,14 @@ block content
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name}            
+            option(value=account._id) #{account.Name}
+      table(style='width:100%')
+        tr
+        each acc, index in popularAccInList
+          td
+            button.btn.btn-primary(type='button' style='width:100%' onclick='accoutInClick(\'' + acc._id + '\')') #{acc.Name}
+          if (index < 2)
+            td(style="width:10px")                          
     button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
     label(for='txLocalId') LocalId:
     input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          

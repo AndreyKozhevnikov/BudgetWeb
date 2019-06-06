@@ -57,10 +57,14 @@ function objectToShowForm(mTitle, serviceOrder, errors) {
     }
     return x.OrderOutNumber - y.OrderOutNumber;
   });
+  let popularAccInList = accountInList.slice(1, 4);
+  let popularAccOutList = accountOutList.slice(1, 4);
   let obj = {
     title: mTitle,
     accountInList: accountInList,
     accountOutList: accountOutList,
+    popularAccInList: popularAccInList,
+    popularAccOutList: popularAccOutList,
     type_list: typesList,
   };
   if (serviceOrder) {
