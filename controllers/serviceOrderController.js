@@ -39,20 +39,20 @@ function create_get(req, res, next) {
 function objectToShowForm(mTitle, serviceOrder, errors) {
   let accountInList = [...accountList];
   accountInList.sort((x, y) => {
-    if (x.OrderInNumber === undefined) {
+    if (x.OrderInNumber === undefined || x.OrderInNumber === null) {
       x.OrderInNumber = 999;
     }
-    if (y.OrderInNumber === undefined) {
+    if (y.OrderInNumber === undefined || y.OrderInNumber === null) {
       y.OrderInNumber = 999;
     }
     return x.OrderInNumber - y.OrderInNumber;
   });
   let accountOutList = [...accountList];
   accountOutList.sort((x, y) => {
-    if (x.OrderOutNumber === undefined) {
+    if (x.OrderOutNumber === undefined || x.OrderOutNumber === null) {
       x.OrderOutNumber = 999;
     }
-    if (y.OrderOutNumber === undefined) {
+    if (y.OrderOutNumber === undefined || y.OrderOutNumber === null) {
       y.OrderOutNumber = 999;
     }
     return x.OrderOutNumber - y.OrderOutNumber;
