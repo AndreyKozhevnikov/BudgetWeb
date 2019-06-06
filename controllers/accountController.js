@@ -607,6 +607,8 @@ function createAccountFromRequest(req, isUpdate) {
     Name: req.body.Name_frm,
     LocalId: req.body.LocalId_frm,
     OrderNumber: req.body.OrderNumber_frm,
+    OrderInNumber: req.body.OrderInNumber_frm,
+    OrderOutNumber: req.body.OrderOutNumber_frm,
     IsUntouchable: Boolean(req.body.IsUntouchable_frm),
   });
   if (isUpdate) {

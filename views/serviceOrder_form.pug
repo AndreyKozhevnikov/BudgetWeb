@@ -36,7 +36,7 @@ block content
       label(for='cmbAccountOut') AccountOut:
       select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
         option(value='') Please Select
-        for account in account_list
+        for account in accountOutList
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
@@ -44,7 +44,7 @@ block content
       label(for='cmbAccountIn') AccountIn:
       select#cmbAccountIn.form-control(type='select', name='AccountIn_frm')
         option(value='') Please Select
-        for account in account_list
+        for account in accountInList
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else

@@ -37,9 +37,30 @@ function create_get(req, res, next) {
 };
 
 function objectToShowForm(mTitle, serviceOrder, errors) {
+  let accountInList = [...accountList];
+  accountInList.sort((x, y) => {
+    if (x.OrderInNumber === undefined) {
+      x.OrderInNumber = 999;
+    }
+    if (y.OrderInNumber === undefined) {
+      y.OrderInNumber = 999;
+    }
+    return x.OrderInNumber - y.OrderInNumber;
+  });
+  let accountOutList = [...accountList];
+  accountOutList.sort((x, y) => {
+    if (x.OrderOutNumber === undefined) {
+      x.OrderOutNumber = 999;
+    }
+    if (y.OrderOutNumber === undefined) {
+      y.OrderOutNumber = 999;
+    }
+    return x.OrderOutNumber - y.OrderOutNumber;
+  });
   let obj = {
     title: mTitle,
-    account_list: accountList,
+    accountInList: accountInList,
+    accountOutList: accountOutList,
     type_list: typesList,
   };
   if (serviceOrder) {
