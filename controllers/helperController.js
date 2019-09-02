@@ -52,8 +52,8 @@ function getFirstDayOfLastMonth() {
 }
 
 function getToday() {
-  let dt = new Date();
-  // let dt = new Date('2019-02-28');
+ // let dt = new Date();
+   let dt = new Date('2019-08-31');
   return dt;
 }
 
