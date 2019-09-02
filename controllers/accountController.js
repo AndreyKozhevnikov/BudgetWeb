@@ -221,7 +221,7 @@ async function getAggregatedAccList(startDate, finishDate) {
   if (finishDate == null) {
     finishDate = Helper.getTomorrow();
   }
-  let startDateExtractMonth = new Date();
+  let startDateExtractMonth = Helper.getToday();
   startDateExtractMonth.setDate(startDate.getDate() - 30);
   let accList = await Account.aggregate(
     [
