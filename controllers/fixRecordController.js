@@ -30,8 +30,20 @@ async function getList(startDate, finishDate) {
   return list;
 }
 
+function deleteTypes(req, res, next) {
+  FixRecord.remove({}, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      res.end('success');
+    }
+
+  });
+}
+
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
 exports.getAccountRecords = getAccountRecords;
 exports.getList = getList;
+exports.deleteTypes = deleteTypes;

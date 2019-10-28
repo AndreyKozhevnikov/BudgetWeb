@@ -190,7 +190,16 @@ async function getList(startDate, finishDate) {
     .populate('AccountIn');
   return list;
 }
+function deleteTypes(req, res, next) {
+  ServiceOrder.remove({}, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      res.end('success');
+    }
 
+  });
+}
 function updateLists() {
   populateLists();
 }
@@ -212,3 +221,4 @@ exports.update_post = update_post_array;
 exports.populateLists = populateLists;
 exports.getList = getList;
 exports.getAccountOrders = getAccountOrders;
+exports.deleteTypes = deleteTypes;

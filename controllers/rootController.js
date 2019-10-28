@@ -25,6 +25,7 @@ let order_controller = require('../controllers/orderController.js');
 let sOrder_controller = require('../controllers/serviceOrderController.js');
 let tag_controller = require('../controllers/tagController.js');
 let paymentType_controller = require('../controllers/paymentTypeController.js');
+let fixRecord_controller = require('../controllers/fixRecordController.js');
 let stream = require('stream');
 
 function checkTime(i) {
@@ -156,6 +157,8 @@ function deleteAll(req, res, next) {
   order_controller.deleteOrders(req, res, next);
   tag_controller.deleteTags(res, res, next);
   paymentType_controller.deleteTypes(req, res, next);
+  fixRecord_controller.deleteTypes(req, res, next);
+  sOrder_controller.deleteTypes(req, res, next);
 }
 
 function wiki(req, res) {
