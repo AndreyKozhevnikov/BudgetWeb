@@ -161,6 +161,13 @@ function deleteAll(req, res, next) {
   sOrder_controller.deleteTypes(req, res, next);
 }
 
+function deleteStartMonthRecords(req, res, next) {
+  if (!canDeleteEntities()) {
+    res.send('cant delete objects');
+    return;
+  }
+  fixRecord_controller.deleteCurrMonthStartRecords(req, res, next);
+}
 function wiki(req, res) {
   res.render('wiki');
 }
@@ -238,6 +245,7 @@ exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
 exports.deleteAll = deleteAll;
+exports.deleteStartMonthRecords = deleteStartMonthRecords;
 exports.createUserGet = createUserGet;
 exports.createUserPost = createUserPost;
 exports.update_localid = updatelocalid;

@@ -7,6 +7,7 @@ let root_controller = require('../controllers/rootController.js');
 router.get('/', root_controller.index);
 
 router.get('/deleteall', root_controller.deleteAll);
+router.get('/deleteStartMonthRecords', root_controller.deleteStartMonthRecords);
 
 router.get('/restore', function(req, res, next) {
   res.redirect('/wiki');

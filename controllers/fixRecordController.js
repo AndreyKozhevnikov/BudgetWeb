@@ -41,9 +41,21 @@ function deleteTypes(req, res, next) {
   });
 }
 
+function deleteCurrMonthStartRecords(req, res, next) {
+  let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth();
+  FixRecord.remove({ DateTime: { $gte: currMonthFirstDate } }, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      res.end('success');
+    }
+  });
+}
+
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
 exports.getAccountRecords = getAccountRecords;
 exports.getList = getList;
 exports.deleteTypes = deleteTypes;
+exports.deleteCurrMonthStartRecords = deleteCurrMonthStartRecords;
