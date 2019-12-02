@@ -492,20 +492,23 @@ async function aggregatedList(req, res, next) {
   //   });
   let firstDayOfTargetMonth;
   let firstDayOfNextToTargetMonth = null;
+  let firstDayOfPrevToTargetMonth = null;
   if (req.params.hasOwnProperty('direction')) {
     firstDayOfTargetMonth = Helper.getFirstDateOfShifterMonth(req.params.date, req.params.direction);
     firstDayOfNextToTargetMonth = Helper.getFirstDateOfShifterMonth(firstDayOfTargetMonth, 'next');
+    firstDayOfPrevToTargetMonth = Helper.getFirstDateOfShifterMonth(firstDayOfTargetMonth, 'prev');
   } else {
-    let lastFOrderTime = await FixRecordController.getTheLastFixRecordsDate();
+    let lastFRecordTime = await FixRecordController.getTheLastFixRecordsDate();
     firstDayOfTargetMonth = Helper.getFirstDateOfCurrentMonth();
-    if (lastFOrderTime < firstDayOfTargetMonth) {
-      let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-      let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDayOfTargetMonth);
+    firstDayOfPrevToTargetMonth = Helper.getFirstDayOfPrevMonth();
+    if (lastFRecordTime < firstDayOfPrevToTargetMonth) {
+      let firsDayOfPrePrevMonth = Helper.getFirstDayOfPrePrevMonth();
+      let accListObject = await getAggregatedAccList(firsDayOfPrePrevMonth, firstDayOfPrevToTargetMonth);
       let start = async () => {
         await asyncForEach(accListObject.accList, async (accRecord) => {
           await FixRecordController.createFixRecord(
             FixRecordController.FRecordTypes.StartMonth,
-            firstDayOfTargetMonth,
+            firstDayOfPrevToTargetMonth,
             accRecord._id,
             accRecord.result);
         });
@@ -514,7 +517,7 @@ async function aggregatedList(req, res, next) {
     }
   }
 
-  let accListObject = await getAggregatedAccList(firstDayOfTargetMonth, firstDayOfNextToTargetMonth);
+  let accListObject = await getAggregatedAccList(firstDayOfPrevToTargetMonth, firstDayOfNextToTargetMonth);
   let statisticObject = await getStaticObject();
   let currMonthName = Helper.getMonthName(firstDayOfTargetMonth);
   let targetMonthData = {};

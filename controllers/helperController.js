@@ -43,10 +43,18 @@ function createObjectId(id) {
   return new ObjectId(id);
 }
 
-function getFirstDayOfLastMonth() {
+function getFirstDayOfPrevMonth() {
   let dt = getToday();
   dt.setDate(1);
   dt.setMonth(dt.getMonth() - 1);
+  dt.setHours(0, 0, 0, 0);
+  return dt;
+}
+
+function getFirstDayOfPrePrevMonth() {
+  let dt = getToday();
+  dt.setDate(1);
+  dt.setMonth(dt.getMonth() - 2);
   dt.setHours(0, 0, 0, 0);
   return dt;
 }
@@ -79,7 +87,8 @@ exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
 exports.createObjectId = createObjectId;
 exports.mixOrderTypes = mixOrderTypes;
-exports.getFirstDayOfLastMonth = getFirstDayOfLastMonth;
+exports.getFirstDayOfPrevMonth = getFirstDayOfPrevMonth;
+exports.getFirstDayOfPrePrevMonth = getFirstDayOfPrePrevMonth;
 exports.getToday = getToday;
 exports.getCurrentMonthDaysCount = getCurrentMonthDaysCount;
 exports.getTomorrow = getTomorrow;
@@ -87,5 +96,3 @@ exports.isRestoreMode = isRestoreMode;
 exports.sOrderTypes = sOrderTypes;
 exports.getMonthName = getMonthName;
 exports.getFirstDateOfShifterMonth = getFirstDateOfShifterMonth;
-
-
