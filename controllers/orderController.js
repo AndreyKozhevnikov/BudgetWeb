@@ -259,30 +259,13 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
   });
 };
 
-
-function promisify(f, context) {
-  return function(...args) { // return a wrapper-function
-    return new Promise((resolve, reject) => {
-      function callback(err, result) { // our custom callback for f
-        if (err) {
-          return reject(err);
-        } else {
-          resolve(result);
-        }
-      }
-      args.push(callback); // append our custom callback to the end of f arguments
-      f.call(context, ...args); // call the original function
-    });
-  };
-};
-
 async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getToday();
   cutDate.setDate(cutDate.getDate() - 60);
 
-  let tagFind = promisify(Tag.find, Tag);
-  let paymentTypeFind = promisify(PaymentType.find, PaymentType);
-  let orderAggregate = promisify(Order.aggregate, Order);
+  let tagFind = Helper.promisify(Tag.find, Tag);
+  let paymentTypeFind = Helper.promisify(PaymentType.find, PaymentType);
+  let orderAggregate = Helper.promisify(Order.aggregate, Order);
   let results = await Promise.all([
     tagFind(),
     paymentTypeFind(),
