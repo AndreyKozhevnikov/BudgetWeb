@@ -4,7 +4,7 @@ let router = express.Router();
 let root_controller = require('../controllers/rootController.js');
 
 
-router.get('/', root_controller.index);
+router.get('/', (req, res, next) => { res.redirect('/account/aggregatedList'); });
 
 router.get('/deleteall', root_controller.deleteAll);
 router.get('/deleteStartMonthRecords', root_controller.deleteStartMonthRecords);
