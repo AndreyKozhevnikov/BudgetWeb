@@ -262,42 +262,66 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
 async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getToday();
   cutDate.setDate(cutDate.getDate() - 60);
-
   let tagFind = Helper.promisify(Tag.find, Tag);
-  let paymentTypeFind = Helper.promisify(PaymentType.find, PaymentType);
+  let paymentTypeAggregate = Helper.promisify(PaymentType.aggregate, PaymentType);
   let orderAggregate = Helper.promisify(Order.aggregate, Order);
-  let results = await Promise.all([
-    tagFind(),
-    paymentTypeFind(),
-    orderAggregate([
-      {
-        $match: {
-          IsDeleted: { $exists: false },
-          DateOrder: { $gt: cutDate },
+  let results;
+  try {
+    results = await Promise.all([
+      tagFind(),
+      paymentTypeAggregate([
+        {
+          $lookup: {
+            from: 'accounts',
+            localField: 'Account',
+            foreignField: '_id',
+            as: 'AccountV',
+          },
         },
-      },
-      {
-        $group: {
-          _id: '$ParentTag',
-          count: { $sum: 1 },
+        {
+          $unwind: '$AccountV',
         },
-      },
-    ]),
-    orderAggregate([
-      {
-        $match: {
-          IsDeleted: { $exists: false },
-          DateOrder: { $gt: cutDate },
+        {
+          $match: {
+            $or: [
+              { 'AccountV.IsArchived': false },
+              { 'AccountV.IsArchived': { $exists: false } },
+            ],
+          },
         },
-      },
-      {
-        $group: {
-          _id: '$PaymentType',
-          count: { $sum: 1 },
+      ]),
+      orderAggregate([
+        {
+          $match: {
+            IsDeleted: { $exists: false },
+            DateOrder: { $gt: cutDate },
+          },
         },
-      },
-    ]),
-  ]);
+        {
+          $group: {
+            _id: '$ParentTag',
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      orderAggregate([
+        {
+          $match: {
+            IsDeleted: { $exists: false },
+            DateOrder: { $gt: cutDate },
+          },
+        },
+        {
+          $group: {
+            _id: '$PaymentType',
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
+  } catch (err) {
+    console.log('error' + err);
+  }
   tagList = results[0];
   paymentTypeList = results[1];
   let groupedOrdersByTag = results[2];
