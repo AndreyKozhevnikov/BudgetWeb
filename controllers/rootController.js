@@ -18,7 +18,6 @@ let constructors = {
   User: User,
 };
 
-let async = require('async');
 let formidable = require('formidable');
 let fs = require('fs');
 let order_controller = require('../controllers/orderController.js');
@@ -119,34 +118,30 @@ async function fullRestore(req, res, next) {
   res.redirect('/wiki');
 }
 
-function index(req, res) {
-  async.parallel(
-    {
-      tag_count: function(callback) {
-        Tag.countDocuments(callback);
-      },
-      order_count: function(callback) {
-        Order.countDocuments(callback);
-      },
-    },
-    function(err, results) {
-      let today = new Date();
-      let h = today.getHours();
-      let m = today.getMinutes();
-      let s = today.getSeconds();
-      // add a zero in front of numbers<10
-      m = checkTime(m);
-      s = checkTime(s);
-      let tms = h + ':' + m + ':' + s + ' -- ' + today;
-      // res.send('test');
-      res.render('index', {
-        title: 'My budget web application',
-        error: err,
-        data: results,
-        time: tms,
-      });
-    }
-  );
+async function index(req, res) {
+  let tagCount = Helper.promisify(Tag.countDocuments, Tag);
+  let orderCount = Helper.promisify(Order.countDocuments, Order);
+
+  let results = await Promise.all([
+    tagCount(),
+    orderCount(),
+  ]);
+  let today = new Date();
+  let h = today.getHours();
+  let m = today.getMinutes();
+  let s = today.getSeconds();
+  // add a zero in front of numbers<10
+  m = checkTime(m);
+  s = checkTime(s);
+  let tms = h + ':' + m + ':' + s + ' -- ' + today;
+  // res.send('test');
+  res.render('index', {
+    title: 'My budget web application',
+    data: results,
+    time: tms,
+  });
+
+
 }
 
 function deleteAll(req, res, next) {
@@ -161,6 +156,13 @@ function deleteAll(req, res, next) {
   sOrder_controller.deleteTypes(req, res, next);
 }
 
+function deleteStartMonthRecords(req, res, next) {
+  if (!canDeleteEntities()) {
+    res.send('cant delete objects');
+    return;
+  }
+  fixRecord_controller.deleteCurrMonthStartRecords(req, res, next);
+}
 function wiki(req, res) {
   res.render('wiki');
 }
@@ -238,6 +240,7 @@ exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
 exports.deleteAll = deleteAll;
+exports.deleteStartMonthRecords = deleteStartMonthRecords;
 exports.createUserGet = createUserGet;
 exports.createUserPost = createUserPost;
 exports.update_localid = updatelocalid;

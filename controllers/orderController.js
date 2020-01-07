@@ -4,7 +4,6 @@ let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
 let Helper = require('../controllers/helperController.js');
 
-let async = require('async');
 let tagList;
 let popularTagList;
 let paymentTypeList;
@@ -260,65 +259,83 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
   });
 };
 
-function populateAdditionalLists(myCallBack, params) {
+async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getToday();
   cutDate.setDate(cutDate.getDate() - 60);
-  async.parallel({
-    tags: function(callback) {
-      Tag.find(callback);
-    },
-    paymentTypes: function(callback) {
-      PaymentType.find(callback);
-    },
-    groupedOrdersByTag: function(callback) {
-      Order.aggregate(
-        [
-          {
-            $match: {
-              IsDeleted: { $exists: false },
-              DateOrder: { $gt: cutDate },
-            },
+  let tagFind = Helper.promisify(Tag.find, Tag);
+  let paymentTypeAggregate = Helper.promisify(PaymentType.aggregate, PaymentType);
+  let orderAggregate = Helper.promisify(Order.aggregate, Order);
+  let results;
+  try {
+    results = await Promise.all([
+      tagFind(),
+      paymentTypeAggregate([
+        {
+          $lookup: {
+            from: 'accounts',
+            localField: 'Account',
+            foreignField: '_id',
+            as: 'AccountV',
           },
-          {
-            $group: {
-              _id: '$ParentTag',
-              count: { $sum: 1 },
-            },
+        },
+        {
+          $unwind: '$AccountV',
+        },
+        {
+          $match: {
+            $or: [
+              { 'AccountV.IsArchived': false },
+              { 'AccountV.IsArchived': { $exists: false } },
+            ],
           },
-        ]).exec(callback);
-    },
-    groupedOrdersByPaymentType: function(callback) {
-      Order.aggregate(
-        [
-          {
-            $match: {
-              IsDeleted: { $exists: false },
-              DateOrder: { $gt: cutDate },
-            },
+        },
+      ]),
+      orderAggregate([
+        {
+          $match: {
+            IsDeleted: { $exists: false },
+            DateOrder: { $gt: cutDate },
           },
-          {
-            $group: {
-              _id: '$PaymentType',
-              count: { $sum: 1 },
-            },
+        },
+        {
+          $group: {
+            _id: '$ParentTag',
+            count: { $sum: 1 },
           },
-        ]).exec(callback);
-    },
-  }, function(err, results) {
-    if (err) {
-      console.dir(err);
-    }
-    tagList = results.tags;
-    paymentTypeList = results.paymentTypes;
-    let popularTagListObject = {};
-    let popularPaymentTypesObject = {};
-    sortEntities(tagList, results.groupedOrdersByTag, popularTagListObject, 4);
-    sortEntities(paymentTypeList, results.groupedOrdersByPaymentType, popularPaymentTypesObject, 5);
-    popularTagList = popularTagListObject.popularList;
-    popularPaymentTypeList = popularPaymentTypesObject.popularList;
-    if (params)
-      myCallBack(params.req, params.res, params.next);
-  });
+        },
+      ]),
+      orderAggregate([
+        {
+          $match: {
+            IsDeleted: { $exists: false },
+            DateOrder: { $gt: cutDate },
+          },
+        },
+        {
+          $group: {
+            _id: '$PaymentType',
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
+  } catch (err) {
+    console.log('error' + err);
+  }
+  tagList = results[0];
+  paymentTypeList = results[1];
+  let groupedOrdersByTag = results[2];
+  let groupedOrdersByPaymentType = results[3];
+  let popularTagListObject = {};
+  let popularPaymentTypesObject = {};
+  sortEntities(tagList, groupedOrdersByTag, popularTagListObject, 4);
+  sortEntities(paymentTypeList, groupedOrdersByPaymentType, popularPaymentTypesObject, 5);
+  popularTagList = popularTagListObject.popularList;
+  popularPaymentTypeList = popularPaymentTypesObject.popularList;
+  if (params) {
+    myCallBack(params.req, params.res, params.next);
+  }
+
 }
 
 function sortEntities(listToSort, groupedList, obj, countOfPopular) {

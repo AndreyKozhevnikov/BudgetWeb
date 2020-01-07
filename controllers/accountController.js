@@ -417,6 +417,7 @@ async function getAggregatedAccList(startDate, finishDate) {
         $project: {
           name: '$Name',
           isuntouchable: '$IsUntouchable',
+          isarchived: '$IsArchived',
           _id: '$_id',
           startSum: { $sum: '$fixRecordsStartMonth.Value' },
           sumPayments: { $sum: '$filteredOrders.Value' },
@@ -515,6 +516,7 @@ async function aggregatedList(req, res, next) {
   }
 
   let accListObject = await getAggregatedAccList(firstDayOfTargetMonth, firstDayOfNextToTargetMonth);
+  accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
   let statisticObject = await getStaticObject();
   let currMonthName = Helper.getMonthName(firstDayOfTargetMonth);
   let targetMonthData = {};
@@ -610,6 +612,7 @@ function createAccountFromRequest(req, isUpdate) {
     OrderInNumber: req.body.OrderInNumber_frm,
     OrderOutNumber: req.body.OrderOutNumber_frm,
     IsUntouchable: Boolean(req.body.IsUntouchable_frm),
+    IsArchived: Boolean(req.body.IsIsArchived_frm),
   });
   if (isUpdate) {
     account._id = req.params.id;

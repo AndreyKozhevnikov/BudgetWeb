@@ -16,6 +16,8 @@ block content
       input#txOrderOutNumber.form-control(type='number' name='OrderOutNumber_frm' value=(undefined===account_frm ? '' : account_frm.OrderOutNumber))
       label(for='chIsUntouchable') IsUntouchable:
       input#chIsUntouchable.form-control(type='checkbox' name='IsUntouchable_frm' checked=(undefined===account_frm ? false : account_frm.IsUntouchable))
+      label(for='chIsArchived') IsArchived:
+      input#chIsIsArchived.form-control(type='checkbox' name='IsIsArchived_frm' checked=(undefined===account_frm ? false : account_frm.IsArchived))
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul

@@ -75,6 +75,22 @@ function getMonthName(date) {
   return monthName;
 }
 
+function promisify(f, context) {
+  return function(...args) { // return a wrapper-function
+    return new Promise((resolve, reject) => {
+      function callback(err, result) { // our custom callback for f
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(result);
+        }
+      }
+      args.push(callback); // append our custom callback to the end of f arguments
+      f.call(context, ...args); // call the original function
+    });
+  };
+};
+
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
 exports.createObjectId = createObjectId;
@@ -87,5 +103,6 @@ exports.isRestoreMode = isRestoreMode;
 exports.sOrderTypes = sOrderTypes;
 exports.getMonthName = getMonthName;
 exports.getFirstDateOfShifterMonth = getFirstDateOfShifterMonth;
+exports.promisify = promisify;
 
 
