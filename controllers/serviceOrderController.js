@@ -108,14 +108,19 @@ let create_post_array = [
   (req, res, next) => create_post(req, res, next),
 ];
 
-function populateLists() {
-  Account.find(function(err, res) {
-    if (err) {
-
-    } else {
-      accountList = res;
+async function populateLists() {
+  let accountFind = Helper.promisify(Account.find, Account);
+  try {
+    accountList = await accountFind({
+      $or: [
+        { IsArchived: false },
+        { IsArchived: { $exists: false } },
+      ],
     }
-  });
+    );
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function list(req, res, next) {
