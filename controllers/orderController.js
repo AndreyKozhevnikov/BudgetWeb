@@ -326,19 +326,16 @@ async function populateAdditionalLists(myCallBack, params) {
   paymentTypeList = results[1];
   let groupedOrdersByTag = results[2];
   let groupedOrdersByPaymentType = results[3];
-  let popularTagListObject = {};
-  let popularPaymentTypesObject = {};
-  sortEntities(tagList, groupedOrdersByTag, popularTagListObject, 4);
-  sortEntities(paymentTypeList, groupedOrdersByPaymentType, popularPaymentTypesObject, 5);
-  popularTagList = popularTagListObject.popularList;
-  popularPaymentTypeList = popularPaymentTypesObject.popularList;
+  sortListByGroupedList(tagList, groupedOrdersByTag);
+  sortListByGroupedList(paymentTypeList, groupedOrdersByPaymentType);
+  popularTagList = tagList.slice(1, 4);
+  popularPaymentTypeList = paymentTypeList.slice(1, 5);
   if (params) {
     myCallBack(params.req, params.res, params.next);
   }
 
 }
-
-function sortEntities(listToSort, groupedList, obj, countOfPopular) {
+function sortListByGroupedList(listToSort, groupedList) {
   listToSort.sort(function(a, b) {
     let aNumber = groupedList.find(item => item._id.equals(a._id));
     let bNumber = groupedList.find(item => item._id.equals(b._id));
@@ -352,7 +349,6 @@ function sortEntities(listToSort, groupedList, obj, countOfPopular) {
     }
     return bNumber - aNumber;
   });
-  obj.popularList = listToSort.slice(1, countOfPopular);
 }
 
 async function getList(startDate, finishDate) {
