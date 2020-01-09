@@ -326,8 +326,8 @@ async function populateAdditionalLists(myCallBack, params) {
   paymentTypeList = results[1];
   let groupedOrdersByTag = results[2];
   let groupedOrdersByPaymentType = results[3];
-  sortListByGroupedList(tagList, groupedOrdersByTag);
-  sortListByGroupedList(paymentTypeList, groupedOrdersByPaymentType);
+  Helper.sortListByGroupedList(tagList, groupedOrdersByTag);
+  Helper.sortListByGroupedList(paymentTypeList, groupedOrdersByPaymentType);
   popularTagList = tagList.slice(1, 4);
   popularPaymentTypeList = paymentTypeList.slice(1, 5);
   if (params) {
@@ -335,21 +335,7 @@ async function populateAdditionalLists(myCallBack, params) {
   }
 
 }
-function sortListByGroupedList(listToSort, groupedList) {
-  listToSort.sort(function(a, b) {
-    let aNumber = groupedList.find(item => item._id.equals(a._id));
-    let bNumber = groupedList.find(item => item._id.equals(b._id));
-    aNumber = aNumber ? aNumber.count : 0;
-    bNumber = bNumber ? bNumber.count : 0;
-    if (!a.MyNumber) {
-      a.MyNumber = aNumber;
-    }
-    if (!b.MyNumber) {
-      b.MyNumber = bNumber;
-    }
-    return bNumber - aNumber;
-  });
-}
+
 
 async function getList(startDate, finishDate) {
   let list = Helper.getListByDates(Order, startDate, finishDate);
