@@ -77,22 +77,22 @@ text-decoration: none;
 {
   color: green;
 }
-td.In{
+.dx-datagrid .dx-row-alt > td.In, td.In{
   background-color: lightgreen;
 }
-td.Out{
+.dx-datagrid .dx-row-alt > td.Out, td.Out{
   background-color: lightpink;
 }
-td.BetweenIn{
+.dx-datagrid .dx-row-alt > td.BetweenIn, td.BetweenIn{
   background-color: lightgreen;
 }
-td.BetweenOut{
+.dx-datagrid .dx-row-alt > td.BetweenOut, td.BetweenOut{
   background-color: lightpink;
 }
-td.Check{
+.dx-datagrid .dx-row-alt > td.Check, td.Check{
   background-color: #eff587;
 }
-td.Order{
+.dx-datagrid .dx-row-alt > td.Order, td.Order{
   background-color:lightpink;
 }
 #cmbAccountIn{

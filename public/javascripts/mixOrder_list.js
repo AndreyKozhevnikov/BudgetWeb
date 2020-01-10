@@ -7,7 +7,7 @@ window.onload = function() {
   new DevExpress.ui.dxDataGrid(gridElement,
     {
       dataSource: mixOrders_list,
-      // rowAlternationEnabled: true,
+       rowAlternationEnabled: true,
       showRowLines: true,
       showColumnLines: true,
       paging: {
