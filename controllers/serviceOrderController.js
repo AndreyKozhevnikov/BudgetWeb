@@ -171,7 +171,9 @@ function update_get(req, res, next) {
       let objToShow = objectToShowForm('Update SOrder', sOrder);
       res.render('serviceOrder_form', objToShow);
     });
-}; function update_post(req, res, next) {
+};
+
+function update_post(req, res, next) {
   let serviceOrder = createServiceOrderFromRequest(req, true);
 
   const errors = validationResult(req);
