@@ -7,6 +7,10 @@ window.onload = function() {
   new DevExpress.ui.dxDataGrid(gridElement,
     {
       dataSource: order_list,
+      filterRow: {
+        visible: true,
+        applyFilter: 'auto',
+      },
       rowAlternationEnabled: true,
       showRowLines: true,
       showColumnLines: true,
