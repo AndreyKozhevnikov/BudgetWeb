@@ -36,6 +36,11 @@ async function create_get(req, res, next) {
   res.render('serviceOrder_form', objToShow);
 };
 
+function getCloneArray(arr) {
+  let newArr = JSON.parse(JSON.stringify(arr));
+  return newArr;
+}
+
 async function objectToShowForm(mTitle, serviceOrder, errors) {
   let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder);
   let cutDate = Helper.getCutDate();
@@ -53,7 +58,7 @@ async function objectToShowForm(mTitle, serviceOrder, errors) {
       },
     },
   ]);
-  let accountInList = [...accountList];
+  let accountInList = getCloneArray(accountList);
   Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc);
 
   let sOrdersGroupedByOutAcc = await soAggregate([
@@ -70,7 +75,7 @@ async function objectToShowForm(mTitle, serviceOrder, errors) {
       },
     },
   ]);
-  let accountOutList = [...accountList];
+  let accountOutList = getCloneArray(accountList);
   Helper.sortListByGroupedList(accountOutList, sOrdersGroupedByOutAcc);
   let popularAccInList = accountInList.slice(0, 3);
   let popularAccOutList = accountOutList.slice(0, 3);

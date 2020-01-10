@@ -40,7 +40,7 @@ block content
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name}
+            option(value=account._id) #{account.Name} - #{account.MyNumber}
       table(style='width:100%')
         tr
         each acc, index in popularAccOutList
@@ -55,7 +55,7 @@ block content
           if serviceOrder_frm
             option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name}
+            option(value=account._id) #{account.Name} - #{account.MyNumber}
       table(style='width:100%')
         tr
         each acc, index in popularAccInList
