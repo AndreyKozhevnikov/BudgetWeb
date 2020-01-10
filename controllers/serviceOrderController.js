@@ -5,7 +5,11 @@ let Helper = require('../controllers/helperController.js');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
-let accountList;
+
+let accountInList;
+let accountOutList;
+let popularAccInList;
+let popularAccOutList;
 let typesList = [Helper.sOrderTypes.between, Helper.sOrderTypes.in, Helper.sOrderTypes.out];
 
 function createServiceOrderFromRequest(req, isUpdate) {
@@ -42,43 +46,6 @@ function getCloneArray(arr) {
 }
 
 async function objectToShowForm(mTitle, serviceOrder, errors) {
-  let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder);
-  let cutDate = Helper.getCutDate();
-  let sOrdersGroupedByInAcc = await soAggregate([
-    {
-      $match: {
-        DateOrder: { $gt: cutDate },
-        AccountIn: { $ne: null },
-      },
-    },
-    {
-      $group: {
-        _id: '$AccountIn',
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  let accountInList = getCloneArray(accountList);
-  Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc);
-
-  let sOrdersGroupedByOutAcc = await soAggregate([
-    {
-      $match: {
-        DateOrder: { $gt: cutDate },
-        AccountOut: { $ne: null },
-      },
-    },
-    {
-      $group: {
-        _id: '$AccountOut',
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  let accountOutList = getCloneArray(accountList);
-  Helper.sortListByGroupedList(accountOutList, sOrdersGroupedByOutAcc);
-  let popularAccInList = accountInList.slice(0, 3);
-  let popularAccOutList = accountOutList.slice(0, 3);
   let obj = {
     title: mTitle,
     accountInList: accountInList,
@@ -129,15 +96,52 @@ let create_post_array = [
 ];
 
 async function populateLists() {
-  let accountFind = Helper.promisify(Account.find, Account);
   try {
-    accountList = await accountFind({
+    let accountFind = Helper.promisify(Account.find, Account);
+    let accountList = await accountFind({
       $or: [
         { IsArchived: false },
         { IsArchived: { $exists: false } },
       ],
     }
     );
+    let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder);
+    let cutDate = Helper.getCutDate();
+    let sOrdersGroupedByInAcc = await soAggregate([
+      {
+        $match: {
+          DateOrder: { $gt: cutDate },
+          AccountIn: { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: '$AccountIn',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    accountInList = getCloneArray(accountList);
+    Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc);
+
+    let sOrdersGroupedByOutAcc = await soAggregate([
+      {
+        $match: {
+          DateOrder: { $gt: cutDate },
+          AccountOut: { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: '$AccountOut',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    accountOutList = getCloneArray(accountList);
+    Helper.sortListByGroupedList(accountOutList, sOrdersGroupedByOutAcc);
+    popularAccInList = accountInList.slice(0, 3);
+    popularAccOutList = accountOutList.slice(0, 3);
   } catch (err) {
     console.log(err);
   }
