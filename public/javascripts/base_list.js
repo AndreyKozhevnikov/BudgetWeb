@@ -40,16 +40,7 @@ function buildValueContainerForOrder(container, order, document) {
     let br = document.createElement('br');
     let lbl = document.createElement('label');
     lbl.classList.add('plainLabel');
-    let pNumber = order.PaymentNumber;
-    if (pNumber) {
-      lbl.innerHTML = order.PaymentType.Name + '-' + pNumber;
-      lbl.classList.add('yaLabel');
-      if (pNumber === 5) {
-        lbl.classList.add('yaLabel5');
-      }
-    } else {
-      lbl.innerHTML = order.PaymentType.Name;
-    }
+    lbl.innerHTML = order.PaymentType.Name;
     container[0].appendChild(br);
     container[0].appendChild(lbl);
   }

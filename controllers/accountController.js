@@ -571,14 +571,6 @@ async function getStaticObject() {
   statisticObject.allColorAttribute = statisticObject.diffAll < 0;
   statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
 
-  let allYaPaymentTypes = paymentTypeList.filter(p => p.IsYandex);
-  let yandexMappedList = allYaPaymentTypes.map(function(p) {
-    let newObj = { value: p.Name + '-' + p.CurrentCount, isFourth: p.CurrentCount === 4 };
-    return newObj;
-  });
-  statisticObject.yaList = yandexMappedList;
-
-
   return statisticObject;
 }
 

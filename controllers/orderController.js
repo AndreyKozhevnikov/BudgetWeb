@@ -142,26 +142,8 @@ function createOrderFromRequest(req, isUpdate) {
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
     PaymentType: req.body.fPaymentType,
-    PaymentNumber: req.body.fPaymentNumber,
     IsMonthCategory: Boolean(req.body.fIsMonthCategory),
   });
-  let paymentType = paymentTypeList.find(el => el._id.equals(order.PaymentType));
-  if (paymentType.IsYandex) {
-    if (!isUpdate) {
-      if (!order.IsMonthCategory) {
-        if (paymentType.CurrentCount > 4) {
-          paymentType.CurrentCount = 1;
-        } else {
-          paymentType.CurrentCount++;
-        }
-      }
-      order.PaymentNumber = paymentType.CurrentCount;
-    } else {
-      if (order.PaymentNumber)
-        paymentType.CurrentCount = order.PaymentNumber;
-    }
-    paymentType.save();
-  }
   if (isUpdate) {
     order._id = req.params.id;
   } else {
@@ -260,8 +242,7 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
 };
 
 async function populateAdditionalLists(myCallBack, params) {
-  let cutDate = Helper.getToday();
-  cutDate.setDate(cutDate.getDate() - 60);
+  let cutDate = Helper.getCutDate();
   let tagFind = Helper.promisify(Tag.find, Tag);
   let paymentTypeAggregate = Helper.promisify(PaymentType.aggregate, PaymentType);
   let orderAggregate = Helper.promisify(Order.aggregate, Order);
@@ -326,30 +307,16 @@ async function populateAdditionalLists(myCallBack, params) {
   paymentTypeList = results[1];
   let groupedOrdersByTag = results[2];
   let groupedOrdersByPaymentType = results[3];
-  popularTagList = getPopularItems(tagList, groupedOrdersByTag, 4);
-  popularPaymentTypeList = getPopularItems(paymentTypeList, groupedOrdersByPaymentType, 5);
+  Helper.sortListByGroupedList(tagList, groupedOrdersByTag);
+  Helper.sortListByGroupedList(paymentTypeList, groupedOrdersByPaymentType);
+  popularTagList = tagList.slice(1, 4);
+  popularPaymentTypeList = paymentTypeList.slice(1, 5);
   if (params) {
     myCallBack(params.req, params.res, params.next);
   }
 
 }
 
-function getPopularItems(listToSort, groupedList, countOfPopular) {
-  listToSort.sort(function(a, b) {
-    let aNumber = groupedList.find(item => item._id.equals(a._id));
-    let bNumber = groupedList.find(item => item._id.equals(b._id));
-    aNumber = aNumber ? aNumber.count : 0;
-    bNumber = bNumber ? bNumber.count : 0;
-    if (!a.MyNumber) {
-      a.MyNumber = aNumber;
-    }
-    if (!b.MyNumber) {
-      b.MyNumber = bNumber;
-    }
-    return bNumber - aNumber;
-  });
-  return listToSort.slice(1, countOfPopular);
-}
 
 async function getList(startDate, finishDate) {
   let list = Helper.getListByDates(Order, startDate, finishDate);

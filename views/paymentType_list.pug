@@ -16,8 +16,6 @@ block content
       thead
         tr 
           th Name 
-          th CurrentCount
-          th IsYandex
           th Acc
           th LocalId
       tbody
@@ -25,8 +23,6 @@ block content
           tr
             td 
               a(href=paymentType.url) #{paymentType.Name}
-            td #{paymentType.CurrentCount}
-            td #{paymentType.IsYandex}
             if (paymentType.Account)
               td   #{paymentType.Account.Name}
             else
