@@ -31,32 +31,47 @@ function createServiceOrderFromRequest(req, isUpdate) {
   return serviceOrder;
 }
 
-function create_get(req, res, next) {
-  let objToShow = objectToShowForm('Create ServiceOrder');
+async function create_get(req, res, next) {
+  let objToShow = await objectToShowForm('Create ServiceOrder');
   res.render('serviceOrder_form', objToShow);
 };
 
-function objectToShowForm(mTitle, serviceOrder, errors) {
+async function objectToShowForm(mTitle, serviceOrder, errors) {
+  let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder);
+  let cutDate = Helper.getCutDate();
+  let sOrdersGroupedByInAcc = await soAggregate([
+    {
+      $match: {
+        DateOrder: { $gt: cutDate },
+        AccountIn: { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: '$AccountIn',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
   let accountInList = [...accountList];
-  accountInList.sort((x, y) => {
-    if (x.OrderInNumber === undefined || x.OrderInNumber === null) {
-      x.OrderInNumber = 999;
-    }
-    if (y.OrderInNumber === undefined || y.OrderInNumber === null) {
-      y.OrderInNumber = 999;
-    }
-    return x.OrderInNumber - y.OrderInNumber;
-  });
+  Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc);
+
+  let sOrdersGroupedByOutAcc = await soAggregate([
+    {
+      $match: {
+        DateOrder: { $gt: cutDate },
+        AccountOut: { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: '$AccountOut',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
   let accountOutList = [...accountList];
-  accountOutList.sort((x, y) => {
-    if (x.OrderOutNumber === undefined || x.OrderOutNumber === null) {
-      x.OrderOutNumber = 999;
-    }
-    if (y.OrderOutNumber === undefined || y.OrderOutNumber === null) {
-      y.OrderOutNumber = 999;
-    }
-    return x.OrderOutNumber - y.OrderOutNumber;
-  });
+  Helper.sortListByGroupedList(accountOutList, sOrdersGroupedByOutAcc);
   let popularAccInList = accountInList.slice(0, 3);
   let popularAccOutList = accountOutList.slice(0, 3);
   let obj = {
