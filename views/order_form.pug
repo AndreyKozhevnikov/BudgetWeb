@@ -70,9 +70,6 @@ block content
       label(for='txLocId') LocalId:
       input#txLocId.form-control(type='number',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))
 
-      label(for='txLocId') PaymentNumber:
-      input#txCurrNumber.form-control(type='number',  name='fPaymentNumber' value=(undefined===fOrder ? '' : fOrder.PaymentNumber))
-
   if errors 
     ul
       for error in errors

@@ -95,18 +95,6 @@ td.Check{
 td.Order{
   background-color:lightpink;
 }
-.yaLabel {
-  background: aquamarine;
-}
-.yaLabel5 {
-  color: red;
-}
-.yaCell {
-  font-weight: 700;
-}
-.yaCell[isFourth] {
-  color:red;
-}
 #cmbAccountIn{
   background: aquamarine;
 }

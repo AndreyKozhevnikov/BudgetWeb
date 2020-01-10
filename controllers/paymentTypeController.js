@@ -13,15 +13,11 @@ function paymentType_create_get(req, res, next) {
 function createPaymentTypeFromRequest(req, isUpdate) {
   let paymentType = new PaymentType({
     Name: req.body.fName,
-    IsYandex: Boolean(req.body.fIsYandex),
     LocalId: req.body.fLocalId,
     Account: req.body.fAccount,
   });
   if (isUpdate) {
     paymentType._id = req.params.id;
-    paymentType.CurrentCount = req.body.fCurrentCount;
-  } else { // tofix
-    paymentType.CurrentCount = 0;
   }
   return paymentType;
 }
