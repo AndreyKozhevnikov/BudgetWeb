@@ -107,6 +107,12 @@ function sortListByGroupedList(listToSort, groupedList) {
   });
 }
 
+function getCutDate(){
+  let cutDate = getToday();
+  cutDate.setDate(cutDate.getDate() - 60);
+  return cutDate;
+}
+
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
 exports.createObjectId = createObjectId;
@@ -121,5 +127,6 @@ exports.getMonthName = getMonthName;
 exports.getFirstDateOfShifterMonth = getFirstDateOfShifterMonth;
 exports.promisify = promisify;
 exports.sortListByGroupedList = sortListByGroupedList;
+exports.getCutDate = getCutDate;
 
 

@@ -260,8 +260,7 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
 };
 
 async function populateAdditionalLists(myCallBack, params) {
-  let cutDate = Helper.getToday();
-  cutDate.setDate(cutDate.getDate() - 60);
+  let cutDate = Helper.getCutDate();
   let tagFind = Helper.promisify(Tag.find, Tag);
   let paymentTypeAggregate = Helper.promisify(PaymentType.aggregate, PaymentType);
   let orderAggregate = Helper.promisify(Order.aggregate, Order);
