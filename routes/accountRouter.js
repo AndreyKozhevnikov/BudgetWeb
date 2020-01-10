@@ -14,5 +14,4 @@ router.get('/aggregatedList/:direction/:date', account_controller.aggregatedList
 router.get('/createCheck/:id/:sum', account_controller.createCheck);
 // router.get('/createFOrdersForFeb19', account_controller.createFOrdersForFeb19);
 
-// router.get('/:id', account_controller.order_detail);
 module.exports = router;

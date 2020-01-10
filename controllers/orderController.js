@@ -20,22 +20,6 @@ async function order_list(req, res, next) {
   res.render('order_list', { order_list: order_list });
 };
 
-// Display detail page for a specific order.
-function order_detail(req, res, next) {
-  Order.findById(req.params.id)
-    .populate('ParentTag')
-    .exec((err, result) => {
-      if (err) {
-        next(err);
-      }
-      if (result == null) {
-        res.send('not found(');
-      } else {
-        res.render('order_detail', { title: 'Order', order: result });
-      }
-    });
-};
-
 // Display order create form on GET.
 function order_create_get(req, res, next) {
   res.render('order_form', {
@@ -335,7 +319,6 @@ async function getAccountOrders(id) {
 }
 populateAdditionalLists();
 
-exports.order_detail = order_detail;
 exports.order_list = order_list;
 exports.order_create_get = order_create_get;
 exports.order_create_get_withNewTag = order_create_get_withNewTag;

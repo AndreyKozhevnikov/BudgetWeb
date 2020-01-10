@@ -11,5 +11,4 @@ router.get('/account/:accountId', mixOrders_controller.listByAcc);
 // router.post('/:id/update', serviceOrder_controller.update_post);
 // router.get('/list', serviceOrder_controller.list);
 // router.get('/updatelists', serviceOrder_controller.updateLists);
-// router.get('/:id', account_controller.order_detail);
 module.exports = router;

@@ -12,23 +12,6 @@ function tag_list(req, res, next) {
   });
 };
 
-function tag_detail(req, res, next) {
-  Tag.findById(req.params.id).exec(function(err, tag) {
-    if (err) {
-      return next(err);
-    }
-    if (tag == null) {
-      let merr = new Error('Tag not m found');
-      merr.status = 404;
-      return next(merr);
-    }
-    res.render('tag_detail', {
-      title: 'Tag detail',
-      tag: tag,
-    });
-  });
-};
-
 function tag_create_get(req, res) {
   res.render('tag_form', { title: 'Create Tag' });
 };
@@ -146,7 +129,6 @@ function createTagFromBackup(tagFromBackup) {
 };
 
 exports.tag_list = tag_list;
-exports.tag_detail = tag_detail;
 exports.tag_create_get = tag_create_get;
 exports.tag_create_post = tag_create_post_array;
 exports.tag_update_get = tag_update_get;

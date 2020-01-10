@@ -23,7 +23,4 @@ router.get('/:id/update', tag_controller.tag_update_get);
 // POST request to update Tag.
 router.post('/:id/update', tag_controller.tag_update_post);
 
-// GET request for one Tag.
-router.get('/:id', tag_controller.tag_detail);
-
 module.exports = router;
