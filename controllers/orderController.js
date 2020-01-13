@@ -11,6 +11,24 @@ let popularPaymentTypeList;
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
+
+function getObjectToShowForm(mTitle, mOrder, mErrors) {
+  let objToShow = {
+    title: mTitle,
+    tag_list: tagList,
+    popularTagList: popularTagList,
+    paymentType_list: paymentTypeList,
+    popularPaymentTypeList: popularPaymentTypeList,
+  };
+  if (mOrder) {
+    objToShow.fOrder = mOrder;
+  }
+  if (mErrors) {
+    objToShow.errors = mErrors;
+  }
+  return objToShow;
+}
+
 // Display list of all orders.
 async function order_list(req, res, next) {
   let order_list = await Order.find({ IsDeleted: { $exists: false } })
@@ -22,13 +40,8 @@ async function order_list(req, res, next) {
 
 // Display order create form on GET.
 function order_create_get(req, res, next) {
-  res.render('order_form', {
-    title: 'Create Order',
-    tag_list: tagList,
-    popularTagList: popularTagList,
-    paymentType_list: paymentTypeList,
-    popularPaymentTypeList: popularPaymentTypeList,
-  });
+  let obj = getObjectToShowForm('Create Order');
+  res.render('order_form', obj);
 };
 
 function order_create_get_withNewTag(req, res, next) {
@@ -46,12 +59,8 @@ function order_create_post(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/errors messages.
-    res.render('order_form', {
-      title: 'Create Order (err)',
-      fOrder: order,
-      errors: errors.array(),
-      tag_list: tagList,
-    });
+    let obj = getObjectToShowForm('Create Order (err)', order, errors.array());
+    res.render('order_form', obj);
     return;
   } else {
     // Data from form is valid.
@@ -106,14 +115,8 @@ function order_update_get(req, res, next) {
     if (err) {
       return next(err);
     }
-    res.render('order_form', {
-      title: 'Update Order',
-      fOrder: order,
-      tag_list: tagList,
-      popularTagList: popularTagList,
-      paymentType_list: paymentTypeList,
-      popularPaymentTypeList: popularPaymentTypeList,
-    });
+    let obj = getObjectToShowForm('Update Order', order);
+    res.render('order_form', obj);
   });
 };
 function createOrderFromRequest(req, isUpdate) {
@@ -142,12 +145,8 @@ function order_update_post(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/errors messages.
-    res.render('order_form', {
-      title: 'Create Order (err)',
-      fOrder: order,
-      errors: errors.array(),
-      tag_list: tagList,
-    });
+    let obj = getObjectToShowForm('Update Order (err)', order, errors.array());
+    res.render('order_form', obj);
     return;
   } else {
     // Data from form is valid.
