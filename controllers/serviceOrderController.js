@@ -35,8 +35,8 @@ function createServiceOrderFromRequest(req, isUpdate) {
   return serviceOrder;
 }
 
-async function create_get(req, res, next) {
-  let objToShow = await objectToShowForm('Create ServiceOrder');
+function create_get(req, res, next) {
+  let objToShow = objectToShowForm('Create ServiceOrder');
   res.render('serviceOrder_form', objToShow);
 };
 
@@ -45,7 +45,7 @@ function getCloneArray(arr) {
   return newArr;
 }
 
-async function objectToShowForm(mTitle, serviceOrder, errors) {
+function objectToShowForm(mTitle, serviceOrder, errors) {
   let obj = {
     title: mTitle,
     accountInList: accountInList,
