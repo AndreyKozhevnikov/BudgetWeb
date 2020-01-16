@@ -32,6 +32,7 @@ function createServiceOrderFromRequest(req, isUpdate) {
   } else {
     serviceOrder.CreatedTime = new Date();
   }
+  Helper.dateForOrders = serviceOrder.DateOrder;
   return serviceOrder;
 }
 
@@ -53,6 +54,7 @@ function objectToShowForm(mTitle, serviceOrder, errors) {
     popularAccInList: popularAccInList,
     popularAccOutList: popularAccOutList,
     type_list: typesList,
+    dateForOrders: Helper.dateForOrders,
   };
   if (serviceOrder) {
     obj.serviceOrder_frm = serviceOrder;

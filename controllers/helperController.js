@@ -113,6 +113,8 @@ function getCutDate(){
   return cutDate;
 }
 
+let dateForOrders;
+
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
 exports.getListByDates = getListByDates;
 exports.createObjectId = createObjectId;
@@ -128,5 +130,6 @@ exports.getFirstDateOfShifterMonth = getFirstDateOfShifterMonth;
 exports.promisify = promisify;
 exports.sortListByGroupedList = sortListByGroupedList;
 exports.getCutDate = getCutDate;
+exports.dateForOrders = dateForOrders;
 
 

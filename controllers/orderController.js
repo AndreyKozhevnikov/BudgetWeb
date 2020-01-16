@@ -19,6 +19,7 @@ function getObjectToShowForm(mTitle, mOrder, mErrors) {
     popularTagList: popularTagList,
     paymentType_list: paymentTypeList,
     popularPaymentTypeList: popularPaymentTypeList,
+    dateForOrders: Helper.dateForOrders,
   };
   if (mOrder) {
     objToShow.fOrder = mOrder;
@@ -136,6 +137,7 @@ function createOrderFromRequest(req, isUpdate) {
   } else {
     order.CreatedTime = new Date();
   }
+  Helper.dateForOrders = order.DateOrder;
   return order;
 }
 // Handle order update on POST.

@@ -9,7 +9,7 @@ block content
       table(style='width:100%')
         tr
           td
-            input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='DateOrder_frm' value=(undefined===serviceOrder_frm ? moment().format('YYYY-MM-DD') : serviceOrder_frm.DateOrder_pugFormat))
+            input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='DateOrder_frm' value=(undefined===serviceOrder_frm ? moment(dateForOrders).format('YYYY-MM-DD') : serviceOrder_frm.DateOrder_pugFormat))
           td(style="width:10px")
           td
             button#btnSetYesterday.btn-primary(type='button' style='width:100%') Yesterday
