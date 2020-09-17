@@ -5,7 +5,7 @@ window.addEventListener('load', init);
 function init() {
   valueInput = document.getElementById('txValue');
   handleSubmitButton();
-  handleYesterDayButton();
+  handleSetDayButtons();
   focusValueInput();
   focusDescriptionAfterEnterNonNumberInValue();
   window.addEventListener('keydown', processKeyDown);
@@ -44,15 +44,18 @@ function disableOnSubmit() {
   setTimeout(() => (this.disabled = true), 1);
   setTimeout(() => (this.disabled = false), 1000);
 }
-function handleYesterDayButton() {
+function handleSetDayButtons() {
   let btnYesterDay = document.getElementById('btnSetYesterday');
-  btnYesterDay.addEventListener('click', setYesterday);
+  btnYesterDay.addEventListener('click', () => { changeOrderDate(-1); });
+
+  let btnTomorrow = document.getElementById('btnSetTomorrow');
+  btnTomorrow.addEventListener('click', () => { changeOrderDate(1); });
 }
 
-function setYesterday() {
+function changeOrderDate(shift) {
   let dtInput = document.getElementById('dtDateOrder');
   let stValue = dtInput.valueAsDate;
-  stValue.setDate(stValue.getDate() - 1);
+  stValue.setDate(stValue.getDate() + shift);
   dtInput.value = formatDate(stValue);
   focusValueInput();
 }
