@@ -1,44 +1,35 @@
-extends layout
+extends commonOrderWithDate
 block scripts
   script(src='/javascripts/base_form.js')
   script(src='/javascripts/sOrder_form.js')
-block content
+block contentOrder
   form#detail_form(method='POST' action='')
-    div.form-group
-      label(for='dtDateOrder') Date order:
-      table(style='width:100%')
-        tr
-          td
-            input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='DateOrder_frm' value=(undefined===serviceOrder_frm ? moment(dateForOrders).format('YYYY-MM-DD') : serviceOrder_frm.DateOrder_pugFormat))
-          td(style="width:10px")
-          td
-            button#btnSetYesterday.btn-primary(type='button' style='width:100%') Yesterday
     div.form-group
       table(style='width:100%')
         tr
         each tp, index in type_list
           td(style='width:33%')
             div
-              label.btn.btn-primary.btnForRB(for='rbType'+ tp style='width: 100%;' selected=(serviceOrder_frm? serviceOrder_frm.Type.toString()==tp:tp=='between')) #{tp}
-              input.hiddenRB(id='rbType'+ tp type='radio' name='Type_frm' value=tp checked=(serviceOrder_frm ? serviceOrder_frm.Type.toString()==tp:tp=='between'))
+              label.btn.btn-primary.btnForRB(for='rbType'+ tp style='width: 100%;' selected=(fOrder? fOrder.Type.toString()==tp:tp=='between')) #{tp}
+              input.hiddenRB(id='rbType'+ tp type='radio' name='Type_frm' value=tp checked=(fOrder ? fOrder.Type.toString()==tp:tp=='between'))
           if (index < 2)
             td(style="width:5px")
       table
         td
           label(for='txValue') Value:
-          input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Value))
+          input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===fOrder ? '' : fOrder.Value))
         td
           div#cashBackDv
             label(for='chIsCashBack') IsCashBack:
-            input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===serviceOrder_frm ? false :serviceOrder_frm.IsCashBack))
+            input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===fOrder ? false :fOrder.IsCashBack))
       label(for='txDescr') Description:
-      input#txDescr.form-control(type='text' name='Description_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.Description))      
+      input#txDescr.form-control(type='text' name='Description_frm' value=(undefined===fOrder ? '' : fOrder.Description))      
       label(for='cmbAccountOut') AccountOut:
       select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
         option(value='') Please Select
         for account in accountOutList
-          if serviceOrder_frm
-            option(value=account._id selected=(serviceOrder_frm.AccountOut && serviceOrder_frm.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
+          if fOrder
+            option(value=account._id selected=(fOrder.AccountOut && fOrder.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
             option(value=account._id) #{account.Name} - #{account.MyNumber}
       table(style='width:100%')
@@ -52,8 +43,8 @@ block content
       select#cmbAccountIn.form-control(type='select', name='AccountIn_frm')
         option(value='') Please Select
         for account in accountInList
-          if serviceOrder_frm
-            option(value=account._id selected=(serviceOrder_frm.AccountIn && serviceOrder_frm.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
+          if fOrder
+            option(value=account._id selected=(fOrder.AccountIn && fOrder.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
             option(value=account._id) #{account.Name} - #{account.MyNumber}
       table(style='width:100%')
@@ -65,7 +56,7 @@ block content
             td(style="width:10px")                          
     button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit
     label(for='txLocalId') LocalId:
-    input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===serviceOrder_frm ? '' : serviceOrder_frm.LocalId))          
+    input#txLocalId.form-control(type='number' name='LocalId_frm' value=(undefined===fOrder ? '' : fOrder.LocalId))          
   if errors 
     ul
       for error in errors

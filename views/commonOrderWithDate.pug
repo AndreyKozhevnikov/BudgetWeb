@@ -1,0 +1,16 @@
+extends layout
+block dateContent
+  form#detail_form(method='POST' action='')
+    div.form-group
+      label(for='dtDateOrder') Date order123123:
+      table(style='width:100%')
+        tr
+          td
+            button#btnSetYesterday.btnSetDate.btn-primary(type='button' style='width:100%') Yesterday
+          td(style="width:10px")          
+          td
+            input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment(dateForOrders).format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
+          td(style="width:10px")
+          td
+            button#btnSetTomorrow.btnSetDate.btn-primary(type='button' style='width:100%') Tomorrow
+    block contentOrder            

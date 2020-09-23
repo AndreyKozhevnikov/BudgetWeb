@@ -14,7 +14,7 @@ let typesList = [Helper.sOrderTypes.between, Helper.sOrderTypes.in, Helper.sOrde
 
 function createServiceOrderFromRequest(req, isUpdate) {
   var serviceOrder = new ServiceOrder({
-    DateOrder: req.body.DateOrder_frm,
+    DateOrder: req.body.fDate,
     Type: req.body.Type_frm,
     LocalId: req.body.LocalId_frm,
     Value: req.body.Value_frm,
@@ -57,7 +57,7 @@ function objectToShowForm(mTitle, serviceOrder, errors) {
     dateForOrders: Helper.dateForOrders,
   };
   if (serviceOrder) {
-    obj.serviceOrder_frm = serviceOrder;
+    obj.fOrder = serviceOrder;
   }
   if (errors) {
     obj.errors = errors;
@@ -199,12 +199,12 @@ function update_post(req, res, next) {
 };
 let update_post_array = [
   // validate fields
-  body('DateOrder_frm', 'Invalid date of order')
+  body('fDate', 'Invalid date of order')
     .optional({ checkFalsy: true })
     .isISO8601(),
   // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
   // Sanitize fields.
-  sanitizeBody('DateOrder_frm').toDate(),
+  sanitizeBody('fDate').toDate(),
   sanitizeBody('Value_frm')
     .trim()
     .escape(),

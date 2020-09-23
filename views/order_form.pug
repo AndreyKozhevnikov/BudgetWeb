@@ -1,22 +1,9 @@
-extends layout
+extends commonOrderWithDate
 block scripts
   script(src='/javascripts/base_form.js')
   script(src='/javascripts/order_form.js')
-block content
-  form#detail_form(method='POST' action='')
-    div.form-group
-      label(for='dtDateOrder') Date order:
-      table(style='width:100%')
-        tr
-          td
-            button#btnSetYesterday.btnSetDate.btn-primary(type='button' style='width:100%') Yesterday
-          td(style="width:10px")          
-          td
-            input#dtDateOrder.form-control(type='date', placeholder='Date' required='true' name='fDate' value=(undefined===fOrder ? moment(dateForOrders).format('YYYY-MM-DD') : fOrder.DateOrder_pugFormat))
-          td(style="width:10px")
-          td
-            button#btnSetTomorrow.btnSetDate.btn-primary(type='button' style='width:100%') Tomorrow
 
+block contentOrder
       label(for='cmbType') Parent tag:
       select#cmbType.form-control(type='select' name='fParentTag' required='true')
         for tag in tag_list
@@ -73,7 +60,7 @@ block content
       label(for='txLocId') LocalId:
       input#txLocId.form-control(type='number',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))
 
-  if errors 
-    ul
-      for error in errors
-        li!= error.msg
+      if errors 
+        ul
+        for error in errors
+          li!= error.msg
