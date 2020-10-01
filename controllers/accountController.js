@@ -536,6 +536,9 @@ async function getStaticObject() {
   //   return order.DateOrder >= firstDay;
   // });
   let sumAllOrders = thisMonthsorders.reduce(function(accumulator, order) {
+    if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
+      return accumulator;
+    }
     return accumulator + order.Value;
   }, 0);
   let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
