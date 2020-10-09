@@ -3,7 +3,6 @@ let moment = require('moment');
 
 let Account = require('../models/account.js');
 let Order = require('../models/order.js');
-let PaymentType = require('../models/paymentType.js');
 
 let Helper = require('../controllers/helperController.js');
 let FixRecordController = require('../controllers/fixRecordController.js');
