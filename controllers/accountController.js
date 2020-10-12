@@ -3,6 +3,7 @@ let moment = require('moment');
 
 let Account = require('../models/account.js');
 let Order = require('../models/order.js');
+let ServiceOrder = require('../models/serviceOrder.js');
 
 let Helper = require('../controllers/helperController.js');
 let FixRecordController = require('../controllers/fixRecordController.js');
@@ -535,6 +536,14 @@ async function getStaticObject() {
 
   let thisMonthsorders = await Order.find({ DateOrder: { $gte: firstDay } })
     .populate('ParentTag');
+  let thisMonthsSorders = await ServiceOrder.find({
+    DateOrder: { $gte: firstDay }, Type: 'between',
+    AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09')
+  });
+  for (let sOrderKey in thisMonthsSorders) {
+    let sOrder = thisMonthsSorders[sOrderKey];
+    thisMonthDates[sOrder.DateOrder].Value = thisMonthDates[sOrder.DateOrder].Value + sOrder.Value;
+  }
   // let thisMonthsorders = order_list.filter(function(order) {
   //   return order.DateOrder >= firstDay;
   // });
