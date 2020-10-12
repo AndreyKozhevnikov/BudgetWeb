@@ -542,7 +542,7 @@ async function getStaticObject() {
     if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
       return accumulator;
     }
-    thisMonthDates[order.DateOrder] = thisMonthDates[order.DateOrder] + order.Value;
+    thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
   }, 0);
   let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
@@ -577,14 +577,23 @@ async function getStaticObject() {
   statisticObject.allColorAttribute = statisticObject.diffAll < 0;
   statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
 
+  statisticObject.thisMonthDates = thisMonthDates;
+
   return statisticObject;
 }
+
+// function ConvertDatesList(dict) {
+//   let list = [];
+//   for (var key in dict) {
+//     var value = objects[key];
+//   }
+// }
 
 function getDaysArray(start, end) {
   let arr = {};
   let dt = new Date(start);
   while (dt <= end) {
-    arr[dt] = 0;
+    arr[dt] = {Value: 0};
     dt.setDate(dt.getDate() + 1);
   }
   return arr;

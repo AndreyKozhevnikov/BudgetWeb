@@ -82,5 +82,15 @@ block content
           label #{statObject.diffAllMonth}  
         td
           label #{statObject.moneyLeftAll}
+    table
+      tr
+        th Date
+        th Sum
+      each dateObject,key in statObject.thisMonthDates
+        tr
+          td
+            label #{key}
+          td
+            label #{dateObject.Value}
             
         
