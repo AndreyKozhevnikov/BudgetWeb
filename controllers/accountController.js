@@ -549,6 +549,7 @@ async function getStaticObject() {
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
   }, 0);
+  processthisMonthDates(thisMonthDates, normAllPerDay);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
   let leftDayCount = monthDayCount - dayCount + 1;
   if (leftDayCount < 1)
@@ -579,7 +580,16 @@ async function getStaticObject() {
 
   return statisticObject;
 }
+function processthisMonthDates(thisMonthDates, normAllPerDay) {
+  let allResult = 0;
+  for (let dateData in thisMonthDates) {
+    thisMonthDates[dateData].Diff = normAllPerDay - thisMonthDates[dateData].Value;
+    allResult = allResult + thisMonthDates[dateData].Diff;
+    thisMonthDates[dateData].TempResult = allResult;
+  }
 
+
+}
 // function ConvertDatesList(dict) {
 //   let list = [];
 //   for (var key in dict) {
@@ -591,7 +601,10 @@ function getDaysArray(start, end) {
   let arr = {};
   let dt = new Date(start);
   while (dt <= end) {
-    arr[dt] = {Value: 0};
+    arr[dt] = {
+      Value: 0,
+      Date: moment(dt).format('DD MMM YY'),
+    };
     dt.setDate(dt.getDate() + 1);
   }
   return arr;
