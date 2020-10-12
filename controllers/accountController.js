@@ -523,12 +523,16 @@ async function aggregatedList(req, res, next) {
   targetMonthData.MonthName = currMonthName;
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
+
 async function getStaticObject() {
   const normEatPerDay = 500;
   const normAllPerDay = 2300;
   let today = Helper.getToday();
   let dayCount = today.getDate();
   let firstDay = Helper.getFirstDateOfCurrentMonth();
+
+  let thisMonthDates = getDaysArray(firstDay, today);
+
   let thisMonthsorders = await Order.find({ DateOrder: { $gte: firstDay } })
     .populate('ParentTag');
   // let thisMonthsorders = order_list.filter(function(order) {
@@ -538,6 +542,7 @@ async function getStaticObject() {
     if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
       return accumulator;
     }
+    thisMonthDates[order.DateOrder] = thisMonthDates[order.DateOrder] + order.Value;
     return accumulator + order.Value;
   }, 0);
   let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
@@ -574,6 +579,16 @@ async function getStaticObject() {
 
   return statisticObject;
 }
+
+function getDaysArray(start, end) {
+  let arr = {};
+  let dt = new Date(start);
+  while (dt <= end) {
+    arr[dt] = 0;
+    dt.setDate(dt.getDate() + 1);
+  }
+  return arr;
+};
 
 function update_get(req, res, next) {
   Account.findById(req.params.id).exec(function(err, result) {
