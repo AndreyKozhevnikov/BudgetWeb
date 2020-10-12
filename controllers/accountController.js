@@ -538,18 +538,16 @@ async function getStaticObject() {
   // let thisMonthsorders = order_list.filter(function(order) {
   //   return order.DateOrder >= firstDay;
   // });
+  let sumEatOrders = 0;
   let sumAllOrders = thisMonthsorders.reduce(function(accumulator, order) {
     if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
       return accumulator;
     }
+    if (order.ParentTag.LocalId === 1) {
+      sumEatOrders = sumEatOrders + order.Value;
+    }
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
-  }, 0);
-  let sumEatOrders = thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.ParentTag.LocalId === 1) {
-      accumulator = accumulator + order.Value;
-    }
-    return accumulator;
   }, 0);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
   let leftDayCount = monthDayCount - dayCount + 1;
