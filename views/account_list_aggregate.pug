@@ -1,5 +1,8 @@
 extends layout
-
+block scripts
+   script.
+     var thisMonthDates=!{JSON.stringify(statObject.thisMonthDates)}; 
+   script(src='/javascripts/account_dates_chart.js')
 block content
   div(style='display:flex; align-items: center;')
     a(href='/account/aggregatedList/prev/' + currMonthData.Date,style='width:33%') Prev
@@ -98,5 +101,6 @@ block content
             label #{dateObject.Diff}
           td
             label #{dateObject.TempResult}
+    div#thisMonthDatesContainer            
             
         
