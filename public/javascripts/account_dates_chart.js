@@ -1,4 +1,4 @@
-/*global DevExpress thisMonthDates $ buildValueContainerForOrder*/
+/*global thisMonthDates $ */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -44,7 +44,6 @@ window.onload = function() {
       position: 'right',
       openValueField: 0,
       synchronizedValue: 0,
-      //visualRange: [null, 0],
     },
     ],
   });
