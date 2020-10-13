@@ -8,6 +8,19 @@ window.onload = function() {
   console.log('test111');
   $('#thisMonthDatesContainer').dxChart({
     dataSource: Object.values(thisMonthDates),
+    customizePoint: function() {
+      if (this.value > 0) {
+        return { color: '#00FF00', hoverStyle: { color: '#8c8cff' } };
+      } else {
+        return { color: '#FF0000', hoverStyle: { color: '#ff7c7c' } };
+      }
+    },
+    commonSeriesSettings: {
+      point: {
+        visible: false,
+      },
+    },
+    legend: { visible: false },
     series: [{
       argumentField: 'Date',
       valueField: 'Diff',
@@ -18,15 +31,20 @@ window.onload = function() {
     {
       argumentField: 'Date',
       valueField: 'TempResult',
-      color: '#ffaa66',
+      color: '#3333FF',
       axis: 'Running',
+      width: 4,
     }],
     valueAxis: [{
       name: 'Diff',
       position: 'left',
+      synchronizedValue: 0,
     }, {
       name: 'Running',
       position: 'right',
+      openValueField: 0,
+      synchronizedValue: 0,
+      //visualRange: [null, 0],
     },
     ],
   });
