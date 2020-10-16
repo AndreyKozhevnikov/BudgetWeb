@@ -2,6 +2,7 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
+let ServiceOrder = require('../models/serviceOrder.js');
 let Helper = require('../controllers/helperController.js');
 
 let tagList;
@@ -49,7 +50,7 @@ function order_create_get_withNewTag(req, res, next) {
   populateAdditionalLists(order_create_get, { req: req, res: res, next: next });
 }
 
-function order_create_post(req, res, next) {
+async function order_create_post(req, res, next) {
   let order = createOrderFromRequest(req, false);
   if (!order.Description) {
     let tagDescr = tagList.find(
@@ -65,6 +66,26 @@ function order_create_post(req, res, next) {
     return;
   } else {
     // Data from form is valid.
+    let ptId = order.PaymentType;
+    let pt = await PaymentType.findById(ptId).populate('Account');
+    let hasMoneyBox = pt.Account.HasMoneyBox;
+    if (hasMoneyBox === true) {
+      let left = getLeft(order.Value);
+      var serviceOrder = new ServiceOrder({
+        DateOrder: order.DateOrder,
+        Type: Helper.sOrderTypes.between,
+        Value: left,
+        Description: 'money box: ' + order.Description,
+        IsCashBack: false,
+        AccountOut: pt.Account,
+        AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
+      });
+      serviceOrder.save((err) => {
+        if (err) {
+          next(err);
+        }
+      });
+    }
     order.save(function(err) {
       if (err) {
         next(err);
@@ -73,6 +94,14 @@ function order_create_post(req, res, next) {
     });
   }
 };
+
+function getLeft(sum) {
+  // let quotient = Math.floor(sum / 50);
+  let remainder = sum % 50;
+  let res = 50 - remainder;
+  return res;
+}
+
 // Handle order create on POST.
 let order_create_post_array = [
   // validate fields
@@ -334,3 +363,4 @@ exports.createOrderFromBackup = createOrderFromBackup;
 exports.populateAdditionalLists = populateAdditionalLists;
 exports.getList = getList;
 exports.getAccountOrders = getAccountOrders;
+exports.getLeft = getLeft;
