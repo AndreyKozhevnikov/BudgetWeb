@@ -8,9 +8,10 @@ let AccountSchema = new Schema({
   LocalId: { type: Number, required: true },
   OrderNumber: { type: Number },
   IsUntouchable: { type: Boolean },
-  IsArchived: { type: Boolean},
+  IsArchived: { type: Boolean },
   OrderInNumber: { type: Number },
   OrderOutNumber: { type: Number },
+  HasMoneyBox: { type: Boolean },
 });
 
 AccountSchema.virtual('url').get(function() {

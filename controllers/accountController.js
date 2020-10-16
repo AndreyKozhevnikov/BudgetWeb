@@ -538,7 +538,7 @@ async function getStaticObject() {
     .populate('ParentTag');
   let thisMonthsSorders = await ServiceOrder.find({
     DateOrder: { $gte: firstDay }, Type: 'between',
-    AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09')
+    AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
   });
   let sumAllOrders = 0;
   for (let sOrderKey in thisMonthsSorders) {
