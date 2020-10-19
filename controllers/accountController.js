@@ -517,6 +517,11 @@ async function aggregatedList(req, res, next) {
 
   let accListObject = await getAggregatedAccList(firstDayOfTargetMonth, firstDayOfNextToTargetMonth);
   accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
+
+  let ali = accListObject.accList.find(el => el.name === 'TinkoffAli');
+  let alires = ali.result;
+  ali.result = alires + ' (' + (Number(alires) + 90000) + ')';
+
   let statisticObject = await getStaticObject();
   let currMonthName = Helper.getMonthName(firstDayOfTargetMonth);
   let targetMonthData = {};
