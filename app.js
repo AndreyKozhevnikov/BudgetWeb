@@ -64,7 +64,10 @@ mongoose.connect(mongoDB, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('333333333333Unhandled Rejection at:', promise, 'reason:', reason);
+  // Application specific logging, throwing an error, or other logic here
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   let err = new Error('Not Found ' + req.originalUrl);
