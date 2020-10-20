@@ -94,7 +94,7 @@ block content
       each dateObject in statObject.thisMonthDates
         tr
           td
-            label #{dateObject.Date}
+            a(href=dateObject.getDateUrl) #{dateObject.Date}
           td
             label #{dateObject.Value}
           td

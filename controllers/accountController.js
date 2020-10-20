@@ -620,6 +620,7 @@ function getDaysArray(start, end) {
     arr[dt] = {
       Value: 0,
       Date: moment(dt).format('DD MMM YY'),
+      getDateUrl: '/mixorders/date/' + moment(dt).format('YYYY-MM-DD'),
     };
     dt.setDate(dt.getDate() + 1);
   }
