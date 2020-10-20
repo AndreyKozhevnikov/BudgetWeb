@@ -44,8 +44,7 @@ async function listByDate(req, res, next) {
   try {
     let orders = await orderController.getList(dt, dtNext);
     let sOrders = await serviceOrderController.getList(dt, dtNext);
-    let fRecords = await fixRecordController.getList(dt, dtNext);
-    createAndShowMixOrdersList(orders, sOrders, fRecords, res, dt, null);
+    createAndShowMixOrdersList(orders, sOrders, [], res, dt, null);
   } catch (err) {
     console.log(err);
   }
