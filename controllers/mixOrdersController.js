@@ -5,15 +5,6 @@ let accountController = require('../controllers/accountController.js');
 let fixRecordController = require('../controllers/fixRecordController.js');
 let Helper = require('../controllers/helperController.js');
 
-
-async function list(req, res, next) {
-  let firstDayOfCurrMonth = Helper.getFirstDateOfCurrentMonth();
-  let sOrders = await serviceOrderController.getList(firstDayOfCurrMonth);
-  let orders = await orderController.getList(firstDayOfCurrMonth);
-  let fRecords = await fixRecordController.getList(firstDayOfCurrMonth);
-  createAndShowMixOrdersList(orders, sOrders, fRecords, res, 'All', null);
-}
-
 function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title, accId) {
   let mixOrders = getMixListFromOrders(orderList);
   let mixSOrders = getMixListFromSOrders(sOrderList, accId);
@@ -46,6 +37,20 @@ async function listByAcc(req, res, next) {
   }
 }
 
+async function listByDate(req, res, next) {
+  let dt = req.params.date;
+  let dtNext = new Date(dt);
+  dtNext.setDate(dtNext.getDate() + 1);
+  try {
+    let orders = await orderController.getList(dt, dtNext);
+    let sOrders = await serviceOrderController.getList(dt, dtNext);
+    let fRecords = await fixRecordController.getList(dt, dtNext);
+    createAndShowMixOrdersList(orders, sOrders, fRecords, res, dt, null);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 function getMixListFromOrders(orderList) {
   let mixOrders = [];
   for (let i = 0; i < orderList.length; i++) {
@@ -56,6 +61,7 @@ function getMixListFromOrders(orderList) {
       createdtime: order.CreatedTime,
       viewType: 'Order',
       viewData: order.ParentTag.Name,
+      accountOut: order.PaymentType.Name,
     };
     mixRecord.entity = order;
     mixRecord.type = Helper.mixOrderTypes.order;
@@ -72,6 +78,7 @@ function getMixListFromSOrders(sOrderList, accId) {
       date: sOrder.DateOrder,
       description: sOrder.Description,
       createdtime: sOrder.CreatedTime,
+
     };
     switch (sOrder.Type) {
       case Helper.sOrderTypes.in:
@@ -84,6 +91,7 @@ function getMixListFromSOrders(sOrderList, accId) {
       case Helper.sOrderTypes.out:
         mixRecord.viewType = 'Out';
         mixRecord.viewData = sOrder.Description;
+        mixRecord.accountOut = sOrder.AccountOut.Name;
         break;
       case Helper.sOrderTypes.between:
         if (sOrder.AccountIn.id === accId) {
@@ -93,6 +101,7 @@ function getMixListFromSOrders(sOrderList, accId) {
           mixRecord.viewType = 'BetweenOut';
           mixRecord.viewData = sOrder.AccountIn.Name;
         }
+        mixRecord.accountOut = sOrder.AccountOut.Name;
         break;
     }
     mixRecord.entity = sOrder;
@@ -120,6 +129,7 @@ function getMixListFromFixRecords(fixRecordsList) {
   return mixOrders;
 }
 
-exports.list = list;
+
 exports.listByAcc = listByAcc;
+exports.listByDate = listByDate;
 

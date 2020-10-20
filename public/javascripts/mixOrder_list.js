@@ -48,6 +48,9 @@ window.onload = function() {
           dataField: 'description',
         },
         {
+          dataField: 'accountOut',
+        },
+        {
           dataField: 'data',
           cellTemplate: (container, options) => {
             let lb = this.document.createElement('label');
