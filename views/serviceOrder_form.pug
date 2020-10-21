@@ -25,7 +25,7 @@ block contentOrder
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text' name='Description_frm' value=(undefined===fOrder ? '' : fOrder.Description))      
       label(for='cmbAccountOut') AccountOut:
-      select#cmbAccountOut.form-control(type='select', name='AccountOut_frm')
+      select#cmbAccountOut.form-control(type='select', name='AccountOut_frm' required='true')
         option(value='') Please Select
         for account in accountOutList
           if fOrder
@@ -40,7 +40,7 @@ block contentOrder
           if (index < 2)
             td(style="width:10px")            
       label(for='cmbAccountIn') AccountIn:
-      select#cmbAccountIn.form-control(type='select', name='AccountIn_frm')
+      select#cmbAccountIn.form-control(type='select', name='AccountIn_frm' required='true')
         option(value='') Please Select
         for account in accountInList
           if fOrder
