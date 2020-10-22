@@ -44,7 +44,7 @@ async function listByDate(req, res, next) {
   try {
     let orders = await orderController.getList(dt, dtNext);
     let sOrders = await serviceOrderController.getList(dt, dtNext);
-    sOrders = sOrders.filter(x => x.AccountIn.id === '5f5765b9a37660001491ac09');
+    sOrders = sOrders.filter(x => x.Type === 'between' && x.AccountIn.id === '5f5765b9a37660001491ac09');
     createAndShowMixOrdersList(orders, sOrders, [], res, dt, null);
   } catch (err) {
     console.log(err);
