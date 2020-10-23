@@ -13,3 +13,8 @@ it('should return true', () => {
   let res = myShortenFile.getLeft(14);
   assert.equal(res, 36);
 });
+it('should return true', () => {
+  let myShortenFile = require('../controllers/orderController');
+  let res = myShortenFile.getLeft(50);
+  assert.equal(res, 0);
+});
