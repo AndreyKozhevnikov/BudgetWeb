@@ -71,20 +71,22 @@ async function order_create_post(req, res, next) {
     let hasMoneyBox = pt.Account.HasMoneyBox;
     if (hasMoneyBox === true) {
       let left = getLeft(order.Value);
-      var serviceOrder = new ServiceOrder({
-        DateOrder: order.DateOrder,
-        Type: Helper.sOrderTypes.between,
-        Value: left,
-        Description: 'money box: ' + order.Description,
-        IsCashBack: false,
-        AccountOut: pt.Account,
-        AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
-      });
-      serviceOrder.save((err) => {
-        if (err) {
-          next(err);
-        }
-      });
+      if (left > 0) {
+        var serviceOrder = new ServiceOrder({
+          DateOrder: order.DateOrder,
+          Type: Helper.sOrderTypes.between,
+          Value: left,
+          Description: 'money box: ' + order.Description,
+          IsCashBack: false,
+          AccountOut: pt.Account,
+          AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
+        });
+        serviceOrder.save((err) => {
+          if (err) {
+            next(err);
+          }
+        });
+      }
     }
     order.save(function(err) {
       if (err) {
@@ -98,6 +100,9 @@ async function order_create_post(req, res, next) {
 function getLeft(sum) {
   // let quotient = Math.floor(sum / 50);
   let remainder = sum % 50;
+  if (remainder === 0) {
+    return 0;
+  }
   let res = 50 - remainder;
   return res;
 }
