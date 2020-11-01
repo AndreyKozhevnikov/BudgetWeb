@@ -218,9 +218,6 @@ function createFOrdersForFeb19(req, res, next) {
 // }
 
 async function getAggregatedAccList(startDate, finishDate) {
-  if (finishDate == null) {
-    finishDate = Helper.getTomorrow();
-  }
   let startDateExtractMonth = Helper.getToday();
   startDateExtractMonth.setDate(startDate.getDate() - 30);
   let accList = await Account.aggregate(
@@ -485,12 +482,23 @@ async function asyncForEach(array, callback) {
   }
   // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
 }
+
+async function createStartMonthRecords(startDateToCalculate){
+  let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
+  let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, startDateToCalculate);
+  let start = async () => {
+    await asyncForEach(accListObject.accList, async (accRecord) => {
+      await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.StartMonth,
+        startDateToCalculate,
+        accRecord._id,
+        accRecord.result);
+    });
+  };
+  await start();
+}
+
 async function aggregatedList(req, res, next) {
-  // FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime')
-  //   .then((fRec) => {
-  //     let lastFOrderTime = fRec.DateTime;
-  //     console.dir(arguments);
-  //   });
   let startDateToCalculate;
   let finishDateToCalculate;
   if (req.params.hasOwnProperty('direction')) {
@@ -499,20 +507,9 @@ async function aggregatedList(req, res, next) {
   } else {
     startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
     finishDateToCalculate = Helper.getTomorrow();
-    let lastFOrderTime = await FixRecordController.getTheLastFixRecordsDate();
-    if (lastFOrderTime < startDateToCalculate) {
-      let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-      let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, startDateToCalculate);
-      let start = async () => {
-        await asyncForEach(accListObject.accList, async (accRecord) => {
-          await FixRecordController.createFixRecord(
-            FixRecordController.FRecordTypes.StartMonth,
-            startDateToCalculate,
-            accRecord._id,
-            accRecord.result);
-        });
-      };
-      await start();
+    let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
+    if (lastStartMonthRecordDate < startDateToCalculate) {
+      await createStartMonthRecords(startDateToCalculate);
     }
   }
 
