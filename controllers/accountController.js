@@ -491,22 +491,23 @@ async function aggregatedList(req, res, next) {
   //     let lastFOrderTime = fRec.DateTime;
   //     console.dir(arguments);
   //   });
-  let firstDayOfTargetMonth;
-  let firstDayOfNextToTargetMonth = null;
+  let startDateToCalculate;
+  let finishDateToCalculate;
   if (req.params.hasOwnProperty('direction')) {
-    firstDayOfTargetMonth = Helper.getFirstDateOfShifterMonth(req.params.date, req.params.direction);
-    firstDayOfNextToTargetMonth = Helper.getFirstDateOfShifterMonth(firstDayOfTargetMonth, 'next');
+    startDateToCalculate = Helper.getFirstDateOfShifterMonth(req.params.date, req.params.direction);
+    finishDateToCalculate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'next');
   } else {
+    startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
+    finishDateToCalculate = Helper.getTomorrow();
     let lastFOrderTime = await FixRecordController.getTheLastFixRecordsDate();
-    firstDayOfTargetMonth = Helper.getFirstDateOfCurrentMonth();
-    if (lastFOrderTime < firstDayOfTargetMonth) {
+    if (lastFOrderTime < startDateToCalculate) {
       let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-      let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDayOfTargetMonth);
+      let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, startDateToCalculate);
       let start = async () => {
         await asyncForEach(accListObject.accList, async (accRecord) => {
           await FixRecordController.createFixRecord(
             FixRecordController.FRecordTypes.StartMonth,
-            firstDayOfTargetMonth,
+            startDateToCalculate,
             accRecord._id,
             accRecord.result);
         });
@@ -515,7 +516,7 @@ async function aggregatedList(req, res, next) {
     }
   }
 
-  let accListObject = await getAggregatedAccList(firstDayOfTargetMonth, firstDayOfNextToTargetMonth);
+  let accListObject = await getAggregatedAccList(startDateToCalculate, finishDateToCalculate);
   accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
 
   let ali = accListObject.accList.find(el => el.name === 'TinkoffAli');
@@ -523,9 +524,9 @@ async function aggregatedList(req, res, next) {
   ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
 
   let statisticObject = await getStaticObject();
-  let currMonthName = Helper.getMonthName(firstDayOfTargetMonth);
+  let currMonthName = Helper.getMonthName(startDateToCalculate);
   let targetMonthData = {};
-  targetMonthData.Date = firstDayOfTargetMonth.toISOString().substring(0, 10);
+  targetMonthData.Date = startDateToCalculate.toISOString().substring(0, 10);
   targetMonthData.MonthName = currMonthName;
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
