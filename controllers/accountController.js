@@ -520,7 +520,7 @@ async function aggregatedList(req, res, next) {
 
   let ali = accListObject.accList.find(el => el.name === 'TinkoffAli');
   let alires = ali.result;
-  ali.result = alires + ' (' + (Number(alires) + 90000) + ')';
+  ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
 
   let statisticObject = await getStaticObject();
   let currMonthName = Helper.getMonthName(firstDayOfTargetMonth);
