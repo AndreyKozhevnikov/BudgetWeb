@@ -520,7 +520,7 @@ async function aggregatedList(req, res, next) {
   let alires = ali.result;
   ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
 
-  let statisticObject = await getStaticObject();
+  let statisticObject = await getStaticObject(startDateToCalculate, finishDateToCalculate);
   let currMonthName = Helper.getMonthName(startDateToCalculate);
   let targetMonthData = {};
   targetMonthData.Date = startDateToCalculate.toISOString().substring(0, 10);
@@ -528,19 +528,18 @@ async function aggregatedList(req, res, next) {
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 
-async function getStaticObject() {
+async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 500;
   const normAllPerDay = 2300;
-  let today = Helper.getToday();
-  let dayCount = today.getDate();
-  let firstDay = Helper.getFirstDateOfCurrentMonth();
+  finishDateToCalculate.setDate(finishDateToCalculate.getDate() - 1);
+  let dayCount = finishDateToCalculate.getDate();
 
-  let thisMonthDates = getDaysArray(firstDay, today);
+  let thisMonthDates = getDaysArray(startDateToCalculate, finishDateToCalculate);
 
-  let thisMonthsorders = await Order.find({ DateOrder: { $gte: firstDay } })
+  let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate } })
     .populate('ParentTag');
   let thisMonthsSorders = await ServiceOrder.find({
-    DateOrder: { $gte: firstDay }, Type: 'between',
+    DateOrder: { $gte: startDateToCalculate }, Type: 'between',
     AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
   });
   let sumAllOrders = 0;
