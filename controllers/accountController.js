@@ -531,15 +531,16 @@ async function aggregatedList(req, res, next) {
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 500;
   const normAllPerDay = 2300;
-  finishDateToCalculate.setDate(finishDateToCalculate.getDate() - 1);
-  let dayCount = finishDateToCalculate.getDate();
+  let lastMonthDate = new Date();
+  lastMonthDate.setDate(finishDateToCalculate.getDate() - 1);
+  let dayCount = lastMonthDate.getDate();
 
-  let thisMonthDates = getDaysArray(startDateToCalculate, finishDateToCalculate);
+  let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate);
 
-  let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate } })
+  let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate } })
     .populate('ParentTag');
   let thisMonthsSorders = await ServiceOrder.find({
-    DateOrder: { $gte: startDateToCalculate }, Type: 'between',
+    DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate }, Type: 'between',
     AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
   });
   let sumAllOrders = 0;
