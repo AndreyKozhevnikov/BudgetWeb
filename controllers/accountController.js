@@ -531,8 +531,8 @@ async function aggregatedList(req, res, next) {
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 500;
   const normAllPerDay = 2300;
-  let lastMonthDate = new Date();
-  lastMonthDate.setDate(finishDateToCalculate.getDate() - 1);
+  let lastMonthDate = new Date(finishDateToCalculate.getTime());
+  lastMonthDate.setDate(lastMonthDate.getDate() - 1);
   let dayCount = lastMonthDate.getDate();
 
   let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate);
