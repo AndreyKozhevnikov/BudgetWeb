@@ -12,6 +12,7 @@ let AccountSchema = new Schema({
   OrderInNumber: { type: Number },
   OrderOutNumber: { type: Number },
   HasMoneyBox: { type: Boolean },
+  MoneyBoxId: { type: Schema.ObjectId, ref: 'Account' },
 });
 
 AccountSchema.virtual('url').get(function() {
