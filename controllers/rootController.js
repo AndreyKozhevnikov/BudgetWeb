@@ -105,7 +105,11 @@ async function fullRestore(req, res, next) {
     let entityCollection = backupObject[entityCollectionProperty];
     for (let i = 0; i < entityCollection.length; i++) {
       let savedEntity = entityCollection[i];
-      let createdEntity = new constructors[entityCollectionProperty](savedEntity);
+      let constructor = constructors[entityCollectionProperty];
+      if (constructor == null){
+        continue;
+      }
+      let createdEntity = new constructor(savedEntity);
       try {
         await createdEntity.save();
       } catch (err) {
