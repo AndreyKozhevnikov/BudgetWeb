@@ -27,20 +27,20 @@ block contentOrder
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text', placeholder='Order description' name='fDescription' value=(undefined===fOrder ? '' : fOrder.Description))
       br
-      label(for='cmbPaymentType') PaymentType:
-      select#cmbPaymentType.form-control(type='select' name='fPaymentType')
-        for paymentType in paymentType_list
+      label(for='cmbAccount') PaymentAccount:
+      select#cmbAccount.form-control(type='select' name='fPaymentAccount')
+        for account in accountList
           if fOrder
-            option(value=paymentType._id selected=(fOrder.PaymentType && fOrder.PaymentType.toString()==paymentType._id.toString() ? 'selected' : false)) #{paymentType.Name} - #{paymentType.MyNumber}
+            option(value=account._id selected=(fOrder.PaymentAccount && fOrder.PaymentAccount.toString()==account._id.toString() ? 'selected' : false)) #{account.Name} - #{account.MyNumber}
           else
-            option(value=paymentType._id) #{paymentType.Name} - #{paymentType.MyNumber}
+            option(value=account._id) #{account.Name} - #{account.MyNumber}
       br
       table(style='width:100%')
         tr
-        each ptype, index in popularPaymentTypeList
+        each account, index in popularAccountList
           td
-            button.btn.btn-primary(type='button' style='width:100%' onclick='popularPTypeButtonClick(\'' + ptype._id + '\')') #{ptype.Name}
-          if (index < popularPaymentTypeList.length-1)
+            button.btn.btn-primary(type='button' style='width:100%' onclick='popularAccountButtonClick(\'' + account._id + '\')') #{account.Name}
+          if (index < popularAccountList.length-1)
             td(style="width:10px")
       br            
       button#btnDisableAfterClick.btn.btn-primary(type='submit') Submit

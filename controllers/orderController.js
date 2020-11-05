@@ -2,13 +2,15 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let PaymentType = require('../models/paymentType.js');
+let Account = require('../models/account.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let Helper = require('../controllers/helperController.js');
 
 let tagList;
 let popularTagList;
-let paymentTypeList;
-let popularPaymentTypeList;
+let accountList;
+let popularAccountList;
+
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -18,8 +20,8 @@ function getObjectToShowForm(mTitle, mOrder, mErrors) {
     title: mTitle,
     tag_list: tagList,
     popularTagList: popularTagList,
-    paymentType_list: paymentTypeList,
-    popularPaymentTypeList: popularPaymentTypeList,
+    accountList: accountList,
+    popularAccountList: popularAccountList,
     dateForOrders: Helper.dateForOrders,
   };
   if (mOrder) {
@@ -78,9 +80,9 @@ async function order_create_post(req, res, next) {
     return;
   } else {
     // Data from form is valid.
-    let ptId = order.PaymentType;
-    let pt = await PaymentType.findById(ptId).populate('Account');
-    let hasMoneyBox = pt.Account.HasMoneyBox;
+    let accId = order.PaymentAccount;
+    let acc = await Account.findById(accId);
+    let hasMoneyBox = acc.HasMoneyBox;
     if (hasMoneyBox === true) {
       let left = getLeft(order.Value);
       if (left > 0) {
@@ -90,8 +92,8 @@ async function order_create_post(req, res, next) {
           Value: left,
           Description: 'money box: ' + order.Description,
           IsCashBack: false,
-          AccountOut: pt.Account,
-          AccountIn: Helper.createObjectId(pt.Account.MoneyBoxId),
+          AccountOut: acc,
+          AccountIn: Helper.createObjectId(acc.MoneyBoxId),
         });
         serviceOrder.save((err) => {
           if (err) {
@@ -175,7 +177,7 @@ function createOrderFromRequest(req, isUpdate) {
     IsJourney: Boolean(req.body.fIsJourney),
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
-    PaymentType: req.body.fPaymentType,
+    PaymentAccount: req.body.fPaymentAccount,
     IsMonthCategory: Boolean(req.body.fIsMonthCategory),
   });
   if (isUpdate) {
@@ -240,6 +242,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
   })
     .populate('ParentTag')
     .populate('PaymentType')
+    .populate('PaymentAccount')
     .exec(function(err, list_orders) {
       if (err) {
         return next(err);
@@ -261,10 +264,11 @@ function deleteOrders(req, res, next) {
   });
 };
 
-function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
+function createOrderFromBackup(tmpOrder, storedTag, storedPType, storedAcc) {
   let order = new Order(tmpOrder);
   order.ParentTag = storedTag;
   order.PaymentType = storedPType;
+  order.PaymentAccount = storedAcc;
   order.save(function(err, savedTag) {
     if (err) {
       console.dir(err);
@@ -275,29 +279,18 @@ function createOrderFromBackup(tmpOrder, storedTag, storedPType) {
 async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getCutDate();
   let tagFind = Helper.promisify(Tag.find, Tag);
-  let paymentTypeAggregate = Helper.promisify(PaymentType.aggregate, PaymentType);
+  let accountAggregate = Helper.promisify(Account.aggregate, Account);
   let orderAggregate = Helper.promisify(Order.aggregate, Order);
   let results;
   try {
     results = await Promise.all([
       tagFind(),
-      paymentTypeAggregate([
-        {
-          $lookup: {
-            from: 'accounts',
-            localField: 'Account',
-            foreignField: '_id',
-            as: 'AccountV',
-          },
-        },
-        {
-          $unwind: '$AccountV',
-        },
+      accountAggregate([
         {
           $match: {
             $or: [
-              { 'AccountV.IsArchived': false },
-              { 'AccountV.IsArchived': { $exists: false } },
+              { IsArchived: false },
+              { IsArchived: { $exists: false } },
             ],
           },
         },
@@ -325,7 +318,7 @@ async function populateAdditionalLists(myCallBack, params) {
         },
         {
           $group: {
-            _id: '$PaymentType',
+            _id: '$PaymentAccount',
             count: { $sum: 1 },
           },
         },
@@ -335,13 +328,15 @@ async function populateAdditionalLists(myCallBack, params) {
     console.log('error' + err);
   }
   tagList = results[0];
-  paymentTypeList = results[1];
+  accountList = results[1];
   let groupedOrdersByTag = results[2];
-  let groupedOrdersByPaymentType = results[3];
+  let groupedOrdersByAccount = results[3];
+
+
   Helper.sortListByGroupedList(tagList, groupedOrdersByTag);
-  Helper.sortListByGroupedList(paymentTypeList, groupedOrdersByPaymentType);
+  Helper.sortListByGroupedList(accountList, groupedOrdersByAccount);
   popularTagList = tagList.slice(1, 4);
-  popularPaymentTypeList = paymentTypeList.slice(1, 5);
+  popularAccountList = accountList.slice(1, 5);
   if (params) {
     myCallBack(params.req, params.res, params.next);
   }
@@ -357,8 +352,7 @@ async function getList(startDate, finishDate) {
   return list;
 }
 async function getAccountOrders(id) {
-  let paymentTypes = await PaymentType.find({ Account: Helper.createObjectId(id) });
-  let list = Order.find({ PaymentType: { $in: paymentTypes } });
+  let list = Order.find({ PaymentAccount: Helper.createObjectId(id) });
   list
     .populate('ParentTag')
     .populate('PaymentAccount');

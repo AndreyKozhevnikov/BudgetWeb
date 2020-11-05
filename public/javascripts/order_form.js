@@ -23,8 +23,8 @@ function focusInputAfterTypeSelection(){
 
 
 /* eslint-disable */
-function popularPTypeButtonClick(ptypeId) {
+function popularAccountButtonClick(accId) {
   /* eslint-enable */
-  let cmbPaymentType = document.getElementById('cmbPaymentType');
-  cmbPaymentType.value = ptypeId;
+  let cmbAccount = document.getElementById('cmbAccount');
+  cmbAccount.value = accId;
 };
