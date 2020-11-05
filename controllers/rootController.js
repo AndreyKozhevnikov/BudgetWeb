@@ -19,6 +19,7 @@ let constructors = {
 let formidable = require('formidable');
 let fs = require('fs');
 let order_controller = require('../controllers/orderController.js');
+let account_controller = require('../controllers/accountController.js');
 let sOrder_controller = require('../controllers/serviceOrderController.js');
 let tag_controller = require('../controllers/tagController.js');
 let fixRecord_controller = require('../controllers/fixRecordController.js');
@@ -148,6 +149,7 @@ function deleteAll(req, res, next) {
   tag_controller.deleteTags(res, res, next);
   fixRecord_controller.deleteTypes(req, res, next);
   sOrder_controller.deleteTypes(req, res, next);
+  account_controller.deleteTypes(req, res, next);
 }
 
 function deleteStartMonthRecords(req, res, next) {

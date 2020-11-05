@@ -545,6 +545,17 @@ let update_post_array = [
   (req, res, next) => update_post(req, res, next),
 ];
 
+function deleteTypes(req, res, next) {
+  Account.remove({}, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      res.end('success');
+    }
+
+  });
+}
+
 exports.create_get = create_get;
 exports.create_post = create_post_array;
 exports.list = list;
@@ -553,4 +564,5 @@ exports.update_get = update_get;
 exports.update_post = update_post_array;
 exports.getAccountName = getAccountName;
 exports.createCheck = createCheck;
+exports.deleteTypes = deleteTypes;
 
