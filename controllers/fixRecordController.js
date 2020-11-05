@@ -17,6 +17,8 @@ async function createFixRecord(type, datetime, account, value) {
 
 async function getTheLastFixRecordsDate() {
   let lastFRecord = await FixRecord.findOne({ Type: FRecordTypes.StartMonth }).sort('-DateTime');
+  if (lastFRecord == null)
+    return new Date();
   return lastFRecord.DateTime;
 }
 
