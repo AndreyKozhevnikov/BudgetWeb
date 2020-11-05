@@ -13,7 +13,6 @@ let OrderSchema = new Schema({
   Tags: { type: String, max: 100 },
   LocalId: { type: Number },
   IsDeleted: { type: Boolean },
-  PaymentType: { type: Schema.ObjectId, ref: 'PaymentType' },
   PaymentAccount: { type: Schema.ObjectId, ref: 'Account' },
   IsMonthCategory: { type: Boolean },
   CreatedTime: { type: Date },

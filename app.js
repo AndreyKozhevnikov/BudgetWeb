@@ -13,7 +13,6 @@ let tagRouter = require('./routes/tagRouter.js');
 let orderRouter = require('./routes/orderRouter.js');
 let accountRouter = require('./routes/accountRouter.js');
 let serviceOrderRouter = require('./routes/serviceOrderRouter.js');
-let paymentTypeRouter = require('./routes/paymentTypeRouter.js');
 let rootRouter = require('./routes/rootRouter.js');
 let mixOrdersRouter = require('./routes/mixOrdersRouter.js');
 
@@ -48,7 +47,6 @@ app.use('/tag', tagRouter);
 app.use('/order', orderRouter);
 app.use('/account', accountRouter);
 app.use('/serviceOrder', serviceOrderRouter);
-app.use('/paymentType', paymentTypeRouter);
 app.use('/mixOrders', mixOrdersRouter);
 
 // Set up mongoose connection

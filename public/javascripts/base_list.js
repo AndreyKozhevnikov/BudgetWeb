@@ -36,11 +36,11 @@ function buildValueContainerForOrder(container, order, document) {
   a.href = '/order/' + order._id + '/update';
   a.style.wordWrap = 'break-word';
   container[0].appendChild(a);
-  if (order.PaymentType) {
+  if (order.PaymentAccount) {
     let br = document.createElement('br');
     let lbl = document.createElement('label');
     lbl.classList.add('plainLabel');
-    lbl.innerHTML = order.PaymentType.Name;
+    lbl.innerHTML = order.PaymentAccount.Name;
     container[0].appendChild(br);
     container[0].appendChild(lbl);
   }

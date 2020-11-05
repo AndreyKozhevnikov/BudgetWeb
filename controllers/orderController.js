@@ -1,7 +1,6 @@
 'use strict';
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
-let PaymentType = require('../models/paymentType.js');
 let Account = require('../models/account.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let Helper = require('../controllers/helperController.js');
@@ -49,7 +48,7 @@ async function populatePaymentAccount(req, res, next){
 async function order_list(req, res, next) {
   let order_list = await Order.find({ IsDeleted: { $exists: false } })
     .populate('ParentTag')
-    .populate('PaymentType')
+    .populate('PaymentAccount')
     .sort({ DateOrder: -1, _id: -1 });
   res.render('order_list', { order_list: order_list });
 };
@@ -241,7 +240,6 @@ function orders_exportWithEmptyLocalId(req, res, next) {
     LocalId: null,
   })
     .populate('ParentTag')
-    .populate('PaymentType')
     .populate('PaymentAccount')
     .exec(function(err, list_orders) {
       if (err) {
@@ -267,7 +265,6 @@ function deleteOrders(req, res, next) {
 function createOrderFromBackup(tmpOrder, storedTag, storedPType, storedAcc) {
   let order = new Order(tmpOrder);
   order.ParentTag = storedTag;
-  order.PaymentType = storedPType;
   order.PaymentAccount = storedAcc;
   order.save(function(err, savedTag) {
     if (err) {

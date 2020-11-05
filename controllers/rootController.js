@@ -2,7 +2,6 @@
 let Order = require('../models/order.js');
 let Account = require('../models/account.js');
 let Tag = require('../models/tag.js');
-let PaymentType = require('../models/paymentType.js');
 let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
@@ -12,7 +11,6 @@ let constructors = {
   Order: Order,
   Account: Account,
   Tag: Tag,
-  PaymentType: PaymentType,
   FixRecord: FixRecord,
   ServiceOrder: ServiceOrder,
   User: User,
@@ -23,7 +21,6 @@ let fs = require('fs');
 let order_controller = require('../controllers/orderController.js');
 let sOrder_controller = require('../controllers/serviceOrderController.js');
 let tag_controller = require('../controllers/tagController.js');
-let paymentType_controller = require('../controllers/paymentTypeController.js');
 let fixRecord_controller = require('../controllers/fixRecordController.js');
 let stream = require('stream');
 
@@ -48,7 +45,6 @@ async function fullbackup(req, res, next) {
   let ordersList = await Order.find();
   let accList = await Account.find();
   let fRecordsList = await FixRecord.find();
-  let pTypesList = await PaymentType.find();
   let sOrdersList = await ServiceOrder.find();
   let tagsList = await Tag.find();
   let usersList = await User.find();
@@ -57,7 +53,6 @@ async function fullbackup(req, res, next) {
     Order: ordersList,
     Account: accList,
     FixRecord: fRecordsList,
-    PaymentType: pTypesList,
     ServiceOrder: sOrdersList,
     Tag: tagsList,
     User: usersList,
@@ -151,7 +146,6 @@ function deleteAll(req, res, next) {
   }
   order_controller.deleteOrders(req, res, next);
   tag_controller.deleteTags(res, res, next);
-  paymentType_controller.deleteTypes(req, res, next);
   fixRecord_controller.deleteTypes(req, res, next);
   sOrder_controller.deleteTypes(req, res, next);
 }
@@ -211,9 +205,6 @@ function updatelocalid(req, res, next) {
       break;
     case 'Tag':
       rt = Tag;
-      break;
-    case 'PaymentType':
-      rt = PaymentType;
       break;
   }
   rt.findById(id, function(err, theEntity) {
