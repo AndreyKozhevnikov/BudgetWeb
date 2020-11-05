@@ -2,6 +2,7 @@
 let Order = require('../models/order.js');
 let Account = require('../models/account.js');
 let Tag = require('../models/tag.js');
+let PaymentType = require('../models/paymentType.js');
 let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
@@ -11,6 +12,7 @@ let constructors = {
   Order: Order,
   Account: Account,
   Tag: Tag,
+  PaymentType: PaymentType,
   FixRecord: FixRecord,
   ServiceOrder: ServiceOrder,
   User: User,
@@ -19,7 +21,6 @@ let constructors = {
 let formidable = require('formidable');
 let fs = require('fs');
 let order_controller = require('../controllers/orderController.js');
-let account_controller = require('../controllers/accountController.js');
 let sOrder_controller = require('../controllers/serviceOrderController.js');
 let tag_controller = require('../controllers/tagController.js');
 let fixRecord_controller = require('../controllers/fixRecordController.js');
@@ -46,6 +47,7 @@ async function fullbackup(req, res, next) {
   let ordersList = await Order.find();
   let accList = await Account.find();
   let fRecordsList = await FixRecord.find();
+  let pTypesList = await PaymentType.find();
   let sOrdersList = await ServiceOrder.find();
   let tagsList = await Tag.find();
   let usersList = await User.find();
@@ -54,6 +56,7 @@ async function fullbackup(req, res, next) {
     Order: ordersList,
     Account: accList,
     FixRecord: fRecordsList,
+    PaymentType: pTypesList,
     ServiceOrder: sOrdersList,
     Tag: tagsList,
     User: usersList,
@@ -102,14 +105,7 @@ async function fullRestore(req, res, next) {
     let entityCollection = backupObject[entityCollectionProperty];
     for (let i = 0; i < entityCollection.length; i++) {
       let savedEntity = entityCollection[i];
-      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-jan-20')){
-        continue;
-      }
-      let constructor = constructors[entityCollectionProperty];
-      if (constructor == null){
-        continue;
-      }
-      let createdEntity = new constructor(savedEntity);
+      let createdEntity = new constructors[entityCollectionProperty](savedEntity);
       try {
         await createdEntity.save();
       } catch (err) {
@@ -156,7 +152,6 @@ function deleteAll(req, res, next) {
   tag_controller.deleteTags(res, res, next);
   fixRecord_controller.deleteTypes(req, res, next);
   sOrder_controller.deleteTypes(req, res, next);
-  account_controller.deleteTypes(req, res, next);
 }
 
 function deleteStartMonthRecords(req, res, next) {
@@ -214,6 +209,9 @@ function updatelocalid(req, res, next) {
       break;
     case 'Tag':
       rt = Tag;
+      break;
+    case 'PaymentType':
+      rt = PaymentType;
       break;
   }
   rt.findById(id, function(err, theEntity) {
