@@ -353,7 +353,7 @@ async function getList(startDate, finishDate) {
   let list = Helper.getListByDates(Order, startDate, finishDate);
   list
     .populate('ParentTag')
-    .populate('PaymentType');
+    .populate('PaymentAccount');
   return list;
 }
 async function getAccountOrders(id) {
@@ -361,7 +361,7 @@ async function getAccountOrders(id) {
   let list = Order.find({ PaymentType: { $in: paymentTypes } });
   list
     .populate('ParentTag')
-    .populate('PaymentType');
+    .populate('PaymentAccount');
   return list;
 }
 populateAdditionalLists();
