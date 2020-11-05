@@ -262,16 +262,6 @@ function deleteOrders(req, res, next) {
   });
 };
 
-function createOrderFromBackup(tmpOrder, storedTag, storedPType, storedAcc) {
-  let order = new Order(tmpOrder);
-  order.ParentTag = storedTag;
-  order.PaymentAccount = storedAcc;
-  order.save(function(err, savedTag) {
-    if (err) {
-      console.dir(err);
-    }
-  });
-};
 
 async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getCutDate();
@@ -367,7 +357,6 @@ exports.order_update_get = order_update_get;
 exports.order_update_post = order_update_post_array;
 exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
 exports.deleteOrders = deleteOrders;
-exports.createOrderFromBackup = createOrderFromBackup;
 exports.populateAdditionalLists = populateAdditionalLists;
 exports.getList = getList;
 exports.getAccountOrders = getAccountOrders;

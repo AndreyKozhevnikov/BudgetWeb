@@ -118,20 +118,9 @@ function deleteTags(req, res, next) {
   });
 };
 
-function createTagFromBackup(tagFromBackup) {
-  let tag = new Tag(tagFromBackup);
-  tag.save(function(err) {
-    if (err) {
-      console.dir(err);
-    }
-  });
-  return tag;
-};
-
 exports.tag_list = tag_list;
 exports.tag_create_get = tag_create_get;
 exports.tag_create_post = tag_create_post_array;
 exports.tag_update_get = tag_update_get;
 exports.tag_update_post = tag_update_post_array;
 exports.deleteTags = deleteTags;
-exports.createTagFromBackup = createTagFromBackup;
