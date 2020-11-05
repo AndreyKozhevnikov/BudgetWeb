@@ -42,6 +42,7 @@ async function populatePaymentAccount(req, res, next){
       await order.save();
     }
   }
+  res.send('update is Successful');
 }
 
 // Display list of all orders.
