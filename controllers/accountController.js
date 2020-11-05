@@ -82,23 +82,15 @@ async function getAggregatedAccList(startDate, finishDate) {
     [
       {
         $lookup: {
-          from: 'paymenttypes',
-          localField: '_id',
-          foreignField: 'Account',
-          as: 'acPayments',
-        },
-      },
-      {
-        $lookup: {
           from: 'orders',
-          let: { ptId: '$acPayments._id' },
+          let: { myid: '$_id' },
           pipeline: [
             {
               $match: {
                 $and: [
                   {
                     $expr: {
-                      $in: ['$PaymentType', '$$ptId'],
+                      $eq: ['$PaymentAccount', '$$myid'],
                     },
                   },
                   { DateOrder: { $gte: startDate, $lt: finishDate } },
