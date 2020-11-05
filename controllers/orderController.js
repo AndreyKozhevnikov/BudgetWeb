@@ -31,6 +31,18 @@ function getObjectToShowForm(mTitle, mOrder, mErrors) {
   return objToShow;
 }
 
+async function populatePaymentAccount(req, res, next){
+  let dateToStart = new Date('01-jan-20');
+  var lst = await Order.find({ DateOrder: { $gte: dateToStart } })
+    .populate('PaymentType');
+  for (let order of lst){
+    if (order.PaymentAccount == null){
+      order.PaymentAccount = order.PaymentType.Account;
+      await order.save();
+    }
+  }
+}
+
 // Display list of all orders.
 async function order_list(req, res, next) {
   let order_list = await Order.find({ IsDeleted: { $exists: false } })
@@ -369,3 +381,4 @@ exports.populateAdditionalLists = populateAdditionalLists;
 exports.getList = getList;
 exports.getAccountOrders = getAccountOrders;
 exports.getLeft = getLeft;
+exports.populatePaymentAccount = populatePaymentAccount;
