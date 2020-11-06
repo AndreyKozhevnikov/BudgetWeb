@@ -15,7 +15,6 @@ let OrderSchema = new Schema({
   IsDeleted: { type: Boolean },
   PaymentType: { type: Schema.ObjectId, ref: 'PaymentType' },
   PaymentAccount: { type: Schema.ObjectId, ref: 'Account' },
-  IsMonthCategory: { type: Boolean },
   CreatedTime: { type: Date },
 });
 

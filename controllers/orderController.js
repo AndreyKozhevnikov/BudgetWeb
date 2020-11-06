@@ -178,7 +178,6 @@ function createOrderFromRequest(req, isUpdate) {
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
     PaymentAccount: req.body.fPaymentAccount,
-    IsMonthCategory: Boolean(req.body.fIsMonthCategory),
   });
   if (isUpdate) {
     order._id = req.params.id;

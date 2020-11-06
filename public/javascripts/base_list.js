@@ -27,9 +27,6 @@ function buildValueContainerForOrder(container, order, document) {
   if (!order.LocalId) {
     valueString = valueString + '*';
   }
-  if (order.IsMonthCategory) {
-    valueString = valueString + '(m)';
-  }
   let a = document.createElement('a');
   a.classList.add('dx-link');
   a.text = valueString;
