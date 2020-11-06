@@ -15,9 +15,6 @@ function buildDataContainerForSOrder(container, sOrder, document) {
     lblInAccount.classList.add('InAccountLabel');
     lblInAccount.classList.add('plainLabel');
     let labelString = sOrder.AccountIn.Name;
-    if (sOrder.IsCashBack) {
-      labelString = '**' + labelString;
-    }
     lblInAccount.innerHTML = labelString;
     container[0].appendChild(lblInAccount);
   }

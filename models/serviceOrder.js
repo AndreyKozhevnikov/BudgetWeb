@@ -9,7 +9,6 @@ let ServiceOrderSchema = new Schema({
   Type: { type: String, required: true },
   Value: { type: Number, required: true },
   Description: { type: String },
-  IsCashBack: { type: Boolean },
   LocalId: { type: Number },
   AccountIn: { type: Schema.ObjectId, ref: 'Account' },
   AccountOut: { type: Schema.ObjectId, ref: 'Account' },

@@ -91,7 +91,6 @@ async function order_create_post(req, res, next) {
           Type: Helper.sOrderTypes.between,
           Value: left,
           Description: 'money box: ' + order.Description,
-          IsCashBack: false,
           AccountOut: acc,
           AccountIn: Helper.createObjectId(acc.MoneyBoxId),
         });

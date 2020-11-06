@@ -18,10 +18,6 @@ block contentOrder
         td
           label(for='txValue') Value:
           input#txValue.form-control(type='number' required='true'  name='Value_frm' value=(undefined===fOrder ? '' : fOrder.Value))
-        td
-          div#cashBackDv
-            label(for='chIsCashBack') IsCashBack:
-            input#chIsCashBack.form-control(type='checkbox',  name='IsCashBack_frm' checked= (undefined===fOrder ? false :fOrder.IsCashBack))
       label(for='txDescr') Description:
       input#txDescr.form-control(type='text' name='Description_frm' value=(undefined===fOrder ? '' : fOrder.Description))      
       label(for='cmbAccountOut') AccountOut:

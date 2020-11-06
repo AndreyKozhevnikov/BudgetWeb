@@ -84,9 +84,6 @@ function getMixListFromSOrders(sOrderList, accId) {
       case Helper.sOrderTypes.in:
         mixRecord.viewType = 'In';
         mixRecord.viewData = sOrder.Description;
-        if (sOrder.IsCashBack) {
-          mixRecord.viewData = '**' + mixRecord.viewData;
-        }
         break;
       case Helper.sOrderTypes.out:
         mixRecord.viewType = 'Out';

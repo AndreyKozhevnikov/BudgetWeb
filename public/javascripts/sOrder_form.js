@@ -4,13 +4,11 @@
 window.addEventListener('load', init);
 let inCombo;
 let outCombo;
-let cashBackDv;
 
 
 function init() {
   inCombo = document.getElementById('cmbAccountIn');
   outCombo = document.getElementById('cmbAccountOut');
-  cashBackDv = document.getElementById('cashBackDv');
   handleTypeRButtons();
 }
 /* eslint-disable */
@@ -65,17 +63,14 @@ function updateCombos(value) {
     case 'in':
       outCombo.disabled = true;
       inCombo.disabled = false;
-      cashBackDv.removeAttribute('hidden');
       break;
     case 'out':
       outCombo.disabled = false;
       inCombo.disabled = true;
-      cashBackDv.setAttribute('hidden', '');
       break;
     case 'between':
       outCombo.disabled = false;
       inCombo.disabled = false;
-      cashBackDv.setAttribute('hidden', '');
       break;
   }
 }

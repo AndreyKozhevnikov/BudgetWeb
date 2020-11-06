@@ -19,7 +19,6 @@ function createServiceOrderFromRequest(req, isUpdate) {
     LocalId: req.body.LocalId_frm,
     Value: req.body.Value_frm,
     Description: req.body.Description_frm,
-    IsCashBack: Boolean(req.body.IsCashBack_frm),
   });
   if (req.body.AccountIn_frm !== '') {
     serviceOrder.AccountIn = req.body.AccountIn_frm;
