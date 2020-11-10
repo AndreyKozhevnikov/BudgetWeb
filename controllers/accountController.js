@@ -388,16 +388,12 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
       { $replaceRoot: { newRoot: '$sOrders' }},
     ]
   );
- 
   let sumAllOrders = 0;
   for (let sOrderKey in thisMonthsSorders) {
     let sOrder = thisMonthsSorders[sOrderKey];
     thisMonthDates[sOrder.DateOrder].Value = thisMonthDates[sOrder.DateOrder].Value + sOrder.Value;
     sumAllOrders = sumAllOrders + sOrder.Value;
   }
-  // let thisMonthsorders = order_list.filter(function(order) {
-  //   return order.DateOrder >= firstDay;
-  // });
   let sumEatOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
     if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
