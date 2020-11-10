@@ -13,6 +13,7 @@ let AccountSchema = new Schema({
   OrderOutNumber: { type: Number },
   HasMoneyBox: { type: Boolean },
   MoneyBoxId: { type: Schema.ObjectId, ref: 'Account' },
+  IsMoneyBox: {type: Boolean},
 });
 
 AccountSchema.virtual('url').get(function() {

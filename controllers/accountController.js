@@ -364,10 +364,31 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
 
   let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate } })
     .populate('ParentTag');
-  let thisMonthsSorders = await ServiceOrder.find({
-    DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate }, Type: 'between',
-    AccountIn: Helper.createObjectId('5f5765b9a37660001491ac09'),
-  });
+
+  let thisMonthsSorders = await Account.aggregate(
+    [
+      {$match: { IsMoneyBox: true} },
+      {
+        $lookup: {
+          from: ServiceOrder.collection.name,
+          let: {accountId: '$_id'},
+          pipeline: [
+            {$match: {
+              $and: [
+                {DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate }},
+                {$expr: {$eq: ['$AccountIn', '$$accountId']}},
+                {Type: 'between'},
+              ],
+            } },
+          ],
+          as: 'sOrders',
+        },
+      },
+      {$unwind: '$sOrders'},
+      { $replaceRoot: { newRoot: '$sOrders' }},
+    ]
+  );
+ 
   let sumAllOrders = 0;
   for (let sOrderKey in thisMonthsSorders) {
     let sOrder = thisMonthsSorders[sOrderKey];
