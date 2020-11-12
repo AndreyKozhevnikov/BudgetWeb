@@ -323,7 +323,6 @@ async function createStartMonthRecords(startDateToCalculate){
 }
 
 async function aggregatedList(req, res, next) {
-  let startTime = new Date();
   let startDateToCalculate;
   let finishDateToCalculate;
   if (req.params.hasOwnProperty('direction')) {
@@ -351,9 +350,6 @@ async function aggregatedList(req, res, next) {
   let targetMonthData = {};
   targetMonthData.Date = startDateToCalculate.toISOString().substring(0, 10);
   targetMonthData.MonthName = currMonthName;
-  let endTime = new Date();
-  let diffTime = startTime - endTime;
-  console.info('Execution time: %dms', diffTime);
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 
