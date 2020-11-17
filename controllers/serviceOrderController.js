@@ -149,8 +149,13 @@ async function populateLists() {
 }
 
 function list(req, res, next) {
+  let cutDate = new Date(2000, 1);
+  if (req.params.showallrecords === 'false'){
+    cutDate = Helper.getToday();
+    cutDate.setDate(cutDate.getDate() - 5);
+  }
   ServiceOrder
-    .find()
+    .find({DateOrder: { $gt: cutDate }})
     .populate('AccountOut')
     .populate('AccountIn')
     .sort({ DateOrder: -1, _id: -1 })
