@@ -54,12 +54,13 @@ function deleteCurrMonthStartRecords(req, res, next) {
   });
 }
 async function createTotalSums(req, res, next){
+  // await FixRecord.remove({Type: FRecordTypes.TotalSum});
+  // return;
   let ls = await FixRecord.find({Type: FRecordTypes.TotalSum});
   if (ls.length > 0){
     res.send('there are totalSum');
     return;
   }
-  //   await FixRecord.remove({Type: FixRecordController.FRecordTypes.TotalSum});
 
 
   let lst = await FixRecord.aggregate([
