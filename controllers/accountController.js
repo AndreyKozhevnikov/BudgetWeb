@@ -310,8 +310,10 @@ async function asyncForEach(array, callback) {
 async function createStartMonthRecords(startDateToCalculate){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
   let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, startDateToCalculate);
+  let totalSum = 0;
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
+      totalSum = totalSum + accRecord.result; ;
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
         startDateToCalculate,
@@ -320,6 +322,12 @@ async function createStartMonthRecords(startDateToCalculate){
     });
   };
   await start();
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.TotalSum,
+    startDateToCalculate,
+    null,
+    totalSum
+  );
 }
 
 async function aggregatedList(req, res, next) {
