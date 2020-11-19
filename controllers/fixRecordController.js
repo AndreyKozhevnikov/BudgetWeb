@@ -1,7 +1,7 @@
 'use strict';
 
 let FixRecord = require('../models/fixRecord.js');
-let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check' };
+let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check', TotalSum: 'TotalSum' };
 let Helper = require('../controllers/helperController.js');
 
 async function createFixRecord(type, datetime, account, value) {
@@ -53,7 +53,40 @@ function deleteCurrMonthStartRecords(req, res, next) {
     }
   });
 }
+async function createTotalSums(req, res, next){
+  let ls = await FixRecord.find({Type: FRecordTypes.TotalSum});
+  if (ls.length > 0){
+    res.send('there are totalSum');
+    return;
+  }
+  //   await FixRecord.remove({Type: FixRecordController.FRecordTypes.TotalSum});
 
+
+  let lst = await FixRecord.aggregate([
+    {
+      $match: {
+        Type: FRecordTypes.StartMonth,
+        // DateTime: { $dayOfMonth: new Date('2016-01-01') },
+      },
+    },
+    {
+      $group: {
+        _id: '$DateTime',
+        totalSum: { $sum: '$Value' },
+      },
+    },
+  ]);
+  let listFirtsOnly = lst.filter(x => x._id.getDate() === 1);
+  for (let row of listFirtsOnly){
+    createFixRecord(
+      FRecordTypes.TotalSum,
+      row._id,
+      null,
+      row.totalSum
+    );
+  }
+  res.send('totalSum are created');
+}
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
@@ -61,3 +94,4 @@ exports.getAccountRecords = getAccountRecords;
 exports.getList = getList;
 exports.deleteTypes = deleteTypes;
 exports.deleteCurrMonthStartRecords = deleteCurrMonthStartRecords;
+exports.createTotalSums = createTotalSums;

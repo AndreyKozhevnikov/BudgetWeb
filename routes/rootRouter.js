@@ -29,4 +29,6 @@ router.get('/fullBackup', root_controller.full_backup);
 
 router.get('/updateLists', root_controller.updateLists);
 
+router.get('/createTotalSums', root_controller.createTotalSums);
+
 module.exports = router;

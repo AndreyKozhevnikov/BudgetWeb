@@ -6,6 +6,7 @@ let PaymentType = require('../models/paymentType.js');
 let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
+
 let Helper = require('../controllers/helperController.js');
 
 let constructors = {
@@ -244,6 +245,10 @@ function updateLists(req, res, next) {
   res.send('update is Successful');
 }
 
+async function createTotalSums(req, res, next){
+  fixRecord_controller.createTotalSums(req, res, next);
+}
+
 exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
@@ -255,4 +260,5 @@ exports.update_localid = updatelocalid;
 exports.full_backup = fullbackup;
 exports.full_Restore = fullRestore;
 exports.updateLists = updateLists;
+exports.createTotalSums = createTotalSums;
 
