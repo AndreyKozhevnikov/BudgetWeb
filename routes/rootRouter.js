@@ -7,7 +7,6 @@ let root_controller = require('../controllers/rootController.js');
 router.get('/', (req, res, next) => { res.redirect('/account/aggregatedList'); });
 
 router.get('/deleteall', root_controller.deleteAll);
-router.get('/deleteStartMonthRecords', root_controller.deleteStartMonthRecords);
 
 router.get('/restore', function(req, res, next) {
   res.redirect('/wiki');
@@ -28,7 +27,5 @@ router.post('/updateLocalId', root_controller.update_localid);
 router.get('/fullBackup', root_controller.full_backup);
 
 router.get('/updateLists', root_controller.updateLists);
-
-router.get('/createTotalSums', root_controller.createTotalSums);
 
 module.exports = router;

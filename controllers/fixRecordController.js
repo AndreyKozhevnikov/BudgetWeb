@@ -42,7 +42,13 @@ function deleteTypes(req, res, next) {
 
   });
 }
-
+function deleteStartMonthRecords(req, res, next) {
+  if (!Helper.canDeleteEntities()) {
+    res.send('cant delete objects');
+    return;
+  }
+  deleteCurrMonthStartRecords(req, res, next);
+}
 function deleteCurrMonthStartRecords(req, res, next) {
   let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth();
   FixRecord.remove({ DateTime: { $gte: currMonthFirstDate } }, function(err) {
@@ -88,11 +94,17 @@ async function createTotalSums(req, res, next){
   }
   res.send('totalSum are created');
 }
+
+function showTotalSumsChart(req, res, next){
+
+}
+
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
 exports.getAccountRecords = getAccountRecords;
 exports.getList = getList;
 exports.deleteTypes = deleteTypes;
-exports.deleteCurrMonthStartRecords = deleteCurrMonthStartRecords;
+exports.deleteStartMonthRecords = deleteStartMonthRecords;
 exports.createTotalSums = createTotalSums;
+exports.showTotalSumsChart = showTotalSumsChart;
