@@ -9,8 +9,11 @@ window.onload = function() {
     tooltip: {
       enabled: true,
     },
-    legend: { 
-      visible: true,
+    legend: {
+      visible: false,
+    },
+    argumentAxis: {
+      argumentType: 'datetime',
     },
     series: [{
       argumentField: 'DateTime',
