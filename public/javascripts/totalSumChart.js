@@ -13,7 +13,15 @@ window.onload = function() {
       visible: false,
     },
     argumentAxis: {
+      tickInterval: { months: 1},
       argumentType: 'datetime',
+      label: {
+        format: 'MMM yy',
+        overlappingBehavior: 'stagger',
+      },
+      grid: {
+        visible: 'true',
+      },
     },
     series: [{
       argumentField: 'DateTime',
