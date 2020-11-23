@@ -5,7 +5,6 @@
 window.onload = function() {
   // let chartElement = document.getElementById('thisMonthDatesContainer');
   // new DevExpress.ui.dxChart(chartElement, {
-  console.log('test111');
   $('#thisMonthDatesContainer').dxChart({
     dataSource: Object.values(thisMonthDates),
     customizePoint: function() {

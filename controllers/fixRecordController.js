@@ -95,8 +95,9 @@ async function createTotalSums(req, res, next){
   res.send('totalSum are created');
 }
 
-function showTotalSumsChart(req, res, next){
-
+async function showTotalSumsChart(req, res, next){
+  let totalSum_list = await FixRecord.find({Type: FRecordTypes.TotalSum}).sort({DateTime: 1});
+  res.render('totalSumsChart.pug', { totalSum_list: totalSum_list });
 }
 
 exports.createFixRecord = createFixRecord;
