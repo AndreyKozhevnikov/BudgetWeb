@@ -6,6 +6,7 @@ let PaymentType = require('../models/paymentType.js');
 let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
+
 let Helper = require('../controllers/helperController.js');
 
 let constructors = {
@@ -153,7 +154,7 @@ async function index(req, res) {
 }
 
 function deleteAll(req, res, next) {
-  if (!canDeleteEntities()) {
+  if (!Helper.canDeleteEntities()) {
     res.send('cant delete objects');
     return;
   }
@@ -164,13 +165,7 @@ function deleteAll(req, res, next) {
   account_controller.deleteTypes(req, res, next);
 }
 
-function deleteStartMonthRecords(req, res, next) {
-  if (!canDeleteEntities()) {
-    res.send('cant delete objects');
-    return;
-  }
-  fixRecord_controller.deleteCurrMonthStartRecords(req, res, next);
-}
+
 function wiki(req, res) {
   res.render('wiki');
 }
@@ -179,9 +174,6 @@ function wikiAbout(req, res) {
 }
 function canCreateUser() {
   return process.env.CANCREATEUSER === 'TRUE';
-}
-function canDeleteEntities() {
-  return process.env.CANDELETEENTITIES === 'TRUE';
 }
 function createUserGet(req, res, next) {
   if (!canCreateUser()) {
@@ -248,7 +240,6 @@ exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
 exports.deleteAll = deleteAll;
-exports.deleteStartMonthRecords = deleteStartMonthRecords;
 exports.createUserGet = createUserGet;
 exports.createUserPost = createUserPost;
 exports.update_localid = updatelocalid;

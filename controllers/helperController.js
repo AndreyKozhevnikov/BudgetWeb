@@ -113,6 +113,10 @@ function getCutDate(){
   return cutDate;
 }
 
+function canDeleteEntities() {
+  return process.env.CANDELETEENTITIES === 'TRUE';
+}
+
 let dateForOrders;
 
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
@@ -131,5 +135,6 @@ exports.promisify = promisify;
 exports.sortListByGroupedList = sortListByGroupedList;
 exports.getCutDate = getCutDate;
 exports.dateForOrders = dateForOrders;
+exports.canDeleteEntities = canDeleteEntities;
 
 

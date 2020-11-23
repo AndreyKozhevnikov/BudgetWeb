@@ -1,7 +1,7 @@
 'use strict';
 
 let FixRecord = require('../models/fixRecord.js');
-let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check' };
+let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check', TotalSum: 'TotalSum' };
 let Helper = require('../controllers/helperController.js');
 
 async function createFixRecord(type, datetime, account, value) {
@@ -42,7 +42,13 @@ function deleteTypes(req, res, next) {
 
   });
 }
-
+function deleteStartMonthRecords(req, res, next) {
+  if (!Helper.canDeleteEntities()) {
+    res.send('cant delete objects');
+    return;
+  }
+  deleteCurrMonthStartRecords(req, res, next);
+}
 function deleteCurrMonthStartRecords(req, res, next) {
   let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth();
   FixRecord.remove({ DateTime: { $gte: currMonthFirstDate } }, function(err) {
@@ -53,6 +59,46 @@ function deleteCurrMonthStartRecords(req, res, next) {
     }
   });
 }
+async function createTotalSums(req, res, next){
+  // await FixRecord.remove({Type: FRecordTypes.TotalSum});
+  // return;
+  let ls = await FixRecord.find({Type: FRecordTypes.TotalSum});
+  if (ls.length > 0){
+    res.send('there are totalSum');
+    return;
+  }
+
+
+  let lst = await FixRecord.aggregate([
+    {
+      $match: {
+        Type: FRecordTypes.StartMonth,
+        // DateTime: { $dayOfMonth: new Date('2016-01-01') },
+      },
+    },
+    {
+      $group: {
+        _id: '$DateTime',
+        totalSum: { $sum: '$Value' },
+      },
+    },
+  ]);
+  let listFirtsOnly = lst.filter(x => x._id.getDate() === 1);
+  for (let row of listFirtsOnly){
+    createFixRecord(
+      FRecordTypes.TotalSum,
+      row._id,
+      null,
+      row.totalSum
+    );
+  }
+  res.send('totalSum are created');
+}
+
+async function showTotalSumsChart(req, res, next){
+  let totalSum_list = await FixRecord.find({Type: FRecordTypes.TotalSum}).sort({DateTime: 1});
+  res.render('totalSumsChart.pug', { totalSum_list: totalSum_list });
+}
 
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
@@ -60,4 +106,6 @@ exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
 exports.getAccountRecords = getAccountRecords;
 exports.getList = getList;
 exports.deleteTypes = deleteTypes;
-exports.deleteCurrMonthStartRecords = deleteCurrMonthStartRecords;
+exports.deleteStartMonthRecords = deleteStartMonthRecords;
+exports.createTotalSums = createTotalSums;
+exports.showTotalSumsChart = showTotalSumsChart;
