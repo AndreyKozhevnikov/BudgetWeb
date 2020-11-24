@@ -8,6 +8,16 @@ window.onload = function() {
     dataSource: Object.values(totalSum_list),
     tooltip: {
       enabled: true,
+      customizeTooltip: function(arg) {
+        const d = arg.originalArgument;
+        const ye = new Intl.DateTimeFormat('en', { year: '2-digit' }).format(d);
+        const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
+        const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+        let resultDate = `${da}-${mo}-${ye}`;
+        return {
+          text: resultDate + '<br> <br>' + arg.valueText,
+        };
+      },
     },
     legend: {
       visible: false,
