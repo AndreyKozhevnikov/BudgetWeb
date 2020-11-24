@@ -18,6 +18,11 @@ window.onload = function() {
     },
     tooltip: {
       enabled: true,
+      customizeTooltip: function(arg) {
+        return {
+          text: arg.originalArgument + '<br> <br>' + arg.valueText,
+        };
+      },
     },
     commonSeriesSettings: {
       point: {
