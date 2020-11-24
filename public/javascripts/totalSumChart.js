@@ -14,8 +14,9 @@ window.onload = function() {
         const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
         const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
         let resultDate = `${da}-${mo}-${ye}`;
+        let resultValue = arg.valueText.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         return {
-          text: resultDate + '<br> <br>' + arg.valueText,
+          text: resultDate + '<br> <br>' + resultValue,
         };
       },
     },
