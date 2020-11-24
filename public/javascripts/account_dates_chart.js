@@ -14,9 +14,12 @@ window.onload = function() {
         return { color: '#FF0000', hoverStyle: { color: '#ff7c7c' } };
       }
     },
+    tooltip: {
+      enabled: true,
+    },
     commonSeriesSettings: {
       point: {
-        visible: false,
+        visible: true,
       },
     },
     legend: { visible: false },

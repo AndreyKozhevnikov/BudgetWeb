@@ -9,8 +9,19 @@ window.onload = function() {
     tooltip: {
       enabled: true,
     },
-    legend: { 
-      visible: true,
+    legend: {
+      visible: false,
+    },
+    argumentAxis: {
+      tickInterval: { months: 1},
+      argumentType: 'datetime',
+      label: {
+        format: 'MMM yy',
+        overlappingBehavior: 'stagger',
+      },
+      grid: {
+        visible: 'true',
+      },
     },
     series: [{
       argumentField: 'DateTime',
