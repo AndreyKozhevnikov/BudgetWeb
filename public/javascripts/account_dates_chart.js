@@ -8,14 +8,21 @@ window.onload = function() {
   $('#thisMonthDatesContainer').dxChart({
     dataSource: Object.values(thisMonthDates),
     customizePoint: function() {
-      if (this.value > 0) {
-        return { color: '#00FF00', hoverStyle: { color: '#8c8cff' } };
-      } else {
-        return { color: '#FF0000', hoverStyle: { color: '#ff7c7c' } };
+      if (this.seriesName === 'DiffSeries'){
+        if (this.value > 0) {
+          return { color: '#00FF00', hoverStyle: { color: '#8c8cff' } };
+        } else {
+          return { color: '#FF0000', hoverStyle: { color: '#ff7c7c' } };
+        }
       }
     },
     tooltip: {
       enabled: true,
+      customizeTooltip: function(arg) {
+        return {
+          text: arg.originalArgument + '<br> <br>' + arg.valueText,
+        };
+      },
     },
     commonSeriesSettings: {
       point: {
@@ -24,6 +31,7 @@ window.onload = function() {
     },
     legend: { visible: false },
     series: [{
+      name: 'DiffSeries',
       argumentField: 'Date',
       valueField: 'Diff',
       type: 'bar',
@@ -31,6 +39,7 @@ window.onload = function() {
       axis: 'Diff',
     },
     {
+      name: 'TempResultSeries',
       argumentField: 'Date',
       valueField: 'TempResult',
       color: '#3333FF',
