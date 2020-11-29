@@ -385,7 +385,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
               $and: [
                 {DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate }},
                 {$expr: {$eq: ['$AccountIn', '$$accountId']}},
-                {Type: 'between'},
+                {$or: [{Type: 'between'}, {Type: 'in'}]},
               ],
             } },
           ],
