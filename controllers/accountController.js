@@ -82,6 +82,76 @@ async function getAggregatedAccList(startDate, finishDate) {
     [
       {
         $lookup: {
+          from: 'accounts',
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $and: [
+                    {$eq: ['$IsMoneyBox', true] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'mbAccounts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { localAccountId: '$_id', localMBAccountIds: '$mbAccounts._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$AccountOut', '$$localAccountId']},
+                        { $in: ['$AccountIn', '$$localMBAccountIds'] },
+
+                      ],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'acOutSOrdersToMB',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { localAccountId: '$_id', localMBAccountIds: '$mbAccounts._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$AccountIn', '$$localAccountId']},
+                        { $in: ['$AccountOut', '$$localMBAccountIds'] },
+
+                      ],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'acInSOrdersFromMB',
+        },
+      },
+      {
+        $lookup: {
           from: 'orders',
           let: { myid: '$_id' },
           pipeline: [
@@ -249,6 +319,8 @@ async function getAggregatedAccList(startDate, finishDate) {
           sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
           sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
+          sumOutSOrdersToMB: { $sum: '$acOutSOrdersToMB.Value' },
+          sumInSOrdersFromMB: { $sum: '$acInSOrdersFromMB.Value' },
           ordernumber: '$OrderNumber',
           fixRecordsLastCheck: '$fixRecordsLastCheck',
         },
@@ -285,7 +357,8 @@ async function getAggregatedAccList(startDate, finishDate) {
     }
     item.lastCheckDate = moment(lastCheckDate).format('DD-MM-YY');
     item.lastCheckValue = lastCheckValue;
-
+    item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
+    item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     // item.url = '/account/' + item._id + '/update';
     item.getOrdsUrl = '/mixorders/account/' + item._id;
@@ -293,8 +366,8 @@ async function getAggregatedAccList(startDate, finishDate) {
     if (item.isuntouchable !== true) {
       sumObject.commonSum = sumObject.commonSum + item.result;
       sumObject.startSum = sumObject.startSum + item.startSum;
-      sumObject.paymentsSum = sumObject.paymentsSum + item.sumPayments;
-      sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersClean;
+      sumObject.paymentsSum = sumObject.paymentsSum + item.sumPaymentsWithMB;
+      sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersCleanWithMB;
       sumObject.outputSum = sumObject.outputSum + item.sumOutSOrdersClean;
     }
   });
@@ -313,7 +386,9 @@ async function createStartMonthRecords(startDateToCalculate){
   let totalSum = 0;
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
-      totalSum = totalSum + accRecord.result; ;
+      if (!accRecord.IsMoneyBox){
+        totalSum = totalSum + accRecord.result;
+      }
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
         startDateToCalculate,
