@@ -439,6 +439,7 @@ async function aggregatedList(req, res, next) {
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 500;
   const normAllPerDay = 2300;
+  const mortGagePayment = 25479;
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
   lastMonthDate.setDate(lastMonthDate.getDate() - 1);
   let dayCount = lastMonthDate.getDate();
@@ -479,21 +480,18 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   }
   let sumEatOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
-      return accumulator;
-    }
     if (order.ParentTag.LocalId === 1) {
       sumEatOrders = sumEatOrders + order.Value;
     }
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
   }, 0);
-  processthisMonthDates(thisMonthDates, normAllPerDay);
+  processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
   let leftDayCount = monthDayCount - dayCount + 1;
   if (leftDayCount < 1)
     leftDayCount = 1;
-  let desiredAllSumForMonth = normAllPerDay * monthDayCount;
+  let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
   let desiredEatSumForMonth = normEatPerDay * monthDayCount;
 
   let statisticObject =
@@ -502,7 +500,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     normEat: normEatPerDay * dayCount,
     normEatMonth: desiredEatSumForMonth,
     spendAll: sumAllOrders,
-    normAll: normAllPerDay * dayCount,
+    normAll: normAllPerDay * dayCount + mortGagePayment,
     normAllMonth: desiredAllSumForMonth,
   };
   statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
@@ -519,10 +517,15 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
 
   return statisticObject;
 }
-function processthisMonthDates(thisMonthDates, normAllPerDay) {
+function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
   let allResult = 0;
   for (let dateData in thisMonthDates) {
+
     thisMonthDates[dateData].Diff = normAllPerDay - thisMonthDates[dateData].Value;
+
+    if (new Date(dateData).getDate() === 1){
+      thisMonthDates[dateData].Diff = thisMonthDates[dateData].Diff + mortGagePayment;
+    }
     allResult = allResult + thisMonthDates[dateData].Diff;
     thisMonthDates[dateData].TempResult = allResult;
   }
