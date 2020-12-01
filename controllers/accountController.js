@@ -82,6 +82,76 @@ async function getAggregatedAccList(startDate, finishDate) {
     [
       {
         $lookup: {
+          from: 'accounts',
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $and: [
+                    {$eq: ['$IsMoneyBox', true] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'mbAccounts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { localAccountId: '$_id', localMBAccountIds: '$mbAccounts._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$AccountOut', '$$localAccountId']},
+                        { $in: ['$AccountIn', '$$localMBAccountIds'] },
+
+                      ],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'acOutSOrdersToMB',
+        },
+      },
+      {
+        $lookup: {
+          from: 'serviceorders',
+          let: { localAccountId: '$_id', localMBAccountIds: '$mbAccounts._id' },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$AccountIn', '$$localAccountId']},
+                        { $in: ['$AccountOut', '$$localMBAccountIds'] },
+
+                      ],
+                    },
+                  },
+                  { DateOrder: { $gte: startDate, $lt: finishDate } },
+                ],
+              },
+            },
+          ],
+          as: 'acInSOrdersFromMB',
+        },
+      },
+      {
+        $lookup: {
           from: 'orders',
           let: { myid: '$_id' },
           pipeline: [
@@ -249,6 +319,8 @@ async function getAggregatedAccList(startDate, finishDate) {
           sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
           sumOutSOrders: { $sum: '$acOutSOrders.Value' },
           sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
+          sumOutSOrdersToMB: { $sum: '$acOutSOrdersToMB.Value' },
+          sumInSOrdersFromMB: { $sum: '$acInSOrdersFromMB.Value' },
           ordernumber: '$OrderNumber',
           fixRecordsLastCheck: '$fixRecordsLastCheck',
         },
@@ -285,7 +357,8 @@ async function getAggregatedAccList(startDate, finishDate) {
     }
     item.lastCheckDate = moment(lastCheckDate).format('DD-MM-YY');
     item.lastCheckValue = lastCheckValue;
-
+    item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
+    item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     // item.url = '/account/' + item._id + '/update';
     item.getOrdsUrl = '/mixorders/account/' + item._id;
@@ -293,8 +366,8 @@ async function getAggregatedAccList(startDate, finishDate) {
     if (item.isuntouchable !== true) {
       sumObject.commonSum = sumObject.commonSum + item.result;
       sumObject.startSum = sumObject.startSum + item.startSum;
-      sumObject.paymentsSum = sumObject.paymentsSum + item.sumPayments;
-      sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersClean;
+      sumObject.paymentsSum = sumObject.paymentsSum + item.sumPaymentsWithMB;
+      sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersCleanWithMB;
       sumObject.outputSum = sumObject.outputSum + item.sumOutSOrdersClean;
     }
   });
@@ -313,7 +386,9 @@ async function createStartMonthRecords(startDateToCalculate){
   let totalSum = 0;
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
-      totalSum = totalSum + accRecord.result; ;
+      if (!accRecord.IsMoneyBox){
+        totalSum = totalSum + accRecord.result;
+      }
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
         startDateToCalculate,
@@ -364,6 +439,7 @@ async function aggregatedList(req, res, next) {
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 500;
   const normAllPerDay = 2300;
+  const mortGagePayment = 25479;
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
   lastMonthDate.setDate(lastMonthDate.getDate() - 1);
   let dayCount = lastMonthDate.getDate();
@@ -385,7 +461,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
               $and: [
                 {DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate }},
                 {$expr: {$eq: ['$AccountIn', '$$accountId']}},
-                {Type: 'between'},
+                {Type: Helper.sOrderTypes.between},
               ],
             } },
           ],
@@ -404,21 +480,18 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   }
   let sumEatOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.ParentTag.LocalId === 21 || order.ParentTag.LocalId === 22) {
-      return accumulator;
-    }
     if (order.ParentTag.LocalId === 1) {
       sumEatOrders = sumEatOrders + order.Value;
     }
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
   }, 0);
-  processthisMonthDates(thisMonthDates, normAllPerDay);
+  processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
   let leftDayCount = monthDayCount - dayCount + 1;
   if (leftDayCount < 1)
     leftDayCount = 1;
-  let desiredAllSumForMonth = normAllPerDay * monthDayCount;
+  let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
   let desiredEatSumForMonth = normEatPerDay * monthDayCount;
 
   let statisticObject =
@@ -427,7 +500,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     normEat: normEatPerDay * dayCount,
     normEatMonth: desiredEatSumForMonth,
     spendAll: sumAllOrders,
-    normAll: normAllPerDay * dayCount,
+    normAll: normAllPerDay * dayCount + mortGagePayment,
     normAllMonth: desiredAllSumForMonth,
   };
   statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
@@ -444,10 +517,15 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
 
   return statisticObject;
 }
-function processthisMonthDates(thisMonthDates, normAllPerDay) {
+function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
   let allResult = 0;
   for (let dateData in thisMonthDates) {
+
     thisMonthDates[dateData].Diff = normAllPerDay - thisMonthDates[dateData].Value;
+
+    if (new Date(dateData).getDate() === 1){
+      thisMonthDates[dateData].Diff = thisMonthDates[dateData].Diff + mortGagePayment;
+    }
     allResult = allResult + thisMonthDates[dateData].Diff;
     thisMonthDates[dateData].TempResult = allResult;
   }
