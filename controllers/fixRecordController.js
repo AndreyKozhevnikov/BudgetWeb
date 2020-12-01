@@ -5,6 +5,7 @@ let ServiceOrder = require('../models/serviceOrder.js');
 let Order = require('../models/order.js');
 let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check', TotalSum: 'TotalSum', TotalIncoming: 'TotalIncoming', TotalExpense: 'TotalExpense' };
 let Helper = require('../controllers/helperController.js');
+const fixRecord = require('../models/fixRecord.js');
 
 async function createFixRecord(type, datetime, account, value) {
   let fRec = new FixRecord({
@@ -141,7 +142,7 @@ async function createTotalIncoming(req, res, next){
     );
   }
 
-
+  res.send('createTotalIncoming succeed');
 }
 async function createTotalSums(req, res, next){
   // await FixRecord.remove({Type: FRecordTypes.TotalSum});
@@ -184,6 +185,21 @@ async function showTotalSumsChart(req, res, next){
   res.render('totalSumsChart.pug', { totalSum_list: totalSum_list });
 }
 
+async function removeTotals(req, res, next){
+  if (!Helper.canDeleteEntities()) {
+    res.send('cant delete objects');
+    return;
+  }
+  var result = await FixRecord.find(
+    {$or: [
+      {Type: FRecordTypes.TotalSum},
+      {Type: FRecordTypes.TotalExpense},
+      {Type: FRecordTypes.TotalIncoming},
+    ]},
+  ).deleteMany();
+  res.send('removeTotals succeed' + result.n);
+}
+
 exports.createFixRecord = createFixRecord;
 exports.FRecordTypes = FRecordTypes;
 exports.getTheLastFixRecordsDate = getTheLastFixRecordsDate;
@@ -194,3 +210,4 @@ exports.deleteStartMonthRecords = deleteStartMonthRecords;
 exports.createTotalSums = createTotalSums;
 exports.createTotalIncoming = createTotalIncoming;
 exports.showTotalSumsChart = showTotalSumsChart;
+exports.removeTotals = removeTotals;
