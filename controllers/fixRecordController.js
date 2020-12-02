@@ -5,7 +5,6 @@ let ServiceOrder = require('../models/serviceOrder.js');
 let Order = require('../models/order.js');
 let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check', TotalSum: 'TotalSum', TotalIncoming: 'TotalIncoming', TotalExpense: 'TotalExpense' };
 let Helper = require('../controllers/helperController.js');
-const fixRecord = require('../models/fixRecord.js');
 
 async function createFixRecord(type, datetime, account, value) {
   let fRec = new FixRecord({
@@ -117,8 +116,8 @@ async function createTotalIncoming(req, res, next){
   );
 
   for (let inOrder of sInOrders){
-    let dt = new Date(inOrder._id.year, inOrder._id.month, 1);
-    createFixRecord(
+    let dt = new Date(inOrder._id.year, inOrder._id.month, 15);
+    await createFixRecord(
       FRecordTypes.TotalIncoming,
       dt,
       null,
@@ -126,7 +125,7 @@ async function createTotalIncoming(req, res, next){
     );
   }
   for (let order of orders){
-    let dt = new Date(order._id.year, order._id.month, 1);
+    let dt = new Date(order._id.year, order._id.month, 15);
     let sOutOrder = sOutOrders.find(x => x._id.year === order._id.year && x._id.month === order._id.month);
 
     if (sOutOrder != null){
@@ -134,7 +133,7 @@ async function createTotalIncoming(req, res, next){
     }
 
 
-    createFixRecord(
+    await createFixRecord(
       FRecordTypes.TotalExpense,
       dt,
       null,
@@ -181,8 +180,24 @@ async function createTotalSums(req, res, next){
 }
 
 async function showTotalSumsChart(req, res, next){
-  let totalSum_list = await FixRecord.find({Type: FRecordTypes.TotalSum}).sort({DateTime: 1});
-  res.render('totalSumsChart.pug', { totalSum_list: totalSum_list });
+  let totalSum_list = await FixRecord.find(
+    {$or: [
+      {Type: FRecordTypes.TotalSum},
+      {Type: FRecordTypes.TotalExpense},
+      {Type: FRecordTypes.TotalIncoming},
+    ]},
+  ).sort({DateTime: 1});
+  let chartList = totalSum_list.map(x => {
+    let chartObject = {DateTime: x.DateTime};
+    let mortrageMonth = new Date(2020, 6, 15);
+    //let mortrageMonth = new Date(2018, 3, 15);
+    if (+x.DateTime !== +mortrageMonth){
+      chartObject[x.Type] = x.Value;
+    }
+
+    return chartObject;
+  });
+  res.render('totalSumsChart.pug', { chartList: chartList });
 }
 
 async function removeTotals(req, res, next){
