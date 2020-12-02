@@ -384,11 +384,15 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
   let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
   let totalSum = 0;
+  let totalIncoming = 0;
+  let totalExpense = 0;
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
       if (!accRecord.IsMoneyBox){
         totalSum = totalSum + accRecord.result;
       }
+      totalIncoming = totalIncoming + accRecord.sumInSOrdersCleanWithMB;
+      totalExpense = totalExpense + accRecord.sumPaymentsWithMB;
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
         firstDateOfCurrentMonth,
@@ -402,6 +406,21 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
     firstDateOfCurrentMonth,
     null,
     totalSum
+  );
+  let dateForPrevMonths = new Date(firsDayOfPrevMonth.getFullYear(), firsDayOfPrevMonth.getMonth(), 15);
+
+
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.TotalIncoming,
+    dateForPrevMonths,
+    null,
+    totalIncoming
+  );
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.TotalExpense,
+    dateForPrevMonths,
+    null,
+    totalExpense
   );
 }
 
