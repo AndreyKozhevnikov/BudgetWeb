@@ -36,8 +36,34 @@ window.onload = function() {
     },
     series: [{
       argumentField: 'DateTime',
-      valueField: 'Value',
+      valueField: 'TotalSum',
       color: '#ffaa66',
+      axis: 'Right',
+    },
+    {
+      argumentField: 'DateTime',
+      valueField: 'TotalIncoming',
+      type: 'bar',
+      color: '#A8C879',
+      axis: 'Right',
+    },
+    {
+      argumentField: 'DateTime',
+      valueField: 'TotalExpense',
+      type: 'bar',
+      color: '#E28FAD',
+      axis: 'Left',
+    },
+    ],
+    valueAxis: [{
+      name: 'Left',
+      position: 'left',
+      synchronizedValue: 0,
+    }, {
+      name: 'Right',
+      position: 'right',
+      openValueField: 0,
+      synchronizedValue: 0,
     },
     ],
   });
