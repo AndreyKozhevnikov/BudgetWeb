@@ -380,9 +380,9 @@ async function asyncForEach(array, callback) {
   // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
 }
 
-async function createStartMonthRecords(startDateToCalculate){
+async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, startDateToCalculate);
+  let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
   let totalSum = 0;
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
@@ -391,7 +391,7 @@ async function createStartMonthRecords(startDateToCalculate){
       }
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
-        startDateToCalculate,
+        firstDateOfCurrentMonth,
         accRecord._id,
         accRecord.result);
     });
@@ -399,7 +399,7 @@ async function createStartMonthRecords(startDateToCalculate){
   await start();
   await FixRecordController.createFixRecord(
     FixRecordController.FRecordTypes.TotalSum,
-    startDateToCalculate,
+    firstDateOfCurrentMonth,
     null,
     totalSum
   );
