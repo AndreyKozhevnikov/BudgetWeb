@@ -189,12 +189,7 @@ async function showTotalSumsChart(req, res, next){
   ).sort({DateTime: 1});
   let chartList = totalSum_list.map(x => {
     let chartObject = {DateTime: x.DateTime};
-    let mortrageMonth = new Date(2020, 6, 15);
-    //let mortrageMonth = new Date(2018, 3, 15);
-    if (+x.DateTime !== +mortrageMonth){
-      chartObject[x.Type] = x.Value;
-    }
-
+    chartObject[x.Type] = x.Value;
     return chartObject;
   });
   res.render('totalSumsChart.pug', { chartList: chartList });
