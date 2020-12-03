@@ -116,7 +116,7 @@ async function createTotalIncoming(req, res, next){
   );
 
   for (let inOrder of sInOrders){
-    let dt = new Date(inOrder._id.year, inOrder._id.month, 15);
+    let dt = new Date(inOrder._id.year, inOrder._id.month - 1, 15);
     await createFixRecord(
       FRecordTypes.TotalIncoming,
       dt,
@@ -125,7 +125,7 @@ async function createTotalIncoming(req, res, next){
     );
   }
   for (let order of orders){
-    let dt = new Date(order._id.year, order._id.month, 15);
+    let dt = new Date(order._id.year, order._id.month - 1, 15);
     let sOutOrder = sOutOrders.find(x => x._id.year === order._id.year && x._id.month === order._id.month);
 
     if (sOutOrder != null){
