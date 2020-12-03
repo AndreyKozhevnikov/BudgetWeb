@@ -312,6 +312,7 @@ async function getAggregatedAccList(startDate, finishDate) {
           name: '$Name',
           isuntouchable: '$IsUntouchable',
           isarchived: '$IsArchived',
+          IsMoneyBox: '$IsMoneyBox',
           _id: '$_id',
           startSum: { $sum: '$fixRecordsStartMonth.Value' },
           sumPayments: { $sum: '$filteredOrders.Value' },
@@ -390,8 +391,9 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
     await asyncForEach(accListObject.accList, async (accRecord) => {
       if (!accRecord.IsMoneyBox){
         totalSum = totalSum + accRecord.result;
+        totalIncoming = totalIncoming + accRecord.sumInSOrdersCleanWithMB;
       }
-      totalIncoming = totalIncoming + accRecord.sumInSOrdersCleanWithMB;
+     
       totalExpense = totalExpense + accRecord.sumPaymentsWithMB;
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
