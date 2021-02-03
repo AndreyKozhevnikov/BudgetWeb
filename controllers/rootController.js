@@ -265,6 +265,15 @@ async function createOrderObjects(req, res, next){
   res.send('there are already objects');
 }
 
+async function test(req, res, next){
+  let startDate = new Date(2021, 1, 1);
+  let lst = await Order.find({ DateOrder: { $gte: startDate } });
+  lst.forEach(element => {
+    element.LocalId = null;
+    element.save();
+  });
+}
+
 exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
@@ -276,4 +285,5 @@ exports.full_backup = fullbackup;
 exports.full_Restore = fullRestore;
 exports.updateLists = updateLists;
 exports.createOrderObjects = createOrderObjects;
+exports.test = test;
 

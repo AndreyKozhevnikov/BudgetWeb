@@ -28,5 +28,6 @@ router.get('/fullBackup', root_controller.full_backup);
 
 router.get('/updateLists', root_controller.updateLists);
 router.get('/createOrderObjects', root_controller.createOrderObjects);
+router.get('/test', root_controller.test);
 
 module.exports = router;
