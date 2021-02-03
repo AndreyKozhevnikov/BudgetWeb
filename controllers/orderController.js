@@ -63,6 +63,8 @@ async function order_list(req, res, next) {
   let order_list = await Order.find({ IsDeleted: { $exists: false }, DateOrder: { $gt: cutDate } })
     .populate('ParentTag')
     .populate('PaymentAccount')
+    .populate('Place')
+    .populate('Object')
     .sort({ DateOrder: -1, _id: -1 });
   res.render('order_list', { order_list: order_list });
 };

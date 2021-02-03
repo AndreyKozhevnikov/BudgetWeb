@@ -51,6 +51,14 @@ window.onload = function() {
           caption: 'Tag',
           width: '21%',
         },
+        {
+          dataField: 'Place.Name',
+          caption: 'Place',
+        },
+        {
+          dataField: 'Object.Name',
+          caption: 'Object',
+        },
       ],
       wordWrapEnabled: true,
     }
