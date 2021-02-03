@@ -42,7 +42,7 @@ block contentOrder
         option(value='') Please Select
         for object in object_list
           if fOrder
-            option(value=place._id selected=(fOrder.Object.toString()==object._id.toString() ? 'selected' : false)) #{object.Name} - #{object.MyNumber}
+            option(value=object._id selected=(fOrder.Object.toString()==object._id.toString() ? 'selected' : false)) #{object.Name} - #{object.MyNumber}
           else
             option(value=object._id) #{object.Name} - #{object.MyNumber}
       br

@@ -5,7 +5,7 @@ let Schema = mongoose.Schema;
 
 let AccountSchema = new Schema({
   Name: { type: String, required: true },
-  LocalId: { type: Number, required: true },
+  LocalId: { type: Number },
   OrderNumber: { type: Number },
   IsUntouchable: { type: Boolean },
   IsArchived: { type: Boolean },

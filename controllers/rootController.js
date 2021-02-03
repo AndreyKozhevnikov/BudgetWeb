@@ -7,6 +7,7 @@ let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
 let OrderObject = require('../models/orderObject.js');
+let OrderPlace = require('../models/orderPlace.js');
 
 let Helper = require('../controllers/helperController.js');
 
@@ -18,6 +19,8 @@ let constructors = {
   FixRecord: FixRecord,
   ServiceOrder: ServiceOrder,
   User: User,
+  OrderObject: OrderObject,
+  OrderPlace: OrderPlace,
 };
 
 let formidable = require('formidable');
@@ -29,6 +32,7 @@ let fixRecord_controller = require('../controllers/fixRecordController.js');
 let account_controller = require('../controllers/accountController.js');
 
 let stream = require('stream');
+
 
 function checkTime(i) {
   if (i < 10) {
@@ -55,6 +59,8 @@ async function fullbackup(req, res, next) {
   let sOrdersList = await ServiceOrder.find();
   let tagsList = await Tag.find();
   let usersList = await User.find();
+  let placesList = await OrderPlace.find();
+  let objectsList = await OrderObject.find();
 
   let backupObject = {
     Order: ordersList,
@@ -64,6 +70,8 @@ async function fullbackup(req, res, next) {
     ServiceOrder: sOrdersList,
     Tag: tagsList,
     User: usersList,
+    OrderPlace: placesList,
+    OrderObject: objectsList,
   };
 
   let fileContents = Buffer.from(JSON.stringify(backupObject));
@@ -215,6 +223,12 @@ function updatelocalid(req, res, next) {
       break;
     case 'PaymentType':
       rt = PaymentType;
+      break;
+    case 'Place':
+      rt = OrderPlace;
+      break;
+    case 'Object':
+      rt = OrderObject;
       break;
   }
   rt.findById(id, function(err, theEntity) {

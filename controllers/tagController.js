@@ -43,7 +43,7 @@ function tag_create_post(req, res, next) {
           if (err) {
             return next(err);
           }
-          res.redirect('/order/createWithNewTag');
+          res.redirect('/order/createWithNewLists');
         });
       }
     });

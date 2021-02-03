@@ -9,7 +9,7 @@ block content
       input#input1.form-control(type='text', placeholder='Enter a new name' name='NameFromForm' value=(undefined===entityFromForm ? '' : entityFromForm.Name))
 
       label(for='input1') LocalId:
-      input#input1.form-control(type='text', required='true'  name='LocalIdFromForm' value=(undefined===entityFromForm ? '' : entityFromForm.LocalId))
+      input#input1.form-control(type='text',  name='LocalIdFromForm' value=(undefined===entityFromForm ? '' : entityFromForm.LocalId))
     button.btn.btn-primary(type='submit') Submit
 
   if errors 
