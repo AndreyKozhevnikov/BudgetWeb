@@ -2,6 +2,7 @@
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
 let OrderPlace = require('../models/orderPlace.js');
+let OrderObject = require('../models/orderObject.js');
 let Account = require('../models/account.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let Helper = require('../controllers/helperController.js');
@@ -12,6 +13,7 @@ let accountList;
 let popularAccountList;
 let placeList;
 let popularPlaceList;
+let objectList;
 
 
 const { body, validationResult } = require('express-validator/check');
@@ -27,6 +29,7 @@ function getObjectToShowForm(mTitle, mOrder, mErrors) {
     dateForOrders: Helper.dateForOrders,
     place_list: placeList,
     popularPlaceList: popularPlaceList,
+    object_list: objectList,
   };
   if (mOrder) {
     objToShow.fOrder = mOrder;
@@ -188,6 +191,7 @@ function createOrderFromRequest(req, isUpdate) {
     LocalId: req.body.fLocalId,
     PaymentAccount: req.body.fPaymentAccount,
     Place: req.body.fPlace,
+    Object: req.body.fObject,
   });
   if (isUpdate) {
     order._id = req.params.id;
@@ -277,6 +281,7 @@ async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getCutDate();
   let tagFind = Helper.promisify(Tag.find, Tag);
   let orderPlaceFind = Helper.promisify(OrderPlace.find, OrderPlace);
+  let orderObjectFind = Helper.promisify(OrderObject.find, OrderObject);
   let accountAggregate = Helper.promisify(Account.aggregate, Account);
   let orderAggregate = Helper.promisify(Order.aggregate, Order);
   let results;
@@ -322,6 +327,7 @@ async function populateAdditionalLists(myCallBack, params) {
         },
       ]),
       orderPlaceFind(),
+      orderObjectFind(),
     ]);
   } catch (err) {
     console.log('error' + err);
@@ -332,6 +338,7 @@ async function populateAdditionalLists(myCallBack, params) {
   let groupedOrdersByAccount = results[3];
   placeList = results[4];
   popularPlaceList = placeList;
+  objectList = results[5];
 
 
   Helper.sortListByGroupedList(tagList, groupedOrdersByTag);

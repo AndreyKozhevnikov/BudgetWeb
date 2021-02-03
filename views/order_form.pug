@@ -22,6 +22,7 @@ block contentOrder
 
       label(for='cmbPlace') Place:
       select#cmbPlace.form-control(type='select' name='fPlace')
+        option(value='') Please Select
         for place in place_list
           if fOrder
             option(value=place._id selected=(fOrder.Place.toString()==place._id.toString() ? 'selected' : false)) #{place.Name} - #{place.MyNumber}
@@ -36,6 +37,22 @@ block contentOrder
           if (index < 2)
             td(style="width:10px")            
 
+      label(for='cmbObject') Object:
+      select#cmbObject.form-control(type='select' name='fObject')
+        option(value='') Please Select
+        for object in object_list
+          if fOrder
+            option(value=place._id selected=(fOrder.Object.toString()==object._id.toString() ? 'selected' : false)) #{object.Name} - #{object.MyNumber}
+          else
+            option(value=object._id) #{object.Name} - #{object.MyNumber}
+      br
+      table(style='width:100%')
+        tr
+        each object, index in object_list
+          td(style='width:30%')
+            button.btn.btn-primary(type='button' style='width:100%' onclick='popularObjectButtonClick(\'' + object._id + '\')') #{object.Name}
+          if (index < 2)
+            td(style="width:10px")      
 
       label(for='txValue') Value:
       input#txValue.form-control(type='number', placeholder='Value' required='true' name='fValue' value=(undefined===fOrder ? '' : fOrder.Value))

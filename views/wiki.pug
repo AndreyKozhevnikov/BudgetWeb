@@ -13,8 +13,8 @@ block content
     form#uploadForm(action="/restore" enctype="multipart/form-data" method="post")
       input(type="file" name="file")
       a(class='mainLink' onclick='parentNode.submit();') Restore
-  //- p 
-  //-   a(class='mainLink' href='/deleteall') DeleteOrdersAndTags
+  p 
+     a(class='mainLink' href='/deleteall') DeleteOrdersAndTags
   p 
     a(class='mainLink' href='/order/list/true') All orders
   p 
