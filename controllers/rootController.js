@@ -266,7 +266,7 @@ async function createOrderObjects(req, res, next){
 }
 
 async function test(req, res, next){
-  let startDate = new Date(2021, 1, 1);
+  let startDate = new Date(2021, 0, 1);
   let lst = await Order.find({ DateOrder: { $gte: startDate } });
   lst.forEach(element => {
     if (element.LocalId !== null){
