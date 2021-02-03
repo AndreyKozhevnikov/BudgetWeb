@@ -17,7 +17,7 @@ let TagSchema = new Schema({
 
 // Virtual for author's URL
 TagSchema.virtual('url').get(function() {
-  return '/tag/' + this._id;
+  return '/tag/' + this._id + '/update';
 });
 
 // Export model
