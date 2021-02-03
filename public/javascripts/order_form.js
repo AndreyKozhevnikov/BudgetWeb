@@ -3,10 +3,16 @@
 'use strict';
 
 let cmbParent;
+let cmbPlace;
 window.addEventListener('load', init);
 
 function init() {
   focusInputAfterTypeSelection();
+  populateCmbs();
+}
+function populateCmbs(){
+  cmbParent = document.getElementById('cmbType');
+  cmbPlace = document.getElementById('cmbPlace');
 }
 
 /* eslint-disable */
@@ -15,9 +21,14 @@ function popularTagButtonClick(tagId) {
    /* eslint-enable */
   valueInput.focus();
 };
+/* eslint-disable */
+function popularPlaceButtonClick(placeId) {
+  cmbPlace.value = placeId;
+  /* eslint-enable */
+  valueInput.focus();
+};
 
 function focusInputAfterTypeSelection(){
-  cmbParent = document.getElementById('cmbType');
   cmbParent.addEventListener('change', () => { valueInput.focus(); });
 }
 

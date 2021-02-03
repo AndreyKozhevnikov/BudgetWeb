@@ -62,11 +62,11 @@ let create_post_array = [
   (req, res, next) => create_post(req, res, next),
 ];
 
-exports.tag_delete_get = function(req, res) {
+exports.delete_get = function(req, res) {
   res.send('NOT IMPLEMENTED: tag delete GET');
 };
 
-exports.tag_delete_post = function(req, res) {
+exports.delete_post = function(req, res) {
   res.send('NOT IMPLEMENTED: tag delete POST');
 };
 

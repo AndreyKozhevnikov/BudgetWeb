@@ -1,6 +1,7 @@
 'use strict';
 let Order = require('../models/order.js');
 let Tag = require('../models/tag.js');
+let OrderPlace = require('../models/orderPlace.js');
 let Account = require('../models/account.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let Helper = require('../controllers/helperController.js');
@@ -9,6 +10,8 @@ let tagList;
 let popularTagList;
 let accountList;
 let popularAccountList;
+let placeList;
+let popularPlaceList;
 
 
 const { body, validationResult } = require('express-validator/check');
@@ -22,6 +25,8 @@ function getObjectToShowForm(mTitle, mOrder, mErrors) {
     accountList: accountList,
     popularAccountList: popularAccountList,
     dateForOrders: Helper.dateForOrders,
+    place_list: placeList,
+    popularPlaceList: popularPlaceList,
   };
   if (mOrder) {
     objToShow.fOrder = mOrder;
@@ -65,7 +70,7 @@ function order_create_get(req, res, next) {
   res.render('order_form', obj);
 };
 
-function order_create_get_withNewTag(req, res, next) {
+function order_create_get_withNewLists(req, res, next) {
   populateAdditionalLists(order_create_get, { req: req, res: res, next: next });
 }
 
@@ -270,6 +275,7 @@ function deleteOrders(req, res, next) {
 async function populateAdditionalLists(myCallBack, params) {
   let cutDate = Helper.getCutDate();
   let tagFind = Helper.promisify(Tag.find, Tag);
+  let orderPlaceFind = Helper.promisify(OrderPlace.find, OrderPlace);
   let accountAggregate = Helper.promisify(Account.aggregate, Account);
   let orderAggregate = Helper.promisify(Order.aggregate, Order);
   let results;
@@ -314,6 +320,7 @@ async function populateAdditionalLists(myCallBack, params) {
           },
         },
       ]),
+      orderPlaceFind(),
     ]);
   } catch (err) {
     console.log('error' + err);
@@ -322,6 +329,8 @@ async function populateAdditionalLists(myCallBack, params) {
   accountList = results[1];
   let groupedOrdersByTag = results[2];
   let groupedOrdersByAccount = results[3];
+  placeList = results[4];
+  popularPlaceList = placeList;
 
 
   Helper.sortListByGroupedList(tagList, groupedOrdersByTag);
@@ -353,7 +362,7 @@ populateAdditionalLists();
 
 exports.order_list = order_list;
 exports.order_create_get = order_create_get;
-exports.order_create_get_withNewTag = order_create_get_withNewTag;
+exports.order_create_get_withNewLists = order_create_get_withNewLists;
 exports.order_create_post = order_create_post_array;
 exports.order_delete_get = order_delete_get;
 exports.order_delete_post = order_delete_post;
