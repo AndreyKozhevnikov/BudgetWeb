@@ -7,8 +7,8 @@ let cmbPlace;
 window.addEventListener('load', init);
 
 function init() {
-  focusInputAfterTypeSelection();
   populateCmbs();
+  focusInputAfterTypeSelection();
 }
 function populateCmbs(){
   cmbParent = document.getElementById('cmbType');
