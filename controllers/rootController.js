@@ -269,9 +269,12 @@ async function test(req, res, next){
   let startDate = new Date(2021, 1, 1);
   let lst = await Order.find({ DateOrder: { $gte: startDate } });
   lst.forEach(element => {
-    element.LocalId = null;
-    element.save();
+    if (element.LocalId !== null){
+      element.LocalId = null;
+      element.save();
+    }
   });
+  res.send('localid is null');
 }
 
 exports.index = index;
