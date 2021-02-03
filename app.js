@@ -10,6 +10,7 @@ let compression = require('compression');
 
 let requestLogin = require('./routes/requestLogin');
 let tagRouter = require('./routes/tagRouter.js');
+let orderPlaceRouter = require('./routes/orderPlaceRouter.js');
 let orderRouter = require('./routes/orderRouter.js');
 let accountRouter = require('./routes/accountRouter.js');
 let serviceOrderRouter = require('./routes/serviceOrderRouter.js');
@@ -45,6 +46,7 @@ if (!isDevelopment)
   app.use('/', requestLogin);
 app.use('/', rootRouter);
 app.use('/tag', tagRouter);
+app.use('/orderPlace', orderPlaceRouter);
 app.use('/order', orderRouter);
 app.use('/account', accountRouter);
 app.use('/serviceOrder', serviceOrderRouter);
