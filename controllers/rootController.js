@@ -6,6 +6,7 @@ let PaymentType = require('../models/paymentType.js');
 let FixRecord = require('../models/fixRecord.js');
 let ServiceOrder = require('../models/serviceOrder.js');
 let User = require('../models/user.js');
+let OrderObject = require('../models/orderObject.js');
 
 let Helper = require('../controllers/helperController.js');
 
@@ -236,6 +237,20 @@ function updateLists(req, res, next) {
   res.send('update is Successful');
 }
 
+async function createOrderObjects(req, res, next){
+  var objectList = await OrderObject.find();
+  if (objectList.length === 0){
+    let kate = new OrderObject({Name: 'Kate', LocalId: '1'});
+    let nina = new OrderObject({Name: 'Nina', LocalId: '2'});
+    let and = new OrderObject({Name: 'And', LocalId: '3'});
+    kate.save();
+    nina.save();
+    and.save();
+    res.send('objects created');
+  }
+  res.send('there are already objects');
+}
+
 exports.index = index;
 exports.wikiAbout = wikiAbout;
 exports.wiki = wiki;
@@ -246,4 +261,5 @@ exports.update_localid = updatelocalid;
 exports.full_backup = fullbackup;
 exports.full_Restore = fullRestore;
 exports.updateLists = updateLists;
+exports.createOrderObjects = createOrderObjects;
 

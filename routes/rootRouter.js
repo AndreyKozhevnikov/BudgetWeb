@@ -27,5 +27,6 @@ router.post('/updateLocalId', root_controller.update_localid);
 router.get('/fullBackup', root_controller.full_backup);
 
 router.get('/updateLists', root_controller.updateLists);
+router.get('/createOrderObjects', root_controller.createOrderObjects);
 
 module.exports = router;
