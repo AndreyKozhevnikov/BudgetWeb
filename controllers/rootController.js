@@ -272,6 +272,7 @@ async function test(req, res, next){
     element.LocalId = null;
     element.save();
   });
+  res.send('localid is null');
 }
 
 exports.index = index;
