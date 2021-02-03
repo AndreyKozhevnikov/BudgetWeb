@@ -1,7 +1,7 @@
 /*global totalSum_list $ */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
-
+// https://codepen.io/freazeek/pen/OJXKpPv
 window.onload = function() {
   // let chartElement = document.getElementById('totalSumChartContainer');
   $('#totalSumChartContainer').dxChart({
@@ -34,26 +34,27 @@ window.onload = function() {
         visible: 'true',
       },
     },
-    series: [{
-      argumentField: 'DateTime',
-      valueField: 'TotalSum',
-      color: '#ffaa66',
-      axis: 'Right',
-    },
-    {
-      argumentField: 'DateTime',
-      valueField: 'TotalIncoming',
-      type: 'bar',
-      color: '#A8C879',
-      axis: 'Right',
-    },
-    {
-      argumentField: 'DateTime',
-      valueField: 'TotalExpense',
-      type: 'bar',
-      color: '#E28FAD',
-      axis: 'Left',
-    },
+    series: [
+      {
+        argumentField: 'DateTime',
+        valueField: 'TotalIncoming',
+        type: 'bar',
+        color: '#A8C879',
+        axis: 'Right',
+      },
+      {
+        argumentField: 'DateTime',
+        valueField: 'TotalExpense',
+        type: 'bar',
+        color: '#E28FAD',
+        axis: 'Left',
+      },
+      {
+        argumentField: 'DateTime',
+        valueField: 'TotalSum',
+        color: '#ffaa66',
+        axis: 'Right',
+      },
     ],
     valueAxis: [{
       name: 'Left',

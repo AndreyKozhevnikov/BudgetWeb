@@ -393,7 +393,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
         totalSum = totalSum + accRecord.result;
         totalIncoming = totalIncoming + accRecord.sumInSOrdersCleanWithMB;
       }
-     
+
       totalExpense = totalExpense + accRecord.sumPaymentsWithMB;
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
