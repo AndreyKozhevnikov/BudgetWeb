@@ -24,7 +24,7 @@ block contentOrder
       select#cmbPlace.form-control(type='select' name='fPlace')
         option(value='') Please Select
         for place in place_list
-          if fOrder
+          if (fOrder && fOrder.Place)
             option(value=place._id selected=(fOrder.Place.toString()==place._id.toString() ? 'selected' : false)) #{place.Name} - #{place.MyNumber}
           else
             option(value=place._id) #{place.Name} - #{place.MyNumber}
@@ -41,7 +41,7 @@ block contentOrder
       select#cmbObject.form-control(type='select' name='fObject')
         option(value='') Please Select
         for object in object_list
-          if fOrder
+          if (fOrder&& fOrder.Object)
             option(value=object._id selected=(fOrder.Object.toString()==object._id.toString() ? 'selected' : false)) #{object.Name} - #{object.MyNumber}
           else
             option(value=object._id) #{object.Name} - #{object.MyNumber}

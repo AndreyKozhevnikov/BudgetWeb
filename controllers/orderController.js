@@ -192,9 +192,13 @@ function createOrderFromRequest(req, isUpdate) {
     Tags: req.body.fTags,
     LocalId: req.body.fLocalId,
     PaymentAccount: req.body.fPaymentAccount,
-    Place: req.body.fPlace,
-    Object: req.body.fObject,
   });
+  if (req.body.fPlace !== ''){
+    order.Place = req.body.fPlace;
+  }
+  if (req.body.fObject !== ''){
+    order.Object = req.body.fObject;
+  }
   if (isUpdate) {
     order._id = req.params.id;
   } else {
