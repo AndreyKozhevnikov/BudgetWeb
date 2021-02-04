@@ -8,7 +8,7 @@ function entity_list(req, res, next) {
     if (err) {
       return next(err);
     }
-    res.render('Place_list', { title: 'Place List', entity_list: result_list });
+    res.render('entity_list.pug', { title: 'Place List', entity_list: result_list });
   });
 };
 

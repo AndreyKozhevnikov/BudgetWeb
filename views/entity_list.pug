@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  
+  ul
+  each entity in entity_list
+    li 
+      a(href=entity.url) #{entity.Name}  
+      | (#{entity._id})
+      |  #{entity.Name}  
+
+  else
+    li There are no tags.
