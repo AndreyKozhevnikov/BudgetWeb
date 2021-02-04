@@ -62,6 +62,8 @@ function getMixListFromOrders(orderList) {
       viewType: 'Order',
       viewData: order.ParentTag.Name,
       accountOut: order.PaymentAccount.Name,
+      place: order.Place.Name,
+      object: order.Object.Name,
     };
     mixRecord.entity = order;
     mixRecord.type = Helper.mixOrderTypes.order;

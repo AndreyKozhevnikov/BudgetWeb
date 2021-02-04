@@ -60,6 +60,12 @@ window.onload = function() {
             container[0].classList.add(options.data.viewType);
           },
         },
+        {
+          dataField: 'place',
+        },
+        {
+          dataField: 'object',
+        },
       ],
       wordWrapEnabled: true,
     }

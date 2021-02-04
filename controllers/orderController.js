@@ -371,7 +371,9 @@ async function getAccountOrders(id) {
   let list = Order.find({ PaymentAccount: Helper.createObjectId(id) });
   list
     .populate('ParentTag')
-    .populate('PaymentAccount');
+    .populate('PaymentAccount')
+    .populate('Object')
+    .populate('Place');
   return list;
 }
 populateAdditionalLists();
