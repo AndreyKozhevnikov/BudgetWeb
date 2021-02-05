@@ -53,7 +53,18 @@ window.onload = function() {
         },
         {
           dataField: 'Place.Name',
-          caption: 'Place',
+          cellTemplate: (container, options) => {
+            let lb = this.document.createElement('text');
+            if (options.data.Place){
+              if (options.data.Place.HasImage){
+                let img = this.document.createElement('img');
+                img.src = '/../images/' + options.data.Place.Name + '32.png';
+                container[0].appendChild(img);
+              }
+              lb.innerHTML = options.data.Place.Name;
+              container[0].appendChild(lb);
+            }
+          },
         },
         {
           dataField: 'Object.Name',
