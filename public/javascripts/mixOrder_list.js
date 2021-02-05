@@ -62,6 +62,18 @@ window.onload = function() {
         },
         {
           dataField: 'place',
+          cellTemplate: (container, options) => {
+            let lb = this.document.createElement('text');
+            if (options.data.place){
+              if (options.data.HasPlaceImage){
+                let img = this.document.createElement('img');
+                img.src = '/../images/' + options.data.place + '32.png';
+                container[0].appendChild(img);
+              }
+              lb.innerHTML = options.data.place;
+              container[0].appendChild(lb);
+            }
+          },
         },
         {
           dataField: 'object',

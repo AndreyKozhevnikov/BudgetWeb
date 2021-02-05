@@ -62,8 +62,13 @@ function getMixListFromOrders(orderList) {
       viewType: 'Order',
       viewData: order.ParentTag.Name,
       accountOut: order.PaymentAccount.Name,
-      place: order.Place.Name,
-      object: order.Object.Name,
+    };
+    if (order.Place){
+      mixRecord.place = order.Place.Name;
+      mixRecord.HasPlaceImage = order.Place.HasImage;
+    };
+    if (order.Object){
+      mixRecord.object = order.Object.Name;
     };
     mixRecord.entity = order;
     mixRecord.type = Helper.mixOrderTypes.order;
