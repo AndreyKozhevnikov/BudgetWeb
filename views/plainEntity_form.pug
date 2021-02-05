@@ -7,6 +7,9 @@ block content
     div.form-group
       label(for='input1') Name:
       input#input1.form-control(type='text', placeholder='Enter a new name' name='NameFromForm' value=(undefined===entityFromForm ? '' : entityFromForm.Name))
+      
+      label(for='chHasImage') HasImage:
+      input#chHasImage.form-control(type='checkbox' name='HasImageFromForm' checked=(undefined===entityFromForm ? false : entityFromForm.HasImage))      
 
       label(for='input1') LocalId:
       input#input1.form-control(type='text',  name='LocalIdFromForm' value=(undefined===entityFromForm ? '' : entityFromForm.LocalId))

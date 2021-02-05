@@ -19,10 +19,7 @@ function create_get(req, res) {
 function create_post(req, res, next) {
   const errors = validationResult(req);
 
-  var orderPlace = new OrderPlace({
-    Name: req.body.NameFromForm,
-    LocalId: req.body.LocalIdFromForm,
-  });
+  var orderPlace = createPlaceOrderFromRequest(req, false);
 
   if (!errors.isEmpty()) {
     res.render('plainEntity_form', {
@@ -75,16 +72,23 @@ function update_get(req, res, next) {
     if (err) {
       next(err);
     }
-    res.render('plainEntity_form', { title: 'Update Place', tagFromForm: result });
+    res.render('plainEntity_form', { title: 'Update Place', entityFromForm: result });
   });
 };
-
-function update_post(req, res, next) {
+function createPlaceOrderFromRequest(req, isUpdate) {
   let orderPlace = new OrderPlace({
     Name: req.body.NameFromForm,
     LocalId: req.body.LocalIdFromForm,
-    _id: req.params.id,
+    HasImage: Boolean(req.body.HasImageFromForm),
   });
+  if (isUpdate) {
+    orderPlace._id = req.params.id;
+  }
+  return orderPlace;
+}
+
+function update_post(req, res, next) {
+  let orderPlace = createPlaceOrderFromRequest(req, true);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -94,7 +98,7 @@ function update_post(req, res, next) {
       if (err) {
         return next(err);
       }
-      res.redirect(theEntity.url);
+      res.redirect('/orderplace/list');
     });
   }
 }
