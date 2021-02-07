@@ -360,21 +360,21 @@ async function populateAdditionalLists(myCallBack, params) {
 }
 
 
-async function getList(startDate, finishDate) {
+async function getOrdersByDates(startDate, finishDate) {
   let list = Helper.getListByDates(Order, startDate, finishDate);
-  list
-    .populate('ParentTag')
-    .populate('PaymentAccount');
+  populateOrderList(list);
   return list;
 }
-async function getAccountOrders(id) {
+async function getOrdersByAccount(id) {
   let list = Order.find({ PaymentAccount: Helper.createObjectId(id) });
-  list
-    .populate('ParentTag')
+  populateOrderList(list);
+  return list;
+}
+function populateOrderList(orderList){
+  orderList.populate('ParentTag')
     .populate('PaymentAccount')
     .populate('Object')
     .populate('Place');
-  return list;
 }
 populateAdditionalLists();
 
@@ -389,7 +389,7 @@ exports.order_update_post = order_update_post_array;
 exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId;
 exports.deleteOrders = deleteOrders;
 exports.populateAdditionalLists = populateAdditionalLists;
-exports.getList = getList;
-exports.getAccountOrders = getAccountOrders;
+exports.getList = getOrdersByDates;
+exports.getAccountOrders = getOrdersByAccount;
 exports.getLeft = getLeft;
 exports.populatePaymentAccount = populatePaymentAccount;
