@@ -336,6 +336,20 @@ async function populateAdditionalLists(myCallBack, params) {
       ]),
       orderPlaceFind(),
       orderObjectFind(),
+      orderAggregate([
+        {
+          $match: {
+            IsDeleted: { $exists: false },
+            DateOrder: { $gt: cutDate },
+          },
+        },
+        {
+          $group: {
+            _id: '$Place',
+            count: { $sum: 1 },
+          },
+        },
+      ]),
     ]);
   } catch (err) {
     console.log('error' + err);
@@ -347,10 +361,13 @@ async function populateAdditionalLists(myCallBack, params) {
   placeList = results[4];
   popularPlaceList = placeList;
   objectList = results[5];
-
+  let groupedOrdersByPlace = results[6];
+  groupedOrdersByPlace = groupedOrdersByPlace.filter(x => x._id !== null);
 
   Helper.sortListByGroupedList(tagList, groupedOrdersByTag);
   Helper.sortListByGroupedList(accountList, groupedOrdersByAccount);
+  Helper.sortListByGroupedList(placeList, groupedOrdersByPlace);
+
   popularTagList = tagList.slice(1, 4);
   popularAccountList = accountList.slice(1, 5);
   if (params) {
