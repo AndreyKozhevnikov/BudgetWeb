@@ -9,7 +9,9 @@ block content
       a(href=entity.url) #{entity.Name}  
       | (#{entity._id})
       |  #{entity.Name}  
-      |  #{entity.HasImage}  
+      |  #{entity.HasImage}
+      if (entity.HasImage)  
+        img(src='/../images/'+entity.Name+'32.png')
 
   else
     li There are no tags.
