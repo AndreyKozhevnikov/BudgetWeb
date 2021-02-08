@@ -368,8 +368,8 @@ async function populateAdditionalLists(myCallBack, params) {
   Helper.sortListByGroupedList(accountList, groupedOrdersByAccount);
   Helper.sortListByGroupedList(placeList, groupedOrdersByPlace);
 
-  popularTagList = tagList.slice(1, 4);
-  popularAccountList = accountList.slice(1, 5);
+  popularTagList = tagList.slice(1, 8);
+  popularAccountList = accountList.slice(1, 8);
   if (params) {
     myCallBack(params.req, params.res, params.next);
   }

@@ -12,13 +12,9 @@ block contentOrder
           else
             option(value=tag._id) #{tag.Name} - #{tag.MyNumber}
       br
-      table(style='width:100%')
-        tr
+      div.buttonGrid(style='width:100%')
         each tag, index in popularTagList
-          td(style='width:30%')
-            button.btn.btn-primary(type='button' style='width:100%' onclick='popularTagButtonClick(\'' + tag._id + '\')') #{tag.Name}
-          if (index < 2)
-            td(style="width:10px")
+          button.btn.btn-primary(type='button' style='margin:2px;width:150px' onclick='popularTagButtonClick(\'' + tag._id + '\')') #{tag.Name}
 
       label(for='cmbPlace') Place:
       select#cmbPlace.form-control(type='select' name='fPlace')
