@@ -117,3 +117,8 @@ label[selected]{
 a.withoutWrap{
   white-space: nowrap;
 }
+.buttonGrid{
+  display: flex;
+  flex-wrap: wrap;
+}
+

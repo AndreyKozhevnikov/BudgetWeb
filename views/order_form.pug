@@ -29,17 +29,13 @@ block contentOrder
           else
             option(value=place._id) #{place.Name} - #{place.MyNumber}
       br
-      table(style='width:100%')
-        tr
+      div.buttonGrid(style='width:100%')
         each place, index in popularPlaceList
-          td(style='width:30%')
-            button.btn.btn-primary(type='button' style='width:100%' onclick='popularPlaceButtonClick(\'' + place._id + '\')') 
-              if (place.HasImage)
-                img(src='/../images/'+place.Name+'32.png')
+          button.btn.btn-primary(type='button' style='margin:2px' onclick='popularPlaceButtonClick(\'' + place._id + '\')') 
+            if (place.HasImage)
+              img(src='/../images/'+place.Name+'32.png')
               //- img(src='/../images/'+'5KA'+'.jpg')
-              | #{place.Name}
-          if (index < 2)
-            td(style="width:10px")            
+            | #{place.Name}
 
       label(for='cmbObject') Object:
       select#cmbObject.form-control(type='select' name='fObject')
