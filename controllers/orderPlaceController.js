@@ -3,17 +3,17 @@ let OrderPlace = require('../models/orderPlace.js');
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
-function entity_list(req, res, next) {
+function orderPlace_list(req, res, next) {
   OrderPlace.find().exec(function(err, result_list) {
     if (err) {
       return next(err);
     }
-    res.render('entity_list.pug', { title: 'Place List', entity_list: result_list });
+    res.render('orderPlace_list.pug', { title: 'Place List', orderPlace_list: result_list });
   });
 };
 
 function create_get(req, res) {
-  res.render('plainEntity_form', { title: 'Create Place' });
+  res.render('orderPlace_form', { title: 'Create Place' });
 };
 
 function create_post(req, res, next) {
@@ -22,9 +22,9 @@ function create_post(req, res, next) {
   var orderPlace = createPlaceOrderFromRequest(req, false);
 
   if (!errors.isEmpty()) {
-    res.render('plainEntity_form', {
+    res.render('orderPlace_form', {
       title: 'Create Place(error)',
-      entityFromForm: orderPlace,
+      orderPlaceFromForm: orderPlace,
       errors: errors.array(),
     });
     return;
@@ -72,7 +72,7 @@ function update_get(req, res, next) {
     if (err) {
       next(err);
     }
-    res.render('plainEntity_form', { title: 'Update Place', entityFromForm: result });
+    res.render('orderPlace_form', { title: 'Update Place', orderPlaceFromForm: result });
   });
 };
 function createPlaceOrderFromRequest(req, isUpdate) {
@@ -92,7 +92,7 @@ function update_post(req, res, next) {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res.render('plainEntity_form', { title: 'Update Order', entityFromForm: orderPlace });
+    res.render('orderPlace_form', { title: 'Update Order', orderPlaceFromForm: orderPlace });
   } else {
     OrderPlace.findByIdAndUpdate(req.params.id, orderPlace, [], function(err, theEntity) {
       if (err) {
@@ -122,7 +122,7 @@ function deleteEntities(req, res, next) {
   });
 };
 
-exports.entity_list = entity_list;
+exports.orderPlace_list = orderPlace_list;
 exports.create_get = create_get;
 exports.create_post = create_post_array;
 exports.update_get = update_get;
