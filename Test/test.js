@@ -11,10 +11,15 @@ it('getLeft(87)', () => {
 it('getLeft(14)', () => {
   let myShortenFile = require('../controllers/orderController');
   let res = myShortenFile.getLeft(14);
-  assert.equal(res, 36);
+  assert.equal(res, 86);
 });
 it('getLeft(50)', () => {
   let myShortenFile = require('../controllers/orderController');
   let res = myShortenFile.getLeft(50);
+  assert.equal(res, 50);
+});
+it('getLeft(100)', () => {
+  let myShortenFile = require('../controllers/orderController');
+  let res = myShortenFile.getLeft(100);
   assert.equal(res, 0);
 });

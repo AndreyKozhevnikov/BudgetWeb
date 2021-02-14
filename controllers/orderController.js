@@ -127,11 +127,11 @@ async function order_create_post(req, res, next) {
 
 function getLeft(sum) {
   // let quotient = Math.floor(sum / 50);
-  let remainder = sum % 50;
+  let remainder = sum % 100;
   if (remainder === 0) {
     return 0;
   }
-  let res = 50 - remainder;
+  let res = 100 - remainder;
   return res;
 }
 
