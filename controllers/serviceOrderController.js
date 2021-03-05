@@ -141,8 +141,8 @@ async function populateLists() {
     ]);
     accountOutList = getCloneArray(accountList);
     Helper.sortListByGroupedList(accountOutList, sOrdersGroupedByOutAcc);
-    popularAccInList = accountInList.slice(0, 3);
-    popularAccOutList = accountOutList.slice(0, 3);
+    popularAccInList = accountInList.slice(0, 4);
+    popularAccOutList = accountOutList.slice(0, 4);
   } catch (err) {
     console.log(err);
   }
