@@ -359,7 +359,6 @@ async function populateAdditionalLists(myCallBack, params) {
   let groupedOrdersByTag = results[2];
   let groupedOrdersByAccount = results[3];
   placeList = results[4];
-  popularPlaceList = placeList;
   objectList = results[5];
   let groupedOrdersByPlace = results[6];
   groupedOrdersByPlace = groupedOrdersByPlace.filter(x => x._id !== null);
@@ -367,6 +366,8 @@ async function populateAdditionalLists(myCallBack, params) {
   Helper.sortListByGroupedList(tagList, groupedOrdersByTag);
   Helper.sortListByGroupedList(accountList, groupedOrdersByAccount);
   Helper.sortListByGroupedList(placeList, groupedOrdersByPlace);
+
+  popularPlaceList = placeList.slice(0, 30);
 
   popularTagList = tagList.slice(1, 8);
   popularAccountList = accountList.slice(1, 8);
