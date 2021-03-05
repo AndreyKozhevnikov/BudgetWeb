@@ -9,6 +9,13 @@ function init() {
   focusValueInput();
   focusDescriptionAfterEnterNonNumberInValue();
   window.addEventListener('keydown', processKeyDown);
+  disableMouseWheel(valueInput);
+}
+
+function disableMouseWheel(input){
+  input.addEventListener('mousewheel', (e) => {
+    e.preventDefault();
+  });
 }
 
 function processKeyDown() {
