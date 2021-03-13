@@ -367,7 +367,7 @@ async function populateAdditionalLists(myCallBack, params) {
   Helper.sortListByGroupedList(accountList, groupedOrdersByAccount);
   Helper.sortListByGroupedList(placeList, groupedOrdersByPlace);
 
-  popularPlaceList = placeList.slice(0, 30);
+  popularPlaceList = placeList.slice(0, 9);
 
   placeList.sort((a, b) => {
     if (a.Name < b.Name) { return -1; }
