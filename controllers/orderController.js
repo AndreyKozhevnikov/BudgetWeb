@@ -369,6 +369,12 @@ async function populateAdditionalLists(myCallBack, params) {
 
   popularPlaceList = placeList.slice(0, 30);
 
+  placeList.sort((a, b) => {
+    if (a.Name < b.Name) { return -1; }
+    if (a.Name > b.Name) { return 1; }
+    return 0;
+  });
+
   popularTagList = tagList.slice(1, 8);
   popularAccountList = accountList.slice(1, 8);
   if (params) {
