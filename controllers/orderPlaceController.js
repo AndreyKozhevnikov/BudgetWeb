@@ -8,6 +8,11 @@ function orderPlace_list(req, res, next) {
     if (err) {
       return next(err);
     }
+    result_list.sort((a, b) => {
+      if (a.Name < b.Name) { return -1; }
+      if (a.Name > b.Name) { return 1; }
+      return 0;
+    });
     res.render('orderPlace_list.pug', { title: 'Place List', orderPlace_list: result_list });
   });
 };
