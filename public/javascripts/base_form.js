@@ -1,15 +1,34 @@
 'use strict';
 let valueInput;
+let dtOrder;
 window.addEventListener('load', init);
 
 function init() {
   valueInput = document.getElementById('txValue');
+  dtOrder = document.getElementById('dtDateOrder');
   handleSubmitButton();
   handleSetDayButtons();
   focusValueInput();
   focusDescriptionAfterEnterNonNumberInValue();
   window.addEventListener('keydown', processKeyDown);
   disableMouseWheel(valueInput);
+  setDtOrderMaxDate();
+}
+
+function setDtOrderMaxDate(){
+  let today = new Date();
+  let dd = today.getDate();
+  let mm = today.getMonth() + 1; // January is 0!
+  let yyyy = today.getFullYear();
+  if (dd < 10){
+    dd = '0' + dd;
+  }
+  if (mm < 10){
+    mm = '0' + mm;
+  }
+
+  today = yyyy + '-' + mm + '-' + dd;
+  dtOrder.setAttribute('max', today);
 }
 
 function disableMouseWheel(input){
@@ -60,10 +79,12 @@ function handleSetDayButtons() {
 }
 
 function changeOrderDate(shift) {
-  let dtInput = document.getElementById('dtDateOrder');
-  let stValue = dtInput.valueAsDate;
+  let stValue = dtOrder.valueAsDate;
   stValue.setDate(stValue.getDate() + shift);
-  dtInput.value = formatDate(stValue);
+  let today = new Date();
+  if (stValue <= today){
+    dtOrder.value = formatDate(stValue);
+  }
   focusValueInput();
 }
 
