@@ -117,7 +117,7 @@ async function fullRestore(req, res, next) {
     let entityCollection = backupObject[entityCollectionProperty];
     for (let i = 0; i < entityCollection.length; i++) {
       let savedEntity = entityCollection[i];
-      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-jan-20')){
+      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-jan-21')){
         continue;
       }
       let constructor = constructors[entityCollectionProperty];
@@ -208,42 +208,46 @@ function createUserPost(req, res, next) {
     res.send('user created');
   });
 }
-
-function updatelocalid(req, res, next) {
-  let id = req.body.id;
-  let localId = req.body.localid;
-  let type = req.body.type;
-  let rt;
-  switch (type) {
-    case 'Order':
-      rt = Order;
-      break;
-    case 'Tag':
-      rt = Tag;
-      break;
-    case 'PaymentType':
-      rt = PaymentType;
-      break;
-    case 'Place':
-      rt = OrderPlace;
-      break;
-    case 'Object':
-      rt = OrderObject;
-      break;
-  }
-  rt.findById(id, function(err, theEntity) {
-    if (err) {
-      next(err);
+function updatelocalids(req, res, next) {
+  var updateObjects = req.body.updateObjects;
+  var updateObjectList = JSON.parse(updateObjects);
+  updateObjectList.forEach(x => {
+    let id = x.WebId;
+    let localId = x.LocalId;
+    let type = x.Type;
+    let rt;
+    switch (type) {
+      case 'Order':
+        rt = Order;
+        break;
+      case 'Tag':
+        rt = Tag;
+        break;
+      case 'PaymentType':
+        rt = PaymentType;
+        break;
+      case 'Place':
+        rt = OrderPlace;
+        break;
+      case 'Object':
+        rt = OrderObject;
+        break;
     }
-    theEntity.LocalId = localId;
-    theEntity.save(function(err, savedEntity) {
+    rt.findById(id, function(err, theEntity) {
       if (err) {
         next(err);
       }
-      res.send('update is Successful');
+      theEntity.LocalId = localId;
+      theEntity.save(function(err, savedEntity) {
+        if (err) {
+          next(err);
+        }
+      });
     });
   });
-};
+
+  res.send('update is Successful');
+}
 
 function updateLists(req, res, next) {
   order_controller.populateAdditionalLists();
@@ -266,15 +270,29 @@ async function createOrderObjects(req, res, next){
 }
 
 async function test(req, res, next){
-  let startDate = new Date(2021, 0, 1);
-  let lst = await Order.find({ DateOrder: { $gte: startDate } });
-  lst.forEach(element => {
-    if (element.LocalId !== null){
-      element.LocalId = null;
-      element.save();
-    }
+  // let startDate = new Date(2021, 0, 1);
+  // let lst = await Order.find({ DateOrder: { $gte: startDate } });
+  // lst.forEach(element => {
+  //   if (element.LocalId !== null){
+  //     element.LocalId = null;
+  //     element.save();
+  //   }
+  // });
+  // res.send('localid is null');
+  // for (let i = 0; i < 100; i++){
+  //   let o = new Order();
+  //   o.Description = 'test descrition';
+  //   o.ParentTag = Helper.createObjectId('5a7894d1fa57ce02c4370d3b');
+  //   o.Value = 33;
+  //   o.DateOrder = new Date();
+  //   o.save();
+  // }
+  let lst = await Order.find({ DateOrder: { $gte: new Date(2021, 1, 1) } });
+  lst.forEach(l => {
+    l.LocalId = null;
+    l.save();
   });
-  res.send('localid is null');
+  var c = lst.length;
 }
 
 exports.index = index;
@@ -283,7 +301,7 @@ exports.wiki = wiki;
 exports.deleteAll = deleteAll;
 exports.createUserGet = createUserGet;
 exports.createUserPost = createUserPost;
-exports.update_localid = updatelocalid;
+exports.update_localids = updatelocalids;
 exports.full_backup = fullbackup;
 exports.full_Restore = fullRestore;
 exports.updateLists = updateLists;

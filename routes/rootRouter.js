@@ -22,7 +22,7 @@ router.get('/createuser', root_controller.createUserGet);
 
 router.post('/createuser', root_controller.createUserPost);
 
-router.post('/updateLocalId', root_controller.update_localid);
+router.post('/updateLocalIds', root_controller.update_localids);
 
 router.get('/fullBackup', root_controller.full_backup);
 
