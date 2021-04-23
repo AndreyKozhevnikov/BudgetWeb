@@ -287,12 +287,12 @@ async function test(req, res, next){
   //   o.DateOrder = new Date();
   //   o.save();
   // }
-  let lst = await Order.find({ DateOrder: { $gte: new Date(2021, 1, 1) } });
-  lst.forEach(l => {
-    l.LocalId = null;
-    l.save();
-  });
-  var c = lst.length;
+  // let lst = await Order.find({ DateOrder: { $gte: new Date(2021, 1, 1) } });
+  // lst.forEach(l => {
+  //   l.LocalId = null;
+  //   l.save();
+  // });
+  // var c = lst.length;
 }
 
 exports.index = index;
