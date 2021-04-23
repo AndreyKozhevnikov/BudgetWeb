@@ -70,6 +70,10 @@ window.onload = function() {
           dataField: 'Object.Name',
           caption: 'Object',
         },
+        {
+          dataField: 'Tags',
+          caption: 'Tags',
+        },
       ],
       wordWrapEnabled: true,
     }
