@@ -69,7 +69,22 @@ block content
         td
           label #{statObject.diffEatMonth}  
         td
-          label #{statObject.moneyLeftEat}                       
+          label #{statObject.moneyLeftEat}     
+      tr
+        td 
+          label FastFood
+        td
+          label #{statObject.normFastFood}
+        td 
+          label(class='spentLabel' overflownorm = statObject.fastFoodColorAttribute) #{statObject.spendFastFood}   
+        td 
+          label(class='spentLabel' overflownorm = statObject.fastFoodColorAttribute) #{statObject.diffFastFood}
+        td
+          label #{statObject.normFastFoodMonth}  
+        td
+          label #{statObject.diffFastFoodMonth}  
+        td
+          label #{statObject.moneyLeftFastFood}                              
       tr
         td
           label All

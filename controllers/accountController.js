@@ -459,6 +459,7 @@ async function aggregatedList(req, res, next) {
 
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 500;
+  const normFastFoodPerDay = 200;
   const normAllPerDay = 2300;
   const mortGagePayment = 25479;
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
@@ -500,13 +501,19 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     sumAllOrders = sumAllOrders + sOrder.Value;
   }
   let sumEatOrders = 0;
+  let sumFastFoodOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
     if (order.ParentTag.LocalId === 1) {
       sumEatOrders = sumEatOrders + order.Value;
     }
+    if (order.ParentTag.LocalId === 2037){
+      sumFastFoodOrders = sumFastFoodOrders + order.Value;
+    }
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
   }, 0);
+
+
   processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
   let leftDayCount = monthDayCount - dayCount + 1;
@@ -514,12 +521,16 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     leftDayCount = 1;
   let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
   let desiredEatSumForMonth = normEatPerDay * monthDayCount;
+  let desiredFastFoodSumForMonth = normFastFoodPerDay * monthDayCount;
 
   let statisticObject =
   {
     spendEat: sumEatOrders,
     normEat: normEatPerDay * dayCount,
     normEatMonth: desiredEatSumForMonth,
+    spendFastFood: sumFastFoodOrders,
+    normFastFood: normFastFoodPerDay * dayCount,
+    normFastFoodMonth: desiredFastFoodSumForMonth,
     spendAll: sumAllOrders,
     normAll: normAllPerDay * dayCount + mortGagePayment,
     normAllMonth: desiredAllSumForMonth,
@@ -527,12 +538,18 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
   statisticObject.diffEatMonth = statisticObject.normEatMonth - statisticObject.spendEat;
   statisticObject.moneyLeftEat = Math.round(statisticObject.diffEatMonth / leftDayCount);
+  
+  statisticObject.diffFastFood = statisticObject.normFastFood - statisticObject.spendFastFood;
+  statisticObject.diffFastFoodMonth = statisticObject.normFastFoodMonth - statisticObject.spendFastFood;
+  statisticObject.moneyLeftFastFood = Math.round(statisticObject.diffFastFoodMonth / leftDayCount);
+
   statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
   statisticObject.diffAllMonth = statisticObject.normAllMonth - statisticObject.spendAll;
   statisticObject.moneyLeftAll = Math.round(statisticObject.diffAllMonth / leftDayCount);
 
   statisticObject.allColorAttribute = statisticObject.diffAll < 0;
   statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
+  statisticObject.fastFoodColorAttribute = statisticObject.diffFastFood < 0;
 
   statisticObject.thisMonthDates = thisMonthDates;
 
