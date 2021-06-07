@@ -63,7 +63,7 @@ let mongoDB =
   // 'mongodb+srv://budgetweb_user:budgetpass@budgetwebdb.7lzl2.mongodb.net/budgetwebdb?retryWrites=true&w=majority';
 if (isDevelopment)
   mongoose.set('debug', true);
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
