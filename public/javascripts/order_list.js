@@ -72,7 +72,6 @@ window.onload = function() {
         },
         {
           dataField: 'Tags',
-          caption: 'Tags',
         },
       ],
       wordWrapEnabled: true,
