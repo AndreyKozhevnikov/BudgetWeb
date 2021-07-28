@@ -78,6 +78,9 @@ window.onload = function() {
         {
           dataField: 'object',
         },
+        {
+          dataField: 'tags',
+        },
       ],
       wordWrapEnabled: true,
     }

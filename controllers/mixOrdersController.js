@@ -62,6 +62,7 @@ function getMixListFromOrders(orderList) {
       viewType: 'Order',
       viewData: order.ParentTag.Name,
       accountOut: order.PaymentAccount.Name,
+      tags: order.Tags,
     };
     if (order.Place){
       mixRecord.place = order.Place.Name;
