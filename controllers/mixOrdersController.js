@@ -5,7 +5,14 @@ let accountController = require('../controllers/accountController.js');
 let fixRecordController = require('../controllers/fixRecordController.js');
 let Helper = require('../controllers/helperController.js');
 
-function createAndShowMixOrdersList(orderList, sOrderList, fRecords, res, title, accId) {
+function createAndShowMixOrdersList(
+  orderList,
+  sOrderList,
+  fRecords,
+  res,
+  title,
+  accId,
+) {
   let mixOrders = getMixListFromOrders(orderList);
   let mixSOrders = getMixListFromSOrders(sOrderList, accId);
   let mixFRecords = getMixListFromFixRecords(fRecords);
@@ -44,7 +51,9 @@ async function listByDate(req, res, next) {
   try {
     let orders = await orderController.getList(dt, dtNext);
     let sOrders = await serviceOrderController.getList(dt, dtNext);
-    sOrders = sOrders.filter(x => x.Type === 'between' && x.AccountIn.IsMoneyBox === true);
+    sOrders = sOrders.filter(
+      (x) => x.Type === 'between' && x.AccountIn.IsMoneyBox === true,
+    );
     createAndShowMixOrdersList(orders, sOrders, [], res, dt, null);
   } catch (err) {
     console.log(err);
@@ -64,13 +73,13 @@ function getMixListFromOrders(orderList) {
       accountOut: order.PaymentAccount.Name,
       tags: order.Tags,
     };
-    if (order.Place){
+    if (order.Place) {
       mixRecord.place = order.Place.Name;
       mixRecord.HasPlaceImage = order.Place.HasImage;
-    };
-    if (order.Object){
+    }
+    if (order.Object) {
       mixRecord.object = order.Object.Name;
-    };
+    }
     mixRecord.entity = order;
     mixRecord.type = Helper.mixOrderTypes.order;
     mixOrders.push(mixRecord);
@@ -86,7 +95,6 @@ function getMixListFromSOrders(sOrderList, accId) {
       date: sOrder.DateOrder,
       description: sOrder.Description,
       createdtime: sOrder.CreatedTime,
-
     };
     switch (sOrder.Type) {
       case Helper.sOrderTypes.in:
@@ -106,6 +114,10 @@ function getMixListFromSOrders(sOrderList, accId) {
           mixRecord.viewType = 'BetweenOut';
           mixRecord.viewData = sOrder.AccountIn.Name;
         }
+        if (sOrder.AccountIn.IsMoneyBox) {
+          mixRecord.IsMoneyBox = true;
+        }
+
         mixRecord.accountOut = sOrder.AccountOut.Name;
         break;
     }
@@ -134,7 +146,5 @@ function getMixListFromFixRecords(fixRecordsList) {
   return mixOrders;
 }
 
-
 exports.listByAcc = listByAcc;
 exports.listByDate = listByDate;
-
