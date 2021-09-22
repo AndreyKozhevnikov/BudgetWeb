@@ -270,30 +270,45 @@ async function createOrderObjects(req, res, next){
 }
 
 async function test(req, res, next){
-  // let startDate = new Date(2021, 0, 1);
-  // let lst = await Order.find({ DateOrder: { $gte: startDate } });
-  // lst.forEach(element => {
-  //   if (element.LocalId !== null){
-  //     element.LocalId = null;
-  //     element.save();
-  //   }
-  // });
-  // res.send('localid is null');
-  // for (let i = 0; i < 100; i++){
-  //   let o = new Order();
-  //   o.Description = 'test descrition';
-  //   o.ParentTag = Helper.createObjectId('5a7894d1fa57ce02c4370d3b');
-  //   o.Value = 33;
-  //   o.DateOrder = new Date();
-  //   o.save();
-  // }
-  // let lst = await Order.find({ DateOrder: { $gte: new Date(2021, 1, 1) } });
-  // lst.forEach(l => {
-  //   l.LocalId = null;
-  //   l.save();
-  // });
-  // var c = lst.length;
+  let startDate = new Date(2021, 8, 1);
+
+  let lst = await Order.find({ DateOrder: { $lte: startDate } });
+
+
+  await FixRecord.remove({ DateTime: { $lte: startDate } });
+  await Order.remove({ DateOrder: { $lte: startDate } }, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      // res.end('success');
+    }
+  });
+  await ServiceOrder.remove({ DateOrder: { $lte: startDate } }, function(err) {
+    if (err) {
+      next(err);
+    } else {
+      // res.end('success');
+    }
+  });
+  // res.end('success22');
 }
+
+// res.send('localid is null');
+// for (let i = 0; i < 100; i++){
+//   let o = new Order();
+//   o.Description = 'test descrition';
+//   o.ParentTag = Helper.createObjectId('5a7894d1fa57ce02c4370d3b');
+//   o.Value = 33;
+//   o.DateOrder = new Date();
+//   o.save();
+// }
+// let lst = await Order.find({ DateOrder: { $gte: new Date(2021, 1, 1) } });
+// lst.forEach(l => {
+//   l.LocalId = null;
+//   l.save();
+// });
+// var c = lst.length;
+
 
 exports.index = index;
 exports.wikiAbout = wikiAbout;
