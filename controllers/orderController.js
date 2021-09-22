@@ -108,6 +108,7 @@ async function order_create_post(req, res, next) {
           Description: 'money box: ' + order.Description,
           AccountOut: acc,
           AccountIn: Helper.createObjectId(acc.MoneyBoxId),
+          CreatedTime: order.CreatedTime,
         });
         serviceOrder.save((err) => {
           if (err) {

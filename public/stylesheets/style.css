@@ -121,4 +121,6 @@ a.withoutWrap{
   display: flex;
   flex-wrap: wrap;
 }
-
+.MoneyBoxRow{
+  color: lightgray;
+}
