@@ -6,6 +6,7 @@ let Helper = require('../controllers/helperController.js');
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
+let accountList;
 let accountInList;
 let accountOutList;
 let popularAccInList;
@@ -48,8 +49,8 @@ function getCloneArray(arr) {
 function objectToShowForm(mTitle, serviceOrder, errors) {
   let obj = {
     title: mTitle,
-    accountInList: accountInList,
-    accountOutList: accountOutList,
+    accountInList: accountList,
+    accountOutList: accountList,
     popularAccInList: popularAccInList,
     popularAccOutList: popularAccOutList,
     type_list: typesList,
@@ -99,13 +100,19 @@ let create_post_array = [
 async function populateLists() {
   try {
     let accountFind = Helper.promisify(Account.find, Account);
-    let accountList = await accountFind({
+    accountList = await accountFind({
       $or: [
         { IsArchived: false },
         { IsArchived: { $exists: false } },
       ],
     }
     );
+    accountList.sort(function(a, b) {
+      if (a.Name < b.Name) { return -1; }
+      if (a.Name > b.Name) { return 1; }
+      return 0;
+    });
+
     let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder);
     let cutDate = Helper.getCutDate();
     let sOrdersGroupedByInAcc = await soAggregate([
