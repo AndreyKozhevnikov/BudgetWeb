@@ -27,7 +27,7 @@ block contentOrder
           if fOrder
             option(value=account._id selected=(fOrder.AccountOut && fOrder.AccountOut.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name} - #{account.MyNumber}
+            option(value=account._id) #{account.Name}
       table(style='width:100%')
         tr
         each acc, index in popularAccOutList
@@ -42,7 +42,7 @@ block contentOrder
           if fOrder
             option(value=account._id selected=(fOrder.AccountIn && fOrder.AccountIn.toString()==account._id.toString() ? 'selected' : false)) #{account.Name}
           else
-            option(value=account._id) #{account.Name} - #{account.MyNumber}
+            option(value=account._id) #{account.Name}
       table(style='width:100%')
         tr
         each acc, index in popularAccInList
