@@ -40,7 +40,7 @@ window.onload = function() {
         valueField: 'TotalIncoming',
         type: 'bar',
         color: '#A8C879',
-        axis: 'Right',
+        axis: 'Left',
       },
       {
         argumentField: 'DateTime',
