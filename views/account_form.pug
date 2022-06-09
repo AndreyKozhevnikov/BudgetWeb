@@ -18,6 +18,9 @@ block content
       input#chIsUntouchable.form-control(type='checkbox' name='IsUntouchable_frm' checked=(undefined===account_frm ? false : account_frm.IsUntouchable))
       label(for='chIsArchived') IsArchived:
       input#chIsIsArchived.form-control(type='checkbox' name='IsIsArchived_frm' checked=(undefined===account_frm ? false : account_frm.IsArchived))
+      label(for='txCurrency') Currency:
+      input#txCurrency.form-control(type='text' placeholder='Enter a currency' name='Currency_frm' value=(undefined===account_frm ? '' : account_frm.Currency))
+     
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul
