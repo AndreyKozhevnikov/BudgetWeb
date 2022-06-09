@@ -117,7 +117,7 @@ async function fullRestore(req, res, next) {
     let entityCollection = backupObject[entityCollectionProperty];
     for (let i = 0; i < entityCollection.length; i++) {
       let savedEntity = entityCollection[i];
-      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-jan-21')){
+      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-may-22')){
         continue;
       }
       let constructor = constructors[entityCollectionProperty];

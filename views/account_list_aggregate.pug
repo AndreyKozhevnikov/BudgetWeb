@@ -21,7 +21,7 @@ block content
       each acc in accListObject.accList
         tr(class=acc.isuntouchable?'untouch':null)
           td
-            a(href=acc.getOrdsUrl) #{acc.name}
+            a(href=acc.getOrdsUrl) #{acc.name}  #{acc.currency} 
           td
             label #{acc.result}  
           td
@@ -38,19 +38,27 @@ block content
       tr
         td
         td
-          label #{accListObject.sumObject.commonSum} 
+          label  
+          each val, key in accListObject.sumObject.commonSum 
+            li #{key} #{val}
         td  
         td
-          label #{accListObject.sumObject.startSum}    
+          label  
+          each val, key in accListObject.sumObject.startSum 
+            li #{key} #{val}
         td    
-          label #{accListObject.sumObject.inputSum}   
+          label  
+          each val, key in accListObject.sumObject.inputSum 
+            li #{key} #{val}
         td 
-          label #{accListObject.sumObject.outputSum}        
+          each val, key in accListObject.sumObject.outputSum 
+            li #{key} #{val}                  
         td     
-          label #{accListObject.sumObject.paymentsSum}           
+          each val, key in accListObject.sumObject.paymentsSum 
+            li #{key} #{val}                    
   ul
   p
-    label.commonSum CommonSum: #{accListObject.commonSum}
+    label.commonSum CommonSum: 123 - #{accListObject.commonSum}
 
 
   div

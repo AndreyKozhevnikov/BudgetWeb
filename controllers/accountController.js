@@ -310,6 +310,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       {
         $project: {
           name: '$Name',
+          currency: '$Currency',
           isuntouchable: '$IsUntouchable',
           isarchived: '$IsArchived',
           IsMoneyBox: '$IsMoneyBox',
@@ -337,12 +338,13 @@ async function getAggregatedAccList(startDate, finishDate) {
       bNumber = 999;
     return aNumber - bNumber;
   });
+ 
   let sumObject = {
-    commonSum: 0,
-    startSum: 0,
-    paymentsSum: 0,
-    inputSum: 0,
-    outputSum: 0,
+    commonSum: {},
+    startSum: {},
+    paymentsSum: {},
+    inputSum: {},
+    outputSum: {},
   };
   accList.forEach((item) => {
     let lastCheckDate = new Date(-8640000000000000);
@@ -365,11 +367,22 @@ async function getAggregatedAccList(startDate, finishDate) {
     item.getOrdsUrl = '/mixorders/account/' + item._id;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true) {
-      sumObject.commonSum = sumObject.commonSum + item.result;
-      sumObject.startSum = sumObject.startSum + item.startSum;
-      sumObject.paymentsSum = sumObject.paymentsSum + item.sumPaymentsWithMB;
-      sumObject.inputSum = sumObject.inputSum + item.sumInSOrdersCleanWithMB;
-      sumObject.outputSum = sumObject.outputSum + item.sumOutSOrdersClean;
+      let currency=item.currency;
+      if(currency==null){
+        currency="Rub";
+      }
+      if(!sumObject.commonSum[currency]){
+         sumObject.commonSum[currency] = 0;
+         sumObject.startSum[currency] = 0;
+         sumObject.paymentsSum[currency] = 0;
+         sumObject.inputSum[currency] = 0;
+         sumObject.outputSum[currency] = 0;
+      }
+      sumObject.commonSum[currency] = sumObject.commonSum[currency] + item.result;
+      sumObject.startSum[currency] = sumObject.startSum[currency] + item.startSum;
+      sumObject.paymentsSum[currency] = sumObject.paymentsSum[currency] + item.sumPaymentsWithMB;
+      sumObject.inputSum[currency] = sumObject.inputSum[currency] + item.sumInSOrdersCleanWithMB;
+      sumObject.outputSum[currency] = sumObject.outputSum[currency] + item.sumOutSOrdersClean;
     }
   });
   return { accList: accList, sumObject: sumObject };
@@ -622,6 +635,7 @@ function createAccountFromRequest(req, isUpdate) {
     OrderOutNumber: req.body.OrderOutNumber_frm,
     IsUntouchable: Boolean(req.body.IsUntouchable_frm),
     IsArchived: Boolean(req.body.IsIsArchived_frm),
+    Currency: req.body.Currency_frm,
   });
   if (isUpdate) {
     account._id = req.params.id;
