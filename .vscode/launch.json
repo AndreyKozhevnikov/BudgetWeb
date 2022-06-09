@@ -15,7 +15,7 @@
         "NODE_ENV": "development",
       },
       "restart": true,
-      "runtimeExecutable": "nodemon",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }
