@@ -376,7 +376,7 @@ async function populateAdditionalLists(myCallBack, params) {
     return 0;
   });
 
-  popularTagList = tagList.slice(0, 8);
+  popularTagList = tagList.slice(0, 15);
   tagList.sort((a, b) => {
     if (a.Name < b.Name) { return -1; }
     if (a.Name > b.Name) { return 1; }
