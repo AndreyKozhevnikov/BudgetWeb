@@ -338,7 +338,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       bNumber = 999;
     return aNumber - bNumber;
   });
- 
+
   let sumObject = {
     commonSum: {},
     startSum: {},
@@ -367,16 +367,16 @@ async function getAggregatedAccList(startDate, finishDate) {
     item.getOrdsUrl = '/mixorders/account/' + item._id;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true) {
-      let currency=item.currency;
-      if(currency==null){
-        currency="Rub";
+      let currency = item.currency;
+      if (currency == null){
+        currency = 'Rub';
       }
-      if(!sumObject.commonSum[currency]){
-         sumObject.commonSum[currency] = 0;
-         sumObject.startSum[currency] = 0;
-         sumObject.paymentsSum[currency] = 0;
-         sumObject.inputSum[currency] = 0;
-         sumObject.outputSum[currency] = 0;
+      if (!sumObject.commonSum[currency]){
+        sumObject.commonSum[currency] = 0;
+        sumObject.startSum[currency] = 0;
+        sumObject.paymentsSum[currency] = 0;
+        sumObject.inputSum[currency] = 0;
+        sumObject.outputSum[currency] = 0;
       }
       sumObject.commonSum[currency] = sumObject.commonSum[currency] + item.result;
       sumObject.startSum[currency] = sumObject.startSum[currency] + item.startSum;
@@ -557,7 +557,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
   statisticObject.diffEatMonth = statisticObject.normEatMonth - statisticObject.spendEat;
   statisticObject.moneyLeftEat = Math.round(statisticObject.diffEatMonth / leftDayCount);
-  
+
   statisticObject.diffFastFood = statisticObject.normFastFood - statisticObject.spendFastFood;
   statisticObject.diffFastFoodMonth = statisticObject.normFastFoodMonth - statisticObject.spendFastFood;
   statisticObject.moneyLeftFastFood = Math.round(statisticObject.diffFastFoodMonth / leftDayCount);
