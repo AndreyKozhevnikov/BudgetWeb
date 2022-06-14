@@ -471,10 +471,10 @@ async function aggregatedList(req, res, next) {
 }
 
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
-  const normEatPerDay = 500;
-  const normFastFoodPerDay = 200;
-  const normAllPerDay = 2300;
-  const mortGagePayment = 25479;
+  const normEatPerDay = 5000;
+  const normFastFoodPerDay = 1000;
+  const normAllPerDay = 15000;
+  const mortGagePayment = 0;
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
   lastMonthDate.setDate(lastMonthDate.getDate() - 1);
   let dayCount = lastMonthDate.getDate();
@@ -482,7 +482,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate);
 
   let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate } })
-    .populate('ParentTag');
+    .populate('ParentTag').populate('PaymentAccount');
 
   let thisMonthsSorders = await Account.aggregate(
     [
@@ -516,6 +516,12 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   let sumEatOrders = 0;
   let sumFastFoodOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
+    if (order.PaymentAccount.Currency !== 'Dram'){
+      return accumulator;
+    }
+    if (order.ParentTag.LocalId === 22){ // capital - flat rent
+      return accumulator;
+    }
     if (order.ParentTag.LocalId === 1) {
       sumEatOrders = sumEatOrders + order.Value;
     }
