@@ -40,26 +40,23 @@ block content
         td
           label  
           each val, key in accListObject.sumObject.commonSum 
-            li #{key} #{val}
+            label #{key} #{formatNumber(val)}
         td  
         td
           label  
           each val, key in accListObject.sumObject.startSum 
-            li #{key} #{val}
+            label #{key} #{formatNumber(val)}
         td    
           label  
           each val, key in accListObject.sumObject.inputSum 
-            li #{key} #{val}
+            label #{key} #{formatNumber(val)}
         td 
           each val, key in accListObject.sumObject.outputSum 
-            li #{key} #{val}                  
+            label #{key} #{formatNumber(val)}                  
         td     
           each val, key in accListObject.sumObject.paymentsSum 
-            li #{key} #{val}                    
-  ul
-  p
-    label.commonSum CommonSum: 123 - #{accListObject.commonSum}
-
+            label #{key} #{formatNumber(val)} 
+            br                   
 
   div
     table.statisticTable
