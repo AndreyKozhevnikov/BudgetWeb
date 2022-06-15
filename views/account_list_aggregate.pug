@@ -41,18 +41,22 @@ block content
           label  
           each val, key in accListObject.sumObject.commonSum 
             label #{key} #{formatNumber(val)}
+            br
         td  
         td
           label  
           each val, key in accListObject.sumObject.startSum 
             label #{key} #{formatNumber(val)}
+            br
         td    
           label  
           each val, key in accListObject.sumObject.inputSum 
             label #{key} #{formatNumber(val)}
+            br
         td 
           each val, key in accListObject.sumObject.outputSum 
-            label #{key} #{formatNumber(val)}                  
+            label #{key} #{formatNumber(val)}
+            br                 
         td     
           each val, key in accListObject.sumObject.paymentsSum 
             label #{key} #{formatNumber(val)} 
