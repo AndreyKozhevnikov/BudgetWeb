@@ -473,7 +473,7 @@ async function aggregatedList(req, res, next) {
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   const normEatPerDay = 5000;
   const normFastFoodPerDay = 1000;
-  const normAllPerDay = 15000;
+  const normAllPerDay = 7000;
   const mortGagePayment = 0;
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
   lastMonthDate.setDate(lastMonthDate.getDate() - 1);
