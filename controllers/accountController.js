@@ -471,7 +471,7 @@ async function aggregatedList(req, res, next) {
 }
 
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
-  const normEatPerDay = 3000;
+  const normEatPerDay = 4000;
   const normFastFoodPerDay = 1000;
   const normExcessPerDay = 2000;
   const normAllPerDay = 6000;
