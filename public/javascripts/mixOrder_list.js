@@ -88,6 +88,9 @@ window.onload = function() {
       {
         dataField: 'tags',
       },
+      {
+        dataField: 'isExcess',
+      },
     ],
     wordWrapEnabled: true,
     onRowPrepared: function(e) {

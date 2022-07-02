@@ -72,6 +72,7 @@ function getMixListFromOrders(orderList) {
       viewData: order.ParentTag.Name,
       accountOut: order.PaymentAccount.Name,
       tags: order.Tags,
+      isExcess: order.IsExcess,
     };
     if (order.Place) {
       mixRecord.place = order.Place.Name;
