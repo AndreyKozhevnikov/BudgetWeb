@@ -471,8 +471,9 @@ async function aggregatedList(req, res, next) {
 }
 
 async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
-  const normEatPerDay = 5000;
+  const normEatPerDay = 3000;
   const normFastFoodPerDay = 1000;
+  const normExcessPerDay = 2000;
   const normAllPerDay = 6000;
   const mortGagePayment = 0;
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
@@ -515,6 +516,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   }
   let sumEatOrders = 0;
   let sumFastFoodOrders = 0;
+  let sumExcessOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
     if (order.PaymentAccount.Currency !== 'Dram'){
       return accumulator;
@@ -527,6 +529,9 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     }
     if (order.ParentTag.LocalId === 2037){
       sumFastFoodOrders = sumFastFoodOrders + order.Value;
+    }
+    if (order.IsExcess === true){
+      sumExcessOrders = sumExcessOrders + order.Value;
     }
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
@@ -541,15 +546,18 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
   let desiredEatSumForMonth = normEatPerDay * monthDayCount;
   let desiredFastFoodSumForMonth = normFastFoodPerDay * monthDayCount;
-
+  let desiredExcessSumForMonth = normExcessPerDay * monthDayCount;
   let statisticObject =
   {
     spendEat: sumEatOrders,
     normEat: normEatPerDay * dayCount,
     normEatMonth: desiredEatSumForMonth,
     spendFastFood: sumFastFoodOrders,
+    spendExcess: sumExcessOrders,
     normFastFood: normFastFoodPerDay * dayCount,
     normFastFoodMonth: desiredFastFoodSumForMonth,
+    normExcess: normExcessPerDay * dayCount,
+    normExcessMonth: desiredExcessSumForMonth,
     spendAll: sumAllOrders,
     normAll: normAllPerDay * dayCount + mortGagePayment,
     normAllMonth: desiredAllSumForMonth,
@@ -562,6 +570,11 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   statisticObject.diffFastFoodMonth = statisticObject.normFastFoodMonth - statisticObject.spendFastFood;
   statisticObject.moneyLeftFastFood = Math.round(statisticObject.diffFastFoodMonth / leftDayCount);
 
+  statisticObject.diffExcess = statisticObject.normExcess - statisticObject.spendExcess;
+  statisticObject.diffExcessMonth = statisticObject.normExcessMonth - statisticObject.spendExcess;
+  statisticObject.moneyLeftExcess = Math.round(statisticObject.diffExcessMonth / leftDayCount);
+
+
   statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
   statisticObject.diffAllMonth = statisticObject.normAllMonth - statisticObject.spendAll;
   statisticObject.moneyLeftAll = Math.round(statisticObject.diffAllMonth / leftDayCount);
@@ -569,6 +582,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   statisticObject.allColorAttribute = statisticObject.diffAll < 0;
   statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
   statisticObject.fastFoodColorAttribute = statisticObject.diffFastFood < 0;
+  statisticObject.excessColorAttribute = statisticObject.diffExcess < 0;
 
   statisticObject.thisMonthDates = thisMonthDates;
 

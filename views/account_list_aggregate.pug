@@ -93,7 +93,22 @@ block content
         td
           label #{statObject.diffFastFoodMonth}  
         td
-          label #{statObject.moneyLeftFastFood}                              
+          label #{statObject.moneyLeftFastFood}   
+      tr
+        td 
+          label IsExcess
+        td
+          label #{statObject.normExcess}
+        td 
+          label(class='spentLabel' overflownorm = statObject.excessColorAttribute) #{statObject.spendExcess}   
+        td 
+          label(class='spentLabel' overflownorm = statObject.excessColorAttribute) #{statObject.diffExcess}
+        td
+          label #{statObject.normExcessMonth}  
+        td
+          label #{statObject.diffExcessMonth}  
+        td
+          label #{statObject.moneyLeftExcess}                                       
       tr
         td
           label All
