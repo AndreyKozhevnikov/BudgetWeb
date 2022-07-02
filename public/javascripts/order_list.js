@@ -73,6 +73,9 @@ window.onload = function() {
         {
           dataField: 'Tags',
         },
+        {
+          dataField: 'IsExcess',
+        },
       ],
       wordWrapEnabled: true,
     }
