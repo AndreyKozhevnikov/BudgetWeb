@@ -10,7 +10,7 @@ block contentOrder
           if fOrder
             option(value=tag._id selected=(fOrder.ParentTag.toString()==tag._id.toString() ? 'selected' : false)) #{tag.Name} - #{tag.MyNumber}
           else
-            option(value=tag._id) #{tag.Name} - #{tag.MyNumber}
+            option(value=tag._id selected=('Eat'==tag.Name ? 'selected' : false)) #{tag.Name} - #{tag.MyNumber}
       br
       div.buttonGrid(style='width:100%')
         each tag, index in popularTagList
