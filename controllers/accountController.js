@@ -366,12 +366,12 @@ async function getAggregatedAccList(startDate, finishDate) {
     // item.url = '/account/' + item._id + '/update';
     item.getOrdsUrl = '/mixorders/account/' + item._id;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
-    if (item.isuntouchable !== true) {
+    if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;
       if (currency == null){
         currency = 'Rub';
       }
-      if (!sumObject.commonSum[currency]){
+      if (!sumObject.commonSum.hasOwnProperty(currency)){
         sumObject.commonSum[currency] = 0;
         sumObject.startSum[currency] = 0;
         sumObject.paymentsSum[currency] = 0;
