@@ -81,7 +81,7 @@ text-decoration: none;
   background-color: lightgreen;
 }
 .dx-datagrid .dx-row-alt > td.Out, td.Out{
-  background-color: lightpink;
+  background-color: rgb(202, 44, 68);
 }
 .dx-datagrid .dx-row-alt > td.BetweenIn, td.BetweenIn{
   background-color: lightgreen;
