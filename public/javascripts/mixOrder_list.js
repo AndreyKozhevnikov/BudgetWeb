@@ -95,7 +95,6 @@ window.onload = function() {
     wordWrapEnabled: true,
     onRowPrepared: function(e) {
       if (e.rowType === 'data') {
-        console.dir(e);
         if (e.data.IsMoneyBox === true){
           e.rowElement.addClass('MoneyBoxRow');
         }
