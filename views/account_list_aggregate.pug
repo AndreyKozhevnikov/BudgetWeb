@@ -2,6 +2,7 @@ extends layout
 block scripts
    script.
      var thisMonthDates=!{JSON.stringify(statObject.thisMonthDates)}; 
+     var thisMonthMondays=!{JSON.stringify(statObject.thisMonthMondays)}; 
    script(src='/javascripts/account_dates_chart.js')
 block content
   div(style='display:flex; align-items: center;')

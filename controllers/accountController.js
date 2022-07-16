@@ -479,8 +479,8 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   let lastMonthDate = new Date(finishDateToCalculate.getTime());
   lastMonthDate.setDate(lastMonthDate.getDate() - 1);
   let dayCount = lastMonthDate.getDate();
-
-  let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate);
+  let thisMonthMondays = [];
+  let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate, thisMonthMondays);
 
   let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate } })
     .populate('ParentTag').populate('PaymentAccount');
@@ -585,6 +585,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   statisticObject.excessColorAttribute = statisticObject.diffExcess < 0;
 
   statisticObject.thisMonthDates = thisMonthDates;
+  statisticObject.thisMonthMondays = thisMonthMondays;
 
   return statisticObject;
 }
@@ -610,15 +611,31 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
 //   }
 // }
 
-function getDaysArray(start, end) {
+function getDaysArray(start, end, listMondays) {
+
+
   let arr = {};
   let dt = new Date(start);
+
   while (dt <= end) {
+    let dateSt = moment(dt).format('DD MMM YY');
     arr[dt] = {
       Value: 0,
-      Date: moment(dt).format('DD MMM YY'),
+      Date: dateSt,
       getDateUrl: '/mixorders/date/' + moment(dt).format('YYYY-MM-DD'),
     };
+
+    if (dt.getDay() === 1){
+      listMondays.push({
+        label: {
+          text: dateSt,
+        },
+        width: 1,
+        value: dateSt,
+        color: 'red',
+        dashStyle: 'dash' });
+    }
+
     dt.setDate(dt.getDate() + 1);
   }
   return arr;

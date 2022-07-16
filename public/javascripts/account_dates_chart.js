@@ -1,4 +1,4 @@
-/*global thisMonthDates $ */
+/*global thisMonthDates thisMonthMondays $ */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 
@@ -57,6 +57,9 @@ window.onload = function() {
       synchronizedValue: 0,
     },
     ],
+    argumentAxis: {
+      constantLines: Object.values(thisMonthMondays),
+    },
   });
 
 };
