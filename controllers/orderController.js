@@ -56,10 +56,18 @@ async function populatePaymentAccount(req, res, next){
 // Display list of all orders.
 async function order_list(req, res, next) {
   let cutDate = new Date(2000, 1);
-  if (req.params.showallrecords === 'false'){
-    cutDate = Helper.getToday();
-    cutDate.setDate(cutDate.getDate() - 5);
+  switch (req.params.daterange){
+    case 'week':
+      cutDate = Helper.getToday();
+      cutDate.setDate(cutDate.getDate() - 8);
+      break;
+    case 'month':
+      cutDate = Helper.getToday();
+      cutDate.setDate(cutDate.getDate() - 32);
+      break;
   }
+
+
   let order_list = await Order.find({ IsDeleted: { $exists: false }, DateOrder: { $gt: cutDate } })
     .populate('ParentTag')
     .populate('PaymentAccount')

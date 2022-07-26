@@ -157,9 +157,15 @@ async function populateLists() {
 
 function list(req, res, next) {
   let cutDate = new Date(2000, 1);
-  if (req.params.showallrecords === 'false'){
-    cutDate = Helper.getToday();
-    cutDate.setDate(cutDate.getDate() - 5);
+  switch (req.params.daterange){
+    case 'week':
+      cutDate = Helper.getToday();
+      cutDate.setDate(cutDate.getDate() - 8);
+      break;
+    case 'month':
+      cutDate = Helper.getToday();
+      cutDate.setDate(cutDate.getDate() - 32);
+      break;
   }
   ServiceOrder
     .find({DateOrder: { $gt: cutDate }})
