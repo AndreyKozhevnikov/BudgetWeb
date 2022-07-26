@@ -462,6 +462,11 @@ async function aggregatedList(req, res, next) {
     let alires = ali.result;
     ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
   }
+  let sberCredit = accListObject.accList.find(el => el.name === 'SberCredit');
+  if (sberCredit != null){
+    let sberCreditres = sberCredit.result;
+    sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
+  }
   let statisticObject = await getStaticObject(startDateToCalculate, finishDateToCalculate);
   let currMonthName = Helper.getMonthName(startDateToCalculate);
   let targetMonthData = {};
