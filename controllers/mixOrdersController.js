@@ -32,11 +32,22 @@ function createAndShowMixOrdersList(
 }
 
 async function listByAcc(req, res, next) {
+  let cutDate = new Date(2000, 1);
+  switch (req.params.daterange){
+    case 'week':
+      cutDate = Helper.getToday();
+      cutDate.setDate(cutDate.getDate() - 8);
+      break;
+    case 'month':
+      cutDate = Helper.getToday();
+      cutDate.setDate(cutDate.getDate() - 32);
+      break;
+  }
   let accId = req.params.accountId;
   try {
-    let orders = await orderController.getAccountOrders(accId);
-    let sOrders = await serviceOrderController.getAccountOrders(accId);
-    let fRecords = await fixRecordController.getAccountRecords(accId);
+    let orders = await orderController.getAccountOrders(accId, cutDate);
+    let sOrders = await serviceOrderController.getAccountOrders(accId, cutDate);
+    let fRecords = await fixRecordController.getAccountRecords(accId, cutDate);
     let accName = await accountController.getAccountName(accId);
     createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName, accId);
   } catch (err) {

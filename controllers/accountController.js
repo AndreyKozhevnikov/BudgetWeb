@@ -364,7 +364,7 @@ async function getAggregatedAccList(startDate, finishDate) {
     item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
     // item.url = '/account/' + item._id + '/update';
-    item.getOrdsUrl = '/mixorders/account/' + item._id;
+    item.getOrdsUrl = '/mixorders/account/' + item._id + '/week';
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;

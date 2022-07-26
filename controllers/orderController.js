@@ -404,8 +404,8 @@ async function getOrdersByDates(startDate, finishDate) {
   populateOrderList(list);
   return list;
 }
-async function getOrdersByAccount(id) {
-  let list = Order.find({ PaymentAccount: Helper.createObjectId(id) });
+async function getOrdersByAccount(id, cutDate) {
+  let list = Order.find({ PaymentAccount: Helper.createObjectId(id), DateOrder: { $gt: cutDate } });
   populateOrderList(list);
   return list;
 }
