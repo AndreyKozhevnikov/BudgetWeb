@@ -624,19 +624,23 @@ function getDaysArray(start, end, listMondays) {
 
   while (dt <= end) {
     let dateSt = moment(dt).format('DD MMM YY');
+    let currDt = new Date(dt.getTime());
     arr[dt] = {
       Value: 0,
-      Date: dateSt,
+      Date: currDt,
+      DateString: dateSt,
       getDateUrl: '/mixorders/date/' + moment(dt).format('YYYY-MM-DD'),
     };
 
     if (dt.getDay() === 1){
+      let monDate = new Date();
+      monDate.setTime(currDt.getTime() - 12 * 60 * 60 * 1000);
       listMondays.push({
         label: {
           text: dateSt,
         },
         width: 1,
-        value: dateSt,
+        value: monDate,
         color: 'red',
         dashStyle: 'dash' });
     }

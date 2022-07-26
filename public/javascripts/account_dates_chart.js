@@ -20,7 +20,7 @@ window.onload = function() {
       enabled: true,
       customizeTooltip: function(arg) {
         return {
-          text: arg.originalArgument + '<br> <br>' + arg.valueText,
+          text: arg.point.data.DateString + '<br> <br>' + arg.valueText,
         };
       },
     },

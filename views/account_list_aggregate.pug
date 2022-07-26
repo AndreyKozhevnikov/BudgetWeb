@@ -1,8 +1,13 @@
 extends layout
 block scripts
    script.
-     var thisMonthDates=!{JSON.stringify(statObject.thisMonthDates)}; 
-     var thisMonthMondays=!{JSON.stringify(statObject.thisMonthMondays)}; 
+     let thisMonthDates=!{JSON.stringify(statObject.thisMonthDates)}; 
+
+     for (let dtValue in thisMonthDates){
+      let dtObj=thisMonthDates[dtValue];
+      dtObj.Date=new Date(dtObj.Date);
+     }
+     let thisMonthMondays=!{JSON.stringify(statObject.thisMonthMondays)}; 
    script(src='/javascripts/account_dates_chart.js')
 block content
   div(style='display:flex; align-items: center;')
@@ -134,7 +139,7 @@ block content
       each dateObject in statObject.thisMonthDates
         tr
           td
-            a(href=dateObject.getDateUrl) #{dateObject.Date}
+            a(href=dateObject.getDateUrl) #{dateObject.DateString}
           td
             label #{dateObject.Value}
           td
