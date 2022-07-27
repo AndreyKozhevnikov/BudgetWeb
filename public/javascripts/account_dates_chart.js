@@ -15,6 +15,25 @@ window.onload = function() {
           return { color: '#FF0000', hoverStyle: { color: '#ff7c7c' } };
         }
       }
+      if (this.seriesName === 'TempResultSeries'){
+        let dt = this.data.Date.getDay();
+        switch (dt){
+          case 1:
+            return { color: '#FF0000' };
+          case 2:
+            return { color: '#FF7F00' };
+          case 3:
+            return { color: '#FFFF00' };
+          case 4:
+            return { color: '#00FF00' };
+          case 5:
+            return { color: '#0000FF' };
+          case 6:
+            return { color: '#4B0082' };
+          case 0:
+            return { color: '#9400D3' };
+        }
+      }
     },
     tooltip: {
       enabled: true,
