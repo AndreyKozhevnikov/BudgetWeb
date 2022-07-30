@@ -85,7 +85,6 @@ function changeOrderDate(shift) {
   if (stValue <= today){
     dtOrder.value = formatDate(stValue);
   }
-  focusValueInput();
 }
 
 function formatDate(date) {
