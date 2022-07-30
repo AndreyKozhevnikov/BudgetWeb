@@ -2,6 +2,7 @@
 let mongoose = require('mongoose');
 let mixOrderTypes = { order: 'order', sorder: 'serviceOrder', fixrecord: 'fixrecord' };
 let sOrderTypes = { between: 'between', in: 'in', out: 'out' };
+let Currencies = {Rub: 'Rub', Dram: 'Dram'};
 
 let isRestoreMode = false;
 function getFirstDateOfCurrentMonth() {
@@ -136,5 +137,6 @@ exports.sortListByGroupedList = sortListByGroupedList;
 exports.getCutDate = getCutDate;
 exports.dateForOrders = dateForOrders;
 exports.canDeleteEntities = canDeleteEntities;
+exports.Currencies = Currencies;
 
 

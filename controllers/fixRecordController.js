@@ -6,12 +6,13 @@ let Order = require('../models/order.js');
 let FRecordTypes = { StartMonth: 'StartMonth', Check: 'Check', TotalSum: 'TotalSum', TotalIncoming: 'TotalIncoming', TotalExpense: 'TotalExpense' };
 let Helper = require('../controllers/helperController.js');
 
-async function createFixRecord(type, datetime, account, value) {
+async function createFixRecord(type, datetime, account, value, currency) {
   let fRec = new FixRecord({
     Type: type,
     DateTime: datetime,
     Account: account,
     Value: value,
+    Currency: currency,
   });
   await fRec.save();
   return fRec;

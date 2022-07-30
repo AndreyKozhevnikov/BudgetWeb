@@ -369,7 +369,7 @@ async function getAggregatedAccList(startDate, finishDate) {
     if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;
       if (currency == null){
-        currency = 'Rub';
+        currency = Helper.Currencies.Rub;
       }
       if (!sumObject.commonSum.hasOwnProperty(currency)){
         sumObject.commonSum[currency] = 0;
@@ -397,22 +397,35 @@ async function asyncForEach(array, callback) {
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
   let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
-  let totalSum = 0;
-  let totalIncoming = 0;
-  let totalExpense = 0;
+  let totalSum = {};
+  let totalIncoming = {};
+  let totalExpense = {};
+  totalSum[Helper.Currencies.Dram] = 0;
+  totalSum[Helper.Currencies.Rub] = 0;
+  totalIncoming[Helper.Currencies.Dram] = 0;
+  totalIncoming[Helper.Currencies.Rub] = 0;
+  totalExpense[Helper.Currencies.Dram] = 0;
+  totalExpense[Helper.Currencies.Rub] = 0;
+
+
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
+      let currentCurrency = accRecord.currency;
+      if (currentCurrency == null){
+        currentCurrency = Helper.Currencies.Rub;
+      }
       if (!accRecord.IsMoneyBox){
-        totalSum = totalSum + accRecord.result;
-        totalIncoming = totalIncoming + accRecord.sumInSOrdersCleanWithMB;
+        totalSum[currentCurrency] = totalSum[currentCurrency] + accRecord.result;
+        totalIncoming[currentCurrency] = totalIncoming[currentCurrency] + accRecord.sumInSOrdersCleanWithMB;
       }
 
-      totalExpense = totalExpense + accRecord.sumPaymentsWithMB;
+      totalExpense[currentCurrency] = totalExpense[currentCurrency] + accRecord.sumPaymentsWithMB;
       await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.StartMonth,
         firstDateOfCurrentMonth,
         accRecord._id,
-        accRecord.result);
+        accRecord.result,
+        null);
     });
   };
   await start();
@@ -420,7 +433,15 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
     FixRecordController.FRecordTypes.TotalSum,
     firstDateOfCurrentMonth,
     null,
-    totalSum
+    totalSum[Helper.Currencies.Rub],
+    Helper.Currencies.Rub,
+  );
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.TotalSum,
+    firstDateOfCurrentMonth,
+    null,
+    totalSum[Helper.Currencies.Dram],
+    Helper.Currencies.Dram,
   );
   let dateForPrevMonths = new Date(firsDayOfPrevMonth.getFullYear(), firsDayOfPrevMonth.getMonth(), 15);
 
@@ -429,13 +450,29 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
     FixRecordController.FRecordTypes.TotalIncoming,
     dateForPrevMonths,
     null,
-    totalIncoming
+    totalIncoming[Helper.Currencies.Rub],
+    Helper.Currencies.Rub,
+  );
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.TotalIncoming,
+    dateForPrevMonths,
+    null,
+    totalIncoming[Helper.Currencies.Dram],
+    Helper.Currencies.Dram,
   );
   await FixRecordController.createFixRecord(
     FixRecordController.FRecordTypes.TotalExpense,
     dateForPrevMonths,
     null,
-    totalExpense
+    totalExpense[Helper.Currencies.Rub],
+    Helper.Currencies.Rub,
+  );
+  await FixRecordController.createFixRecord(
+    FixRecordController.FRecordTypes.TotalExpense,
+    dateForPrevMonths,
+    null,
+    totalExpense[Helper.Currencies.Dram],
+    Helper.Currencies.Dram,
   );
 }
 
@@ -523,7 +560,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   let sumFastFoodOrders = 0;
   let sumExcessOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.PaymentAccount.Currency !== 'Dram'){
+    if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){
       return accumulator;
     }
     if (order.ParentTag.LocalId === 22){ // capital - flat rent

@@ -9,6 +9,7 @@ let FixRecordSchema = new Schema({
   Account: { type: Schema.ObjectId, ref: 'Account' },
   Value: { type: Number, required: true },
   LocalId: { type: Number },
+  Currency: {type: String},
 });
 
 module.exports = mongoose.model('FixRecord', FixRecordSchema);
