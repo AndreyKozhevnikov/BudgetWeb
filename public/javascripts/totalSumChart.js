@@ -1,11 +1,10 @@
-/*global totalSum_list $ */
+/*global chartListRub chartListDram $ */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 // https://codepen.io/freazeek/pen/OJXKpPv
-window.onload = function() {
-  // let chartElement = document.getElementById('totalSumChartContainer');
-  $('#totalSumChartContainer').dxChart({
-    dataSource: Object.values(totalSum_list),
+function createChart(listName){
+  let chart = {
+    dataSource: Object.values(listName),
     tooltip: {
       enabled: true,
       customizeTooltip: function(arg) {
@@ -67,5 +66,11 @@ window.onload = function() {
       synchronizedValue: 0,
     },
     ],
-  });
+  };
+  return chart;
+}
+window.onload = function() {
+  // let chartElement = document.getElementById('totalSumChartContainer');
+  $('#totalSumChartContainerRub').dxChart(createChart(chartListRub));
+  $('#totalSumChartContainerDram').dxChart(createChart(chartListDram));
 };

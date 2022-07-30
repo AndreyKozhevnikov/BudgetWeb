@@ -188,12 +188,18 @@ async function showTotalSumsChart(req, res, next){
       {Type: FRecordTypes.TotalIncoming},
     ]},
   ).sort({DateTime: 1});
-  let chartList = totalSum_list.map(x => {
+
+  let chartListRub = totalSum_list.filter(record => record.Currency === Helper.Currencies.Rub || typeof record.Currency === 'undefined').map(x => {
     let chartObject = {DateTime: x.DateTime};
     chartObject[x.Type] = x.Value;
     return chartObject;
   });
-  res.render('totalSumsChart.pug', { chartList: chartList });
+  let chartListDram = totalSum_list.filter(record => record.Currency === Helper.Currencies.Dram).map(x => {
+    let chartObject = {DateTime: x.DateTime};
+    chartObject[x.Type] = x.Value;
+    return chartObject;
+  });
+  res.render('totalSumsChart.pug', { chartListRub: chartListRub, chartListDram: chartListDram });
 }
 
 async function removeTotals(req, res, next){

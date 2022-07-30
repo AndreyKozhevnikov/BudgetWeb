@@ -1,9 +1,11 @@
 extends layout
 block scripts
    script.
-     var totalSum_list=!{JSON.stringify(chartList)}; 
+     var chartListRub=!{JSON.stringify(chartListRub)}; 
+     var chartListDram=!{JSON.stringify(chartListDram)}; 
    script(src='/javascripts/totalSumChart.js')
 block wideContent
-  div#totalSumChartContainer
+  div#totalSumChartContainerRub
+  div#totalSumChartContainerDram
    
             
