@@ -53,6 +53,7 @@ function getFirstDayOfLastMonth() {
 }
 
 function getToday() {
+  return new Date(2022, 5, 1);
   let dt = new Date();
   //    let dt = new Date('2020-12-01');
   return dt;

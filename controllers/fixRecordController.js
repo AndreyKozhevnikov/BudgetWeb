@@ -54,6 +54,7 @@ function deleteStartMonthRecords(req, res, next) {
 }
 function deleteCurrMonthStartRecords(req, res, next) {
   let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth();
+  currMonthFirstDate = new Date(2022, 4, 10);
   FixRecord.remove({ DateTime: { $gte: currMonthFirstDate } }, function(err) {
     if (err) {
       next(err);
