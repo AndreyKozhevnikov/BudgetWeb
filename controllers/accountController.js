@@ -566,6 +566,9 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     if (order.ParentTag.LocalId === 22){ // capital - flat rent
       return accumulator;
     }
+    if (order.ParentTag.LocalId === 36){ // flat rent
+      return accumulator;
+    }
     if (order.ParentTag.LocalId === 1) {
       sumEatOrders = sumEatOrders + order.Value;
     }
