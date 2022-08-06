@@ -87,7 +87,7 @@ text-decoration: none;
   background-color: lightgreen;
 }
 .dx-datagrid .dx-row-alt > td.BetweenOut, td.BetweenOut{
-  background-color: lightpink;
+  background-color: rgb(237, 182, 255);
 }
 .dx-datagrid .dx-row-alt > td.Check, td.Check{
   background-color: #eff587;
