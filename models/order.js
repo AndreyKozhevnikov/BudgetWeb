@@ -1,6 +1,7 @@
 'use strict';
 let mongoose = require('mongoose');
 let moment = require('moment');
+let Helper = require('../controllers/helperController.js');
 
 let Schema = mongoose.Schema;
 
@@ -32,7 +33,7 @@ OrderSchema.virtual('DateOrder_formatted').get(function() {
   return moment(this.DateOrder).format('DD MMMM YYYY ddd');
 });
 OrderSchema.virtual('DateOrder_pugFormat').get(function() {
-  return moment(this.DateOrder).format('YYYY-MM-DD');
+  return Helper.getUrlDateString(this.DateOrder);
 });
 
 // Export model

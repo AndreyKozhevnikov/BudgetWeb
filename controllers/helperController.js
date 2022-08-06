@@ -3,6 +3,8 @@ let mongoose = require('mongoose');
 let mixOrderTypes = { order: 'order', sorder: 'serviceOrder', fixrecord: 'fixrecord' };
 let sOrderTypes = { between: 'between', in: 'in', out: 'out' };
 let Currencies = {Rub: 'Rub', Dram: 'Dram'};
+let url = require('url');
+let moment = require('moment');
 
 let isRestoreMode = false;
 function getFirstDateOfCurrentMonth() {
@@ -118,6 +120,27 @@ function canDeleteEntities() {
   return process.env.CANDELETEENTITIES === 'TRUE';
 }
 
+function getDateObjectFromUrl(req){
+  let startDate = new Date(2000, 1);
+  let hasDateParameter = false;
+  let queryObject = url.parse(req.url, true).query;
+  if (queryObject.startDate !== undefined){
+    startDate = new Date(queryObject.startDate);
+    hasDateParameter = true;
+  }
+  let obj = {startDate: startDate, hasDateParameter: hasDateParameter};
+  return obj;
+}
+
+function getUrlDateString(startDate){
+  return moment(startDate).format('YYYY-MM-DD');
+}
+function redirectToLastWeek(req, res){
+  let tempDate = getToday();
+  tempDate.setDate(tempDate.getDate() - 8);
+  res.redirect(req.originalUrl + '?startDate=' + getUrlDateString(tempDate));
+}
+
 let dateForOrders;
 
 exports.getFirstDateOfCurrentMonth = getFirstDateOfCurrentMonth;
@@ -137,6 +160,9 @@ exports.sortListByGroupedList = sortListByGroupedList;
 exports.getCutDate = getCutDate;
 exports.dateForOrders = dateForOrders;
 exports.canDeleteEntities = canDeleteEntities;
+exports.getDateObjectFromUrl = getDateObjectFromUrl;
+exports.getUrlDateString = getUrlDateString;
+exports.redirectToLastWeek = redirectToLastWeek;
 exports.Currencies = Currencies;
 
 

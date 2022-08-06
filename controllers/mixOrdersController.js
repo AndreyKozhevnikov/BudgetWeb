@@ -4,7 +4,7 @@ let orderController = require('../controllers/orderController.js');
 let accountController = require('../controllers/accountController.js');
 let fixRecordController = require('../controllers/fixRecordController.js');
 let Helper = require('../controllers/helperController.js');
-const url = require('url');
+
 
 function createAndShowMixOrdersList(
   orderList,
@@ -33,13 +33,9 @@ function createAndShowMixOrdersList(
 }
 
 async function listByAcc(req, res, next) {
-  let startDate = new Date(2000, 1);
+  let dateObject = Helper.getDateObjectFromUrl(req);
 
-  let queryObject = url.parse(req.url, true).query;
-  if (queryObject.startDate !== undefined){
-    startDate = new Date(queryObject.startDate);
-  }
-
+  let startDate = dateObject.startDate;
   let accId = req.params.accountId;
   try {
     let orders = await orderController.getAccountOrders(accId, startDate);

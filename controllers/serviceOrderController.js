@@ -156,10 +156,15 @@ async function populateLists() {
 }
 
 function list(req, res, next) {
-  let cutDate = new Date(2000, 1);
+  let dateObject = Helper.getDateObjectFromUrl(req);
+  if (!dateObject.hasDateParameter){
+    Helper.redirectToLastWeek(req, res);
+    return;
+  }
+  let startDate = dateObject.startDate;
 
   ServiceOrder
-    .find({DateOrder: { $gt: cutDate }})
+    .find({DateOrder: { $gte: startDate }})
     .populate('AccountOut')
     .populate('AccountIn')
     .sort({ DateOrder: -1, _id: -1 })

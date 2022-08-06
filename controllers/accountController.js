@@ -358,13 +358,17 @@ async function getAggregatedAccList(startDate, finishDate) {
       lastCheckDate = item.fixRecordsLastCheck[0].DateTime;
       lastCheckValue = item.fixRecordsLastCheck[0].Value;
     }
-    item.lastCheckDate = moment(lastCheckDate).format('DD-MM-YY');
+    if (lastCheckDate.getFullYear() < 2000){
+      item.lastCheckDate = '----';
+    } else {
+      item.lastCheckDate = Helper.getUrlDateString(lastCheckDate);
+    }
     item.lastCheckValue = lastCheckValue;
     item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
     item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
 
-    item.getOrdsUrl = '/mixorders/account/' + item._id + '?startDate=' + moment(startDate).format('YYYY-MM-DD');
+    item.getOrdsUrl = '/mixorders/account/' + item._id + '?startDate=' + Helper.getUrlDateString(startDate);
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;
@@ -669,7 +673,7 @@ function getDaysArray(start, end, listMondays) {
       Value: 0,
       Date: currDt,
       DateString: dateSt,
-      getDateUrl: '/mixorders/date/' + moment(dt).format('YYYY-MM-DD'),
+      getDateUrl: '/mixorders/date/' + Helper.getUrlDateString(dt),
     };
 
     if (dt.getDay() === 1){
