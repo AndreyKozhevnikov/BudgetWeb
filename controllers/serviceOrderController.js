@@ -249,8 +249,9 @@ function deleteTypes(req, res, next) {
 function updateLists() {
   populateLists();
 }
-async function getAccountOrders(id, startDate) {
-  let sords = ServiceOrder.find({ $or: [{ AccountIn: id }, { AccountOut: id }], DateOrder: { $gte: startDate } });
+async function getAccountOrders(id, startDate, finishDate) {
+  let sords = ServiceOrder.find({ $or: [{ AccountIn: id }, { AccountOut: id }],
+    DateOrder: { $gte: startDate, $lt: finishDate } });
   sords.populate('AccountOut')
     .populate('AccountIn');
   return sords;

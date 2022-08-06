@@ -122,13 +122,17 @@ function canDeleteEntities() {
 
 function getDateObjectFromUrl(req){
   let startDate = new Date(2000, 1);
+  let finishDate = getTomorrow();
   let hasDateParameter = false;
   let queryObject = url.parse(req.url, true).query;
   if (queryObject.startDate !== undefined){
     startDate = new Date(queryObject.startDate);
     hasDateParameter = true;
   }
-  let obj = {startDate: startDate, hasDateParameter: hasDateParameter};
+  if (queryObject.finishDate !== undefined){
+    finishDate = new Date(queryObject.finishDate);
+  }
+  let obj = {startDate: startDate, finishDate: finishDate, hasDateParameter: hasDateParameter};
   return obj;
 }
 

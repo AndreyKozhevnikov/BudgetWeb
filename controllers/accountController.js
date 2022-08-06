@@ -359,7 +359,7 @@ async function getAggregatedAccList(startDate, finishDate) {
       lastCheckValue = item.fixRecordsLastCheck[0].Value;
     }
     if (lastCheckDate.getFullYear() < 2000){
-      item.lastCheckDate = '----';
+      item.lastCheckDate = '--';
     } else {
       item.lastCheckDate = Helper.getUrlDateString(lastCheckDate);
     }
@@ -367,8 +367,9 @@ async function getAggregatedAccList(startDate, finishDate) {
     item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
     item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-
-    item.getOrdsUrl = '/mixorders/account/' + item._id + '?startDate=' + Helper.getUrlDateString(startDate);
+    let startDateString = Helper.getUrlDateString(startDate);
+    let finishDateString = Helper.getUrlDateString(Helper.getFirstDateOfShifterMonth(startDate, 'next'));
+    item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;

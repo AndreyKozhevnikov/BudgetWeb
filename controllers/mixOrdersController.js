@@ -36,11 +36,12 @@ async function listByAcc(req, res, next) {
   let dateObject = Helper.getDateObjectFromUrl(req);
 
   let startDate = dateObject.startDate;
+  let finishDate = dateObject.finishDate;
   let accId = req.params.accountId;
   try {
-    let orders = await orderController.getAccountOrders(accId, startDate);
-    let sOrders = await serviceOrderController.getAccountOrders(accId, startDate);
-    let fRecords = await fixRecordController.getAccountRecords(accId, startDate);
+    let orders = await orderController.getAccountOrders(accId, startDate, finishDate);
+    let sOrders = await serviceOrderController.getAccountOrders(accId, startDate, finishDate);
+    let fRecords = await fixRecordController.getAccountRecords(accId, startDate, finishDate);
     let accName = await accountController.getAccountName(accId);
     createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName, accId);
   } catch (err) {
