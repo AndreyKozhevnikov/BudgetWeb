@@ -157,16 +157,7 @@ async function populateLists() {
 
 function list(req, res, next) {
   let cutDate = new Date(2000, 1);
-  switch (req.params.daterange){
-    case 'week':
-      cutDate = Helper.getToday();
-      cutDate.setDate(cutDate.getDate() - 8);
-      break;
-    case 'month':
-      cutDate = Helper.getToday();
-      cutDate.setDate(cutDate.getDate() - 32);
-      break;
-  }
+
   ServiceOrder
     .find({DateOrder: { $gt: cutDate }})
     .populate('AccountOut')
@@ -253,8 +244,8 @@ function deleteTypes(req, res, next) {
 function updateLists() {
   populateLists();
 }
-async function getAccountOrders(id, cutDate) {
-  let sords = ServiceOrder.find({ $or: [{ AccountIn: id }, { AccountOut: id }], DateOrder: { $gt: cutDate } });
+async function getAccountOrders(id, startDate) {
+  let sords = ServiceOrder.find({ $or: [{ AccountIn: id }, { AccountOut: id }], DateOrder: { $gte: startDate } });
   sords.populate('AccountOut')
     .populate('AccountIn');
   return sords;

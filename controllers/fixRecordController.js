@@ -25,8 +25,8 @@ async function getTheLastFixRecordsDate() {
   return lastFRecord.DateTime;
 }
 
-async function getAccountRecords(accId, cutDate) {
-  let fRecs = FixRecord.find({ Account: accId, DateTime: { $gt: cutDate }});
+async function getAccountRecords(accId, startDate) {
+  let fRecs = FixRecord.find({ Account: accId, DateTime: { $gte: startDate }});
   return fRecs;
 }
 

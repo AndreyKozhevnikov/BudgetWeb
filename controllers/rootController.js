@@ -281,7 +281,7 @@ async function createOrderObjects(req, res, next){
 async function test(req, res, next){
   let startDate = new Date(2021, 8, 1);
 
-  let lst = await Order.find({ DateOrder: { $lte: startDate } });
+  // let lst = await Order.find({ DateOrder: { $lte: startDate } });
 
 
   await FixRecord.remove({ DateTime: { $lte: startDate } });

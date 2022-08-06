@@ -4,6 +4,7 @@ let orderController = require('../controllers/orderController.js');
 let accountController = require('../controllers/accountController.js');
 let fixRecordController = require('../controllers/fixRecordController.js');
 let Helper = require('../controllers/helperController.js');
+const url = require('url');
 
 function createAndShowMixOrdersList(
   orderList,
@@ -32,22 +33,18 @@ function createAndShowMixOrdersList(
 }
 
 async function listByAcc(req, res, next) {
-  let cutDate = new Date(2000, 1);
-  switch (req.params.daterange){
-    case 'week':
-      cutDate = Helper.getToday();
-      cutDate.setDate(cutDate.getDate() - 8);
-      break;
-    case 'month':
-      cutDate = Helper.getToday();
-      cutDate.setDate(cutDate.getDate() - 32);
-      break;
+  let startDate = new Date(2000, 1);
+
+  let queryObject = url.parse(req.url, true).query;
+  if (queryObject.startDate !== undefined){
+    startDate = new Date(queryObject.startDate);
   }
+
   let accId = req.params.accountId;
   try {
-    let orders = await orderController.getAccountOrders(accId, cutDate);
-    let sOrders = await serviceOrderController.getAccountOrders(accId, cutDate);
-    let fRecords = await fixRecordController.getAccountRecords(accId, cutDate);
+    let orders = await orderController.getAccountOrders(accId, startDate);
+    let sOrders = await serviceOrderController.getAccountOrders(accId, startDate);
+    let fRecords = await fixRecordController.getAccountRecords(accId, startDate);
     let accName = await accountController.getAccountName(accId);
     createAndShowMixOrdersList(orders, sOrders, fRecords, res, accName, accId);
   } catch (err) {

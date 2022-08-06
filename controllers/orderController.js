@@ -56,17 +56,6 @@ async function populatePaymentAccount(req, res, next){
 // Display list of all orders.
 async function order_list(req, res, next) {
   let cutDate = new Date(2000, 1);
-  switch (req.params.daterange){
-    case 'week':
-      cutDate = Helper.getToday();
-      cutDate.setDate(cutDate.getDate() - 8);
-      break;
-    case 'month':
-      cutDate = Helper.getToday();
-      cutDate.setDate(cutDate.getDate() - 32);
-      break;
-  }
-
 
   let order_list = await Order.find({ IsDeleted: { $exists: false }, DateOrder: { $gt: cutDate } })
     .populate('ParentTag')
@@ -404,8 +393,8 @@ async function getOrdersByDates(startDate, finishDate) {
   populateOrderList(list);
   return list;
 }
-async function getOrdersByAccount(id, cutDate) {
-  let list = Order.find({ PaymentAccount: Helper.createObjectId(id), DateOrder: { $gt: cutDate } });
+async function getOrdersByAccount(id, startDate) {
+  let list = Order.find({ PaymentAccount: Helper.createObjectId(id), DateOrder: { $gte: startDate } });
   populateOrderList(list);
   return list;
 }
