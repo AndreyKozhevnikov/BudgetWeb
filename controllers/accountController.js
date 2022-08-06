@@ -483,16 +483,17 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
 async function aggregatedList(req, res, next) {
   let startDateToCalculate;
   let finishDateToCalculate;
-  if (req.params.hasOwnProperty('direction')) {
-    startDateToCalculate = Helper.getFirstDateOfShifterMonth(req.params.date, req.params.direction);
-    finishDateToCalculate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'next');
-  } else {
+  let dateObject = Helper.getDateObjectFromUrl(req);
+  if (!dateObject.hasDateParameter){
     startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
     finishDateToCalculate = Helper.getTomorrow();
     let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
     if (lastStartMonthRecordDate < startDateToCalculate) {
       await createStartMonthRecords(startDateToCalculate);
     }
+  } else {
+    startDateToCalculate = dateObject.startDate;
+    finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObject.startDate, 'next');
   }
 
   let accListObject = await getAggregatedAccList(startDateToCalculate, finishDateToCalculate);
@@ -511,7 +512,10 @@ async function aggregatedList(req, res, next) {
   let statisticObject = await getStaticObject(startDateToCalculate, finishDateToCalculate);
   let currMonthName = Helper.getMonthName(startDateToCalculate);
   let targetMonthData = {};
-  targetMonthData.Date = startDateToCalculate.toISOString().substring(0, 10);
+  let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'prev');
+  let nextMonthStartDate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'next');
+  targetMonthData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate);
+  targetMonthData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate);
   targetMonthData.MonthName = currMonthName;
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }

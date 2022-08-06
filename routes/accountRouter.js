@@ -10,7 +10,6 @@ router.get('/:id/update', account_controller.update_get);
 router.post('/:id/update', account_controller.update_post);
 router.get('/list', account_controller.list);
 router.get('/aggregatedList', account_controller.aggregatedList);
-router.get('/aggregatedList/:direction/:date', account_controller.aggregatedList);
 router.get('/createCheck/:id/:sum', account_controller.createCheck);
 
 module.exports = router;
