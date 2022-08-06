@@ -50,16 +50,21 @@ async function listByAcc(req, res, next) {
 }
 
 async function listByDate(req, res, next) {
-  let dt = req.params.date;
-  let dtNext = new Date(dt);
-  dtNext.setDate(dtNext.getDate() + 1);
+  let dateObject = Helper.getDateObjectFromUrl(req);
+  if (!dateObject.hasDateParameter){
+    Helper.redirectToLastWeek(req, res);
+    return;
+  }
+  let startDate = dateObject.startDate;
+  let finishDate = new Date(startDate);
+  finishDate.setDate(finishDate.getDate() + 1);
   try {
-    let orders = await orderController.getList(dt, dtNext);
-    let sOrders = await serviceOrderController.getList(dt, dtNext);
+    let orders = await orderController.getList(startDate, finishDate);
+    let sOrders = await serviceOrderController.getList(startDate, finishDate);
     sOrders = sOrders.filter(
       (x) => x.Type === 'between' && x.AccountIn.IsMoneyBox === true,
     );
-    createAndShowMixOrdersList(orders, sOrders, [], res, dt, null);
+    createAndShowMixOrdersList(orders, sOrders, [], res, Helper.getUrlDateString(startDate), null);
   } catch (err) {
     console.log(err);
   }

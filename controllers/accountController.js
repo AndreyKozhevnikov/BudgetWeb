@@ -681,7 +681,7 @@ function getDaysArray(start, end, listMondays) {
       Value: 0,
       Date: currDt,
       DateString: dateSt,
-      getDateUrl: '/mixorders/date/' + Helper.getUrlDateString(dt),
+      getDateUrl: '/mixorders/?startDate=' + Helper.getUrlDateString(dt),
     };
 
     if (dt.getDay() === 1){
