@@ -493,6 +493,9 @@ async function aggregatedList(req, res, next) {
     }
   } else {
     startDateToCalculate = dateObject.startDate;
+    if (startDateToCalculate > Helper.getToday()){
+      startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
+    }
     finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObject.startDate, 'next');
   }
 
