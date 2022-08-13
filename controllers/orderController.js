@@ -231,7 +231,7 @@ function order_update_post(req, res, next) {
       if (err) {
         return next(err);
       }
-      res.redirect('/order/list/false');
+      res.redirect('/order/list');
     });
   }
 };
