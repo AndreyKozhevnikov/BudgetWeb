@@ -1,5 +1,8 @@
 /*eslint no-unused-vars: ["off"]*/
 'use strict';
+function formatNumber(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 function buildDataContainerForSOrder(container, sOrder, document) {
   if (sOrder.AccountOut) {
     let lblOutAccount = document.createElement('label');
@@ -20,7 +23,7 @@ function buildDataContainerForSOrder(container, sOrder, document) {
   }
 }
 function buildValueContainerForOrder(container, order, document) {
-  let valueString = order.Value;
+  let valueString = formatNumber(order.Value);
   if (!order.LocalId) {
     valueString = valueString + '*';
   }
@@ -43,7 +46,7 @@ function buildValueContainerForOrder(container, order, document) {
 function buildValueContainerForSOrder(container, sOrder, document) {
   let a = document.createElement('a');
   a.classList.add('dx-link');
-  a.text = sOrder.Value;
+  a.text = formatNumber(sOrder.Value);
   a.href = '/serviceOrder/' + sOrder._id + '/update';
   a.style.wordWrap = 'break-word';
   container[0].appendChild(a);

@@ -33,7 +33,7 @@ window.onload = function() {
         cellTemplate: (container, options) => {
           switch (options.data.type) {
             case 'fixrecord':
-              container[0].innerHTML = options.data.entity.Value;
+              container[0].innerHTML = formatNumber(options.data.entity.Value);
               break;
             case 'order':
               buildValueContainerForOrder(
