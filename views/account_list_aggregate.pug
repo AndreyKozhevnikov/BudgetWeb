@@ -29,43 +29,43 @@ block content
           td
             a(href=acc.getOrdsUrl) #{acc.name}  #{acc.currency} 
           td
-            label #{acc.result}  
+            label #{fN(acc.result)}  
           td
             div
-              a.withoutWrap(href=acc.createCheckUrl) #{acc.lastCheckDate}/#{acc.lastCheckValue}                      
+              a.withoutWrap(href=acc.createCheckUrl) #{acc.lastCheckDate} / #{fN(acc.lastCheckValue)}                      
           td
-            label #{acc.startSum}
+            label #{fN(acc.startSum)}
           td
-            label #{acc.sumInSOrdersCleanWithMB}
+            label #{fN(acc.sumInSOrdersCleanWithMB)}
           td
-            label #{acc.sumOutSOrdersClean}
+            label #{fN(acc.sumOutSOrdersClean)}
           td
-            label #{acc.sumPaymentsWithMB}
+            label #{fN(acc.sumPaymentsWithMB)}
       tr
         td
         td
           label  
           each val, key in accListObject.sumObject.commonSum 
-            label #{key} #{formatNumber(val)}
+            label #{key} #{fN(val)}
             br
         td  
         td
           label  
           each val, key in accListObject.sumObject.startSum 
-            label #{key} #{formatNumber(val)}
+            label #{key} #{fN(val)}
             br
         td    
           label  
           each val, key in accListObject.sumObject.inputSum 
-            label #{key} #{formatNumber(val)}
+            label #{key} #{fN(val)}
             br
         td 
           each val, key in accListObject.sumObject.outputSum 
-            label #{key} #{formatNumber(val)}
+            label #{key} #{fN(val)}
             br                 
         td     
           each val, key in accListObject.sumObject.paymentsSum 
-            label #{key} #{formatNumber(val)} 
+            label #{key} #{fN(val)} 
             br                   
 
   div
@@ -74,62 +74,62 @@ block content
         td 
           label Eat
         td
-          label #{statObject.normEat}
+          label #{fN(statObject.normEat)}
         td 
-          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.spendEat}   
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{fN(statObject.spendEat)}   
         td 
-          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{statObject.diffEat}
+          label(class='spentLabel' overflownorm = statObject.eatColorAttribute) #{fN(statObject.diffEat)}
         td
-          label #{statObject.normEatMonth}  
+          label #{fN(statObject.normEatMonth)}  
         td
-          label #{statObject.diffEatMonth}  
+          label #{fN(statObject.diffEatMonth)}  
         td
-          label #{statObject.moneyLeftEat}     
+          label #{fN(statObject.moneyLeftEat)}     
       tr
         td 
           label FastFood
         td
-          label #{statObject.normFastFood}
+          label #{fN(statObject.normFastFood)}
         td 
-          label(class='spentLabel' overflownorm = statObject.fastFoodColorAttribute) #{statObject.spendFastFood}   
+          label(class='spentLabel' overflownorm = statObject.fastFoodColorAttribute) #{fN(statObject.spendFastFood)}   
         td 
-          label(class='spentLabel' overflownorm = statObject.fastFoodColorAttribute) #{statObject.diffFastFood}
+          label(class='spentLabel' overflownorm = statObject.fastFoodColorAttribute) #{fN(statObject.diffFastFood)}
         td
-          label #{statObject.normFastFoodMonth}  
+          label #{fN(statObject.normFastFoodMonth)}  
         td
-          label #{statObject.diffFastFoodMonth}  
+          label #{fN(statObject.diffFastFoodMonth)}  
         td
-          label #{statObject.moneyLeftFastFood}   
+          label #{fN(statObject.moneyLeftFastFood)}   
       tr
         td 
           label IsExcess
         td
-          label #{statObject.normExcess}
+          label #{fN(statObject.normExcess)}
         td 
-          label(class='spentLabel' overflownorm = statObject.excessColorAttribute) #{statObject.spendExcess}   
+          label(class='spentLabel' overflownorm = statObject.excessColorAttribute) #{fN(statObject.spendExcess)}   
         td 
-          label(class='spentLabel' overflownorm = statObject.excessColorAttribute) #{statObject.diffExcess}
+          label(class='spentLabel' overflownorm = statObject.excessColorAttribute) #{fN(statObject.diffExcess)}
         td
-          label #{statObject.normExcessMonth}  
+          label #{fN(statObject.normExcessMonth)}  
         td
-          label #{statObject.diffExcessMonth}  
+          label #{fN(statObject.diffExcessMonth)}  
         td
-          label #{statObject.moneyLeftExcess}                                       
+          label #{fN(statObject.moneyLeftExcess)}                                       
       tr
         td
           label All
         td
-          label #{statObject.normAll}
+          label #{fN(statObject.normAll)}
         td 
-          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.spendAll}            
+          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{fN(statObject.spendAll)}            
         td 
-          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{statObject.diffAll}            
+          label(class='spentLabel' overflownorm = statObject.allColorAttribute) #{fN(statObject.diffAll)}            
         td
-          label #{statObject.normAllMonth}  
+          label #{fN(statObject.normAllMonth)}  
         td
-          label #{statObject.diffAllMonth}  
+          label #{fN(statObject.diffAllMonth)}  
         td
-          label #{statObject.moneyLeftAll}
+          label #{fN(statObject.moneyLeftAll)}
     table.statisticTable
       tr
         th Date
@@ -141,11 +141,11 @@ block content
           td
             a(href=dateObject.getDateUrl) #{dateObject.DateString}
           td
-            label #{dateObject.Value}
+            label #{fN(dateObject.Value)}
           td
-            label #{dateObject.Diff}
+            label #{fN(dateObject.Diff)}
           td
-            label #{dateObject.TempResult}
+            label #{fN(dateObject.TempResult)}
 block wideContent            
   div#thisMonthDatesContainer            
             

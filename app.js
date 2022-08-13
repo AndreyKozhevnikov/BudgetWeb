@@ -20,11 +20,10 @@ let fixRecordRouter = require('./routes/fixRecordRouter.js');
 
 let app = express();
 app.locals.moment = require('moment');
-const numeral = require('numeral');
 function formatNumber(num) {
-  return numeral(num).format('0,0');
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
-app.locals.formatNumber = formatNumber;
+app.locals.fN = formatNumber;
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 // test

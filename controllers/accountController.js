@@ -513,9 +513,6 @@ async function aggregatedList(req, res, next) {
     let sberCreditres = sberCredit.result;
     sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
   }
-  accListObject.accList.forEach((item) => {
-    item.result = item.result.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  });
 
   let statisticObject = await getStaticObject(startDateToCalculate, finishDateToCalculate);
   let currMonthName = Helper.getMonthName(startDateToCalculate);
