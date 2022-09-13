@@ -267,6 +267,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
     .populate('PaymentAccount')
     .populate('Place')
     .populate('Object')
+    .limit(200)
     .exec(function(err, list_orders) {
       if (err) {
         return next(err);
