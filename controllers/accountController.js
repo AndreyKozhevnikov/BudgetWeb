@@ -735,7 +735,13 @@ function createAccountFromRequest(req, isUpdate) {
     IsUntouchable: Boolean(req.body.IsUntouchable_frm),
     IsArchived: Boolean(req.body.IsIsArchived_frm),
     Currency: req.body.Currency_frm,
+    IsMoneyBox: Boolean(req.body.IsMoneyBox_frm),
+    HasMoneyBox: Boolean(req.body.HasMoneyBox_frm),
+
   });
+  if (req.body.MoneyBoxId_frm !== undefined){
+    account.MoneyBoxId = req.body.MoneyBoxId_frm;
+  }
   if (isUpdate) {
     account._id = req.params.id;
   }

@@ -4,6 +4,11 @@ block content
   h1 #{title}
   form(method='POST' action='')
     div.form-group
+      label(for='txId') ID:
+      if (account_frm===undefined)
+         label#txId.form-control(type='text' name='ID_frm') NoId
+      else 
+         label#txId.form-control(type='text' name='ID_frm') #{account_frm._id} 
       label(for='txName') Name:
       input#txName.form-control(type='text' required='true' placeholder='Enter a new account name' name='Name_frm' value=(undefined===account_frm ? '' : account_frm.Name))
       label(for='txLocalId') LocalId:
@@ -18,9 +23,15 @@ block content
       input#chIsUntouchable.form-control(type='checkbox' name='IsUntouchable_frm' checked=(undefined===account_frm ? false : account_frm.IsUntouchable))
       label(for='chIsArchived') IsArchived:
       input#chIsIsArchived.form-control(type='checkbox' name='IsIsArchived_frm' checked=(undefined===account_frm ? false : account_frm.IsArchived))
+      label(for='chIsMoneyBox') IsMoneyBox:
+      input#chIsMoneyBox.form-control(type='checkbox' name='IsMoneyBox_frm' checked=(undefined===account_frm ? false : account_frm.IsMoneyBox))
+      label(for='chHasMoneyBox') HasMoneyBox:
+      input#chHasMoneyBox.form-control(type='checkbox' name='HasMoneyBox_frm' checked=(undefined===account_frm ? false : account_frm.HasMoneyBox))      
       label(for='txCurrency') Currency:
       input#txCurrency.form-control(type='text' placeholder='Enter a currency' name='Currency_frm' value=(undefined===account_frm ? '' : account_frm.Currency))
-     
+      label(for='txMoneyBoxId') MoneyBoxId:
+      input#txMoneyBoxId.form-control(type='text' placeholder='Enter a MoneyBoxId' name='MoneyBoxId_frm' value=(undefined===account_frm ? '' : account_frm.MoneyBoxId))
+          
     button.btn.btn-primary(type='submit') Submit
   if errors 
     ul
