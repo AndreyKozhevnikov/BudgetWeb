@@ -561,11 +561,27 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
       },
       {$unwind: '$sOrders'},
       { $replaceRoot: { newRoot: '$sOrders' }},
+      {
+        $lookup: {
+          from: Account.collection.name,
+          localField: 'AccountOut',
+          foreignField: '_id',
+          as: 'AccountOutLook',
+        },
+      },
+      {
+        $set: {
+          AccountOutLook: {$arrayElemAt: ['$AccountOutLook', 0]},
+        },
+      },
     ]
   );
   let sumAllOrders = 0;
   for (let sOrderKey in thisMonthsSorders) {
     let sOrder = thisMonthsSorders[sOrderKey];
+    if (sOrder.AccountOutLook.Currency !== Helper.Currencies.Dram){ // dram theme
+      continue;
+    }
     thisMonthDates[sOrder.DateOrder].Value = thisMonthDates[sOrder.DateOrder].Value + sOrder.Value;
     sumAllOrders = sumAllOrders + sOrder.Value;
   }
