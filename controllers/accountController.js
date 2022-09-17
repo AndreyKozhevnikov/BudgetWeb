@@ -573,7 +573,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
   let sumFastFoodOrders = 0;
   let sumExcessOrders = 0;
   sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){
+    if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
       return accumulator;
     }
     if (order.ParentTag.LocalId === 22){ // capital - flat rent
