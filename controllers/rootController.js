@@ -114,19 +114,19 @@ async function fullRestore(req, res, next) {
   let backupObject = JSON.parse(data);
   Helper.isRestoreMode = true;
   for (let entityCollectionProperty in backupObject) {
-    if (entityCollectionProperty !== 'FixRecord'){
-      continue;
-    }
+    // if (entityCollectionProperty !== 'FixRecord'){
+    //   continue;
+    // }
     let entityCollection = backupObject[entityCollectionProperty];
     for (let i = 0; i < entityCollection.length; i++) {
       let savedEntity = entityCollection[i];
-      if (savedEntity.Type !== 'Check'){
+      // if (savedEntity.Type !== 'Check'){
+      //   continue;
+      // }
+      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-aug-22')){
         continue;
       }
-      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-may-22')){
-        continue;
-      }
-      if (savedEntity.DateTime != null && new Date(savedEntity.DateTime) < new Date('01-may-22')){
+      if (savedEntity.DateTime != null && new Date(savedEntity.DateTime) < new Date('01-aug-22')){
         continue;
       }
       let constructor = constructors[entityCollectionProperty];
