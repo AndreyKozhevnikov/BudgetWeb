@@ -755,7 +755,7 @@ function createAccountFromRequest(req, isUpdate) {
     HasMoneyBox: Boolean(req.body.HasMoneyBox_frm),
 
   });
-  if (req.body.MoneyBoxId_frm !== undefined){
+  if (req.body.MoneyBoxId_frm){
     account.MoneyBoxId = req.body.MoneyBoxId_frm;
   }
   if (isUpdate) {
