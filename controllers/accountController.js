@@ -592,7 +592,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
     if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
       return accumulator;
     }
-    if (order.ParentTag.LocalId === 22){ // capital 
+    if (order.ParentTag.LocalId === 22){ // capital
       return accumulator;
     }
     if (order.ParentTag.LocalId === 3039){ // flat rent
