@@ -373,7 +373,7 @@ async function getAggregatedAccList(startDate, finishDate) {
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
     if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;
-      if (currency == null){
+      if (!currency){
         currency = Helper.Currencies.Rub;
       }
       if (!sumObject.commonSum.hasOwnProperty(currency)){
