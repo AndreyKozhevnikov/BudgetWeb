@@ -614,7 +614,7 @@ async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
 
   processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
-  let leftDayCount = monthDayCount - dayCount + 1;
+  let leftDayCount = monthDayCount - dayCount;
   if (leftDayCount < 1)
     leftDayCount = 1;
   let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
