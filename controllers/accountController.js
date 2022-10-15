@@ -95,9 +95,6 @@ async function getAggregatedAccList(startDate, accList){
     outputSum: {},
   };
   accList.forEach((item) => {
-  // for (let itemKey in accList){
-  //   let item = accList[itemKey];
-    // Object.entries(accList).forEach((item) => {
     if (item.lastCheckDate.getFullYear() < 2000){
       item.lastCheckDate = '--';
     } else {
@@ -241,7 +238,7 @@ async function aggregatedList(req, res, next) {
   }
 
   let orderList = await Order.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
-    .populate('PaymentAccount');
+    .populate('PaymentAccount').populate('ParentTag');
   let serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
     .populate('AccountIn').populate('AccountOut');
   let lastCheckDate = Helper.getToday();
@@ -274,15 +271,24 @@ async function aggregatedList(req, res, next) {
     };
   });
 
-  orderList.forEach((order) => {
-    let orderAccount = order.PaymentAccount;
-    accList[orderAccount.Name].sumPayments = accList[orderAccount.Name].sumPayments + order.Value;
-  });
+  let sumAllOrders = 0;
+  let sumEatOrders = 0;
+  let sumFastFoodOrders = 0;
+  let sumExcessOrders = 0;
+  let lastMonthDate = new Date(finishDateToCalculate.getTime());
+  lastMonthDate.setDate(lastMonthDate.getDate() - 1);
+  let dayCount = lastMonthDate.getDate();
+  let thisMonthMondays = [];
+  let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate, thisMonthMondays);
+
 
   serviceOrderList.forEach((sOrder) => {
     if (sOrder.AccountIn){
       if (sOrder.AccountIn.IsMoneyBox){
         accList[sOrder.AccountOut.Name].sumOutSOrdersToMB = accList[sOrder.AccountOut.Name].sumOutSOrdersToMB + sOrder.Value;
+        if (sOrder.AccountOut.Currency === Helper.Currencies.Dram){
+          sumAllOrders = sumAllOrders + sOrder.Value;
+        }
       }
       accList[sOrder.AccountIn.Name].sumInSOrders = accList[sOrder.AccountIn.Name].sumInSOrders + sOrder.Value;
       if (sOrder.Type !== Helper.sOrderTypes.between){
@@ -299,7 +305,36 @@ async function aggregatedList(req, res, next) {
       }
     }
   });
+  sumAllOrders = sumAllOrders + orderList.reduce(function(accumulator, order) {
+    let orderAccount = order.PaymentAccount;
+    accList[orderAccount.Name].sumPayments = accList[orderAccount.Name].sumPayments + order.Value;
 
+    if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
+      return accumulator;
+    }
+    if (order.ParentTag.LocalId === 22){ // capital
+      return accumulator;
+    }
+    if (order.ParentTag.LocalId === 3039){ // flat rent
+      return accumulator;
+    }
+    if (order.ParentTag.LocalId === 1) {
+      sumEatOrders = sumEatOrders + order.Value;
+    }
+    if (order.ParentTag.LocalId === 2037){
+      sumFastFoodOrders = sumFastFoodOrders + order.Value;
+    }
+    if (order.IsExcess === true){
+      sumExcessOrders = sumExcessOrders + order.Value;
+    }
+    thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
+    return accumulator + order.Value;
+  }, 0);
+  // orderList.forEach((order) => {
+  //   let orderAccount = order.PaymentAccount;
+  //   accList[orderAccount.Name].sumPayments = accList[orderAccount.Name].sumPayments + order.Value;
+
+  // });
   fixRecordsList.forEach((fixRecord) => {
     if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= startDateToCalculate){
       accList[fixRecord.Account.Name].startSum = fixRecord.Value;
@@ -322,8 +357,8 @@ async function aggregatedList(req, res, next) {
     let sberCreditres = sberCredit.result;
     sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
   }
+  let statisticObject = await getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAllOrders, sumEatOrders, sumFastFoodOrders, sumExcessOrders);
 
-  let statisticObject = await getStaticObject(startDateToCalculate, finishDateToCalculate);
   let currMonthName = Helper.getMonthName(startDateToCalculate);
   let targetMonthData = {};
   let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'prev');
@@ -334,91 +369,13 @@ async function aggregatedList(req, res, next) {
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 
-async function getStaticObject(startDateToCalculate, finishDateToCalculate) {
+async function getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAllOrders, sumEatOrders, sumFastFoodOrders, sumExcessOrders) {
   const normEatPerDay = 4000;
   const normFastFoodPerDay = 1000;
   const normExcessPerDay = 2000;
   const normAllPerDay = 6000;
   const mortGagePayment = 0;
-  let lastMonthDate = new Date(finishDateToCalculate.getTime());
-  lastMonthDate.setDate(lastMonthDate.getDate() - 1);
-  let dayCount = lastMonthDate.getDate();
-  let thisMonthMondays = [];
-  let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate, thisMonthMondays);
 
-  let thisMonthsorders = await Order.find({ DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate } })
-    .populate('ParentTag').populate('PaymentAccount');
-
-  let thisMonthsSorders = await Account.aggregate(
-    [
-      {$match: { IsMoneyBox: true} },
-      {
-        $lookup: {
-          from: ServiceOrder.collection.name,
-          let: {accountId: '$_id'},
-          pipeline: [
-            {$match: {
-              $and: [
-                {DateOrder: { $gte: startDateToCalculate, $lt: finishDateToCalculate }},
-                {$expr: {$eq: ['$AccountIn', '$$accountId']}},
-                {Type: Helper.sOrderTypes.between},
-              ],
-            } },
-          ],
-          as: 'sOrders',
-        },
-      },
-      {$unwind: '$sOrders'},
-      { $replaceRoot: { newRoot: '$sOrders' }},
-      {
-        $lookup: {
-          from: Account.collection.name,
-          localField: 'AccountOut',
-          foreignField: '_id',
-          as: 'AccountOutLook',
-        },
-      },
-      {
-        $set: {
-          AccountOutLook: {$arrayElemAt: ['$AccountOutLook', 0]},
-        },
-      },
-    ]
-  );
-  let sumAllOrders = 0;
-  for (let sOrderKey in thisMonthsSorders) {
-    let sOrder = thisMonthsSorders[sOrderKey];
-    if (sOrder.AccountOutLook.Currency !== Helper.Currencies.Dram){ // dram theme
-      continue;
-    }
-    thisMonthDates[sOrder.DateOrder].Value = thisMonthDates[sOrder.DateOrder].Value + sOrder.Value;
-    sumAllOrders = sumAllOrders + sOrder.Value;
-  }
-  let sumEatOrders = 0;
-  let sumFastFoodOrders = 0;
-  let sumExcessOrders = 0;
-  sumAllOrders = sumAllOrders + thisMonthsorders.reduce(function(accumulator, order) {
-    if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
-      return accumulator;
-    }
-    if (order.ParentTag.LocalId === 22){ // capital
-      return accumulator;
-    }
-    if (order.ParentTag.LocalId === 3039){ // flat rent
-      return accumulator;
-    }
-    if (order.ParentTag.LocalId === 1) {
-      sumEatOrders = sumEatOrders + order.Value;
-    }
-    if (order.ParentTag.LocalId === 2037){
-      sumFastFoodOrders = sumFastFoodOrders + order.Value;
-    }
-    if (order.IsExcess === true){
-      sumExcessOrders = sumExcessOrders + order.Value;
-    }
-    thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
-    return accumulator + order.Value;
-  }, 0);
 
 
   processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
