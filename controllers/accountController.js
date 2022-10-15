@@ -4,6 +4,7 @@ let moment = require('moment');
 let Account = require('../models/account.js');
 let Order = require('../models/order.js');
 let ServiceOrder = require('../models/serviceOrder.js');
+let FixRecord = require('../models/fixRecord.js');
 
 let Helper = require('../controllers/helperController.js');
 let FixRecordController = require('../controllers/fixRecordController.js');
@@ -75,260 +76,7 @@ function list(req, res, next) {
   });
 };
 
-async function getAggregatedAccList(startDate, finishDate) {
-  let startDateExtractMonth = Helper.getToday();
-  startDateExtractMonth.setDate(startDate.getDate() - 30);
-  let accList = await Account.aggregate(
-    [
-      {
-        $lookup: {
-          from: 'accounts',
-          pipeline: [
-            {
-              $match:
-              {
-                $expr: {
-                  $and: [
-                    {$eq: ['$IsMoneyBox', true] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'mbAccounts',
-        },
-      },
-      {
-        $lookup: {
-          from: 'serviceorders',
-          let: { localAccountId: '$_id', localMBAccountIds: '$mbAccounts._id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $and: [
-                        { $eq: ['$AccountOut', '$$localAccountId']},
-                        { $in: ['$AccountIn', '$$localMBAccountIds'] },
-
-                      ],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'acOutSOrdersToMB',
-        },
-      },
-      {
-        $lookup: {
-          from: 'serviceorders',
-          let: { localAccountId: '$_id', localMBAccountIds: '$mbAccounts._id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $and: [
-                        { $eq: ['$AccountIn', '$$localAccountId']},
-                        { $in: ['$AccountOut', '$$localMBAccountIds'] },
-
-                      ],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'acInSOrdersFromMB',
-        },
-      },
-      {
-        $lookup: {
-          from: 'orders',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$PaymentAccount', '$$myid'],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'filteredOrders',
-        },
-      },
-      {
-        $lookup: {
-          from: 'serviceorders',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$AccountOut', '$$myid'],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'acOutSOrders',
-        },
-      },
-      {
-        $lookup: {
-          from: 'serviceorders',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$AccountOut', '$$myid'],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                  { Type: { $ne: 'between' } },
-                ],
-              },
-            },
-          ],
-          as: 'acOutSOrdersClean',
-        },
-      },
-      {
-        $lookup: {
-          from: 'serviceorders',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$AccountIn', '$$myid'],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'acInSOrders',
-        },
-      },
-      {
-        $lookup: {
-          from: 'serviceorders',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$AccountIn', '$$myid'],
-                    },
-                  },
-                  { DateOrder: { $gte: startDate, $lt: finishDate } },
-                  { Type: { $ne: Helper.sOrderTypes.between } },
-                ],
-              },
-            },
-          ],
-          as: 'acInSOrdersClean',
-        },
-      },
-      {
-        $lookup: {
-          from: 'fixrecords',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$Account', '$$myid'],
-                    },
-                  },
-                  { Type: FixRecordController.FRecordTypes.StartMonth },
-                  { DateTime: { $gte: startDate, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'fixRecordsStartMonth',
-        },
-      },
-      {
-        $lookup: {
-          from: 'fixrecords',
-          let: { myid: '$_id' },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$Account', '$$myid'],
-                    },
-                  },
-                  { Type: FixRecordController.FRecordTypes.Check },
-                  { DateTime: { $gte: startDateExtractMonth, $lt: finishDate } },
-                ],
-              },
-            },
-          ],
-          as: 'fixRecordsLastCheck',
-        },
-      },
-      {
-        $project: {
-          name: '$Name',
-          currency: '$Currency',
-          isuntouchable: '$IsUntouchable',
-          isarchived: '$IsArchived',
-          IsMoneyBox: '$IsMoneyBox',
-          _id: '$_id',
-          startSum: { $sum: '$fixRecordsStartMonth.Value' },
-          sumPayments: { $sum: '$filteredOrders.Value' },
-          sumInSOrders: { $sum: '$acInSOrders.Value' },
-          sumInSOrdersClean: { $sum: '$acInSOrdersClean.Value' },
-          sumOutSOrders: { $sum: '$acOutSOrders.Value' },
-          sumOutSOrdersClean: { $sum: '$acOutSOrdersClean.Value' },
-          sumOutSOrdersToMB: { $sum: '$acOutSOrdersToMB.Value' },
-          sumInSOrdersFromMB: { $sum: '$acInSOrdersFromMB.Value' },
-          ordernumber: '$OrderNumber',
-          fixRecordsLastCheck: '$fixRecordsLastCheck',
-        },
-      },
-    ]
-  );
+async function getAggregatedAccList(startDate, accList){
   accList.sort(function(a, b) {
     let aNumber = a.ordernumber;
     let bNumber = b.ordernumber;
@@ -347,23 +95,14 @@ async function getAggregatedAccList(startDate, finishDate) {
     outputSum: {},
   };
   accList.forEach((item) => {
-    let lastCheckDate = new Date(-8640000000000000);
-    let lastCheckValue = 0;
-    if (item.fixRecordsLastCheck.length > 0) {
-      item.fixRecordsLastCheck.sort((a, b) => {
-        let aDate = new Date(a.DateTime);
-        let bDate = new Date(b.DateTime);
-        return bDate - aDate;
-      });
-      lastCheckDate = item.fixRecordsLastCheck[0].DateTime;
-      lastCheckValue = item.fixRecordsLastCheck[0].Value;
-    }
-    if (lastCheckDate.getFullYear() < 2000){
+  // for (let itemKey in accList){
+  //   let item = accList[itemKey];
+    // Object.entries(accList).forEach((item) => {
+    if (item.lastCheckDate.getFullYear() < 2000){
       item.lastCheckDate = '--';
     } else {
-      item.lastCheckDate = Helper.getUrlDateString(lastCheckDate);
+      item.lastCheckDate = Helper.getUrlDateString(item.lastCheckDate);
     }
-    item.lastCheckValue = lastCheckValue;
     item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
     item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
@@ -392,6 +131,7 @@ async function getAggregatedAccList(startDate, finishDate) {
   });
   return { accList: accList, sumObject: sumObject };
 }
+
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
@@ -500,9 +240,78 @@ async function aggregatedList(req, res, next) {
     finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObject.startDate, 'next');
   }
 
-  let accListObject = await getAggregatedAccList(startDateToCalculate, finishDateToCalculate);
-  accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
+  let orderList = await Order.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
+    .populate('PaymentAccount');
+  let serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
+    .populate('AccountIn').populate('AccountOut');
+  let lastCheckDate = Helper.getToday();
+  lastCheckDate.setDate(startDateToCalculate.getDate() - 30);
+  let fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: lastCheckDate }}, {DateTime: { $lte: finishDateToCalculate }}]})
+    .populate('Account').sort('DateTime');
+  let accountList = await Account.find();
 
+
+  let accList = {};
+  accountList.forEach((acc) => {
+    accList[acc.Name] = {
+      name: acc.Name,
+      startSum: 0,
+      sumPayments: 0,
+      sumOutSOrdersToMB: 0,
+      sumInSOrdersFromMB: 0,
+      sumOutSOrders: 0,
+      sumOutSOrdersClean: 0,
+      sumInSOrders: 0,
+      sumInSOrdersClean: 0,
+      ordernumber: acc.OrderNumber,
+      fixRecordsLastCheck: 0,
+      lastCheckDate: new Date(-8640000000000000),
+      lastCheckValue: 0,
+      isarchived: acc.IsArchived,
+      isuntouchable: acc.IsUntouchable,
+      currency: acc.Currency,
+      _id: acc._id,
+    };
+  });
+
+  orderList.forEach((order) => {
+    let orderAccount = order.PaymentAccount;
+    accList[orderAccount.Name].sumPayments = accList[orderAccount.Name].sumPayments + order.Value;
+  });
+
+  serviceOrderList.forEach((sOrder) => {
+    if (sOrder.AccountIn){
+      if (sOrder.AccountIn.IsMoneyBox){
+        accList[sOrder.AccountOut.Name].sumOutSOrdersToMB = accList[sOrder.AccountOut.Name].sumOutSOrdersToMB + sOrder.Value;
+      }
+      accList[sOrder.AccountIn.Name].sumInSOrders = accList[sOrder.AccountIn.Name].sumInSOrders + sOrder.Value;
+      if (sOrder.Type !== Helper.sOrderTypes.between){
+        accList[sOrder.AccountIn.Name].sumInSOrdersClean = accList[sOrder.AccountIn.Name].sumInSOrdersClean + sOrder.Value;
+      }
+    }
+    if (sOrder.AccountOut){
+      if (sOrder.AccountOut.IsMoneyBox){
+        accList[sOrder.AccountIn.Name].sumInSOrdersFromMB = accList[sOrder.AccountIn.Name].sumInSOrdersFromMB + sOrder.Value;
+      }
+      accList[sOrder.AccountOut.Name].sumOutSOrders = accList[sOrder.AccountOut.Name].sumOutSOrders + sOrder.Value;
+      if (sOrder.Type !== Helper.sOrderTypes.between){
+        accList[sOrder.AccountOut.Name].sumOutSOrdersClean = accList[sOrder.AccountOut.Name].sumOutSOrdersClean + sOrder.Value;
+      }
+    }
+  });
+
+  fixRecordsList.forEach((fixRecord) => {
+    if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= startDateToCalculate){
+      accList[fixRecord.Account.Name].startSum = fixRecord.Value;
+    }
+    if (fixRecord.Type === FixRecordController.FRecordTypes.Check){
+      accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
+      accList[fixRecord.Account.Name].lastCheckValue = fixRecord.Value;
+    }
+  });
+  accList = Object.values(accList);
+  let accListObject = await getAggregatedAccList(startDateToCalculate, accList);
+  accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
   let ali = accListObject.accList.find(el => el.name === 'TinkoffAli');
   if (ali != null){
     let alires = ali.result;
