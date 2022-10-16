@@ -158,7 +158,6 @@ async function asyncForEach(array, callback) {
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
   let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
-  let test = dataObject.fixRecordsList.map(x => ({tp: x.Type, dt: x.DateTime, ac: x.Account }));
   let accListObject = {};
   await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, {}, {startDateToCalculate: firsDayOfPrevMonth}, true);
   await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth }, true);
