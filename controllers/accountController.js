@@ -76,7 +76,7 @@ function list(req, res, next) {
   });
 };
 
-async function tuneAccountResultObject(accRes, dateObject){
+async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
 
   let startDate = dateObject.startDateToCalculate;
   accRes.accList = Object.values(accRes.accList);
@@ -132,16 +132,17 @@ async function tuneAccountResultObject(accRes, dateObject){
   });
   accRes.sumObject = sumObject;
 
-
-  let ali = accRes.accList.find(el => el.name === 'TinkoffAli');
-  if (ali != null){
-    let alires = ali.result;
-    ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
-  }
-  let sberCredit = accRes.accList.find(el => el.name === 'SberCredit');
-  if (sberCredit != null){
-    let sberCreditres = sberCredit.result;
-    sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
+  if (!isCreateFirstMonth){
+    let ali = accRes.accList.find(el => el.name === 'TinkoffAli');
+    if (ali != null){
+      let alires = ali.result;
+      ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
+    }
+    let sberCredit = accRes.accList.find(el => el.name === 'SberCredit');
+    if (sberCredit != null){
+      let sberCreditres = sberCredit.result;
+      sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
+    }
   }
 
   return accRes;
@@ -156,7 +157,11 @@ async function asyncForEach(array, callback) {
 
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let accListObject = await tuneAccountResultObject(firsDayOfPrevMonth, firstDateOfCurrentMonth);
+  let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
+  let test = dataObject.fixRecordsList.map(x => ({tp: x.Type, dt: x.DateTime, ac: x.Account }));
+  let accListObject = {};
+  await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, {}, {startDateToCalculate: firsDayOfPrevMonth}, true);
+  await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth }, true);
   let totalSum = {};
   let totalIncoming = {};
   let totalExpense = {};
@@ -242,8 +247,8 @@ async function prepareDataToBuildAccountList(startDate, finishDate){
     .populate('PaymentAccount').populate('ParentTag');
   dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]})
     .populate('AccountIn').populate('AccountOut');
-  dataObject.lastCheckDate = Helper.getToday();
-  dataObject.lastCheckDate.setDate(startDate.getDate() - 30);
+  dataObject.lastCheckDate = new Date(startDate.getTime());
+  dataObject.lastCheckDate.setDate(dataObject.lastCheckDate.getDate() - 45);
   dataObject.fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: dataObject.lastCheckDate }}, {DateTime: { $lte: finishDate }}]})
     .populate('Account').sort('DateTime');
   dataObject.accountList = await Account.find();
@@ -252,7 +257,7 @@ async function prepareDataToBuildAccountList(startDate, finishDate){
   return dataObject;
 }
 
-async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statObj, monthObject, dateObject){
+async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statObj, monthObject, dateObject, isCreateFirstMonth){
   accRes.accList = {};
   dataObject.accountList.forEach((acc) => {
     accRes.accList[acc.Name] = {
@@ -299,18 +304,18 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
       }
     }
   });
-  statObj.sumAllOrders = statObj.sumAllOrders + dataObject.orderList.reduce(function(accumulator, order) {
+  dataObject.orderList.forEach((order) => {
     let orderAccount = order.PaymentAccount;
     accRes.accList[orderAccount.Name].sumPayments += order.Value;
 
     if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
-      return accumulator;
+      return;
     }
     if (order.ParentTag.LocalId === 22){ // capital
-      return accumulator;
+      return;
     }
     if (order.ParentTag.LocalId === 3039){ // flat rent
-      return accumulator;
+      return;
     }
     if (order.ParentTag.LocalId === 1) {
       statObj.sumEatOrders += order.Value;
@@ -321,13 +326,19 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
     if (order.IsExcess === true){
       statObj.sumExcessOrders += order.Value;
     }
-    monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
-    return accumulator + order.Value;
-  }, 0);
-
+    if (!isCreateFirstMonth){
+      monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
+    }
+    statObj.sumAllOrders += order.Value;
+  });
+  // let dateToCheckStartMonthRecords = new Date(dateObject.startDateToCalculate.getTime());
+  // dateToCheckStartMonthRecords.setDate(dateToCheckStartMonthRecords.getDate() - 1);
   dataObject.fixRecordsList.forEach((fixRecord) => {
-    if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= dateObject.startDateToCalculate){
-      accRes.accList[fixRecord.Account.Name].startSum = fixRecord.Value;
+    // if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= dateObject.startDateToCalculate){
+    if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth){
+      if (fixRecord.DateTime >= dateObject.startDateToCalculate){
+        accRes.accList[fixRecord.Account.Name].startSum = fixRecord.Value;
+      }
     }
     if (fixRecord.Type === FixRecordController.FRecordTypes.Check){
       accRes.accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
@@ -347,7 +358,7 @@ async function getDateObject(req){
     dateData.finishDateToCalculate = Helper.getTomorrow();
     let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
     if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
-      // await createStartMonthRecords(dateData.startDateToCalculate); //! Rewrite!
+      await createStartMonthRecords(dateData.startDateToCalculate); //! Rewrite!
     }
   } else {
     dateData.startDateToCalculate = dateObjectFromQuery.startDate;
