@@ -219,6 +219,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
 }
 
 async function aggregatedList(req, res, next) {
+  console.time('doSomething');
   let startDateToCalculate;
   let finishDateToCalculate;
   let dateObject = Helper.getDateObjectFromUrl(req);
@@ -366,6 +367,7 @@ async function aggregatedList(req, res, next) {
   targetMonthData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate);
   targetMonthData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate);
   targetMonthData.MonthName = currMonthName;
+  console.timeEnd('doSomething')
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 
