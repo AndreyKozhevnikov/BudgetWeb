@@ -76,8 +76,12 @@ function list(req, res, next) {
   });
 };
 
-async function tuneAccountListAndPrepareStatObject(startDate, accList){
-  accList.sort(function(a, b) {
+async function tuneAccountResultObject(accRes, dateObject){
+
+  let startDate = dateObject.startDateToCalculate;
+  accRes.accList = Object.values(accRes.accList);
+  accRes.accList = accRes.accList.filter(x => !x.isarchived);
+  accRes.accList.sort(function(a, b) {
     let aNumber = a.ordernumber;
     let bNumber = b.ordernumber;
     if (aNumber === null)
@@ -94,7 +98,7 @@ async function tuneAccountListAndPrepareStatObject(startDate, accList){
     inputSum: {},
     outputSum: {},
   };
-  accList.forEach((item) => {
+  accRes.accList.forEach((item) => {
     if (item.lastCheckDate.getFullYear() < 2000){
       item.lastCheckDate = '--';
     } else {
@@ -126,7 +130,21 @@ async function tuneAccountListAndPrepareStatObject(startDate, accList){
       sumObject.outputSum[currency] = sumObject.outputSum[currency] + item.sumOutSOrdersClean;
     }
   });
-  return { accList: accList, sumObject: sumObject };
+  accRes.sumObject = sumObject;
+
+
+  let ali = accRes.accList.find(el => el.name === 'TinkoffAli');
+  if (ali != null){
+    let alires = ali.result;
+    ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
+  }
+  let sberCredit = accRes.accList.find(el => el.name === 'SberCredit');
+  if (sberCredit != null){
+    let sberCreditres = sberCredit.result;
+    sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
+  }
+
+  return accRes;
 }
 
 async function asyncForEach(array, callback) {
@@ -138,7 +156,7 @@ async function asyncForEach(array, callback) {
 
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let accListObject = await tuneAccountListAndPrepareStatObject(firsDayOfPrevMonth, firstDateOfCurrentMonth);
+  let accListObject = await tuneAccountResultObject(firsDayOfPrevMonth, firstDateOfCurrentMonth);
   let totalSum = {};
   let totalIncoming = {};
   let totalExpense = {};
@@ -218,45 +236,26 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   );
 }
 
-async function aggregatedList(req, res, next) {
-  console.time('doSomething');
-
-  // prepare dates
-  let startDateToCalculate;
-  let finishDateToCalculate;
-  let dateObject = Helper.getDateObjectFromUrl(req);
-  if (!dateObject.hasDateParameter){
-    startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
-    finishDateToCalculate = Helper.getTomorrow();
-    let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
-    if (lastStartMonthRecordDate < startDateToCalculate) {
-      await createStartMonthRecords(startDateToCalculate);
-    }
-  } else {
-    startDateToCalculate = dateObject.startDate;
-    if (startDateToCalculate > Helper.getToday()){
-      startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
-    }
-    finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObject.startDate, 'next');
-  }
-
-  // get data
-
-  let orderList = await Order.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
+async function prepareDataToBuildAccountList(startDate, finishDate){
+  let dataObject = {};
+  dataObject.orderList = await Order.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]})
     .populate('PaymentAccount').populate('ParentTag');
-  let serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
+  dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]})
     .populate('AccountIn').populate('AccountOut');
-  let lastCheckDate = Helper.getToday();
-  lastCheckDate.setDate(startDateToCalculate.getDate() - 30);
-  let fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: lastCheckDate }}, {DateTime: { $lte: finishDateToCalculate }}]})
+  dataObject.lastCheckDate = Helper.getToday();
+  dataObject.lastCheckDate.setDate(startDate.getDate() - 30);
+  dataObject.fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: dataObject.lastCheckDate }}, {DateTime: { $lte: finishDate }}]})
     .populate('Account').sort('DateTime');
-  let accountList = await Account.find();
+  dataObject.accountList = await Account.find();
 
-  // account list + sum account Object
 
-  let accList = {};
-  accountList.forEach((acc) => {
-    accList[acc.Name] = {
+  return dataObject;
+}
+
+async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statObj, monthObject, dateObject){
+  accRes.accList = {};
+  dataObject.accountList.forEach((acc) => {
+    accRes.accList[acc.Name] = {
       name: acc.Name,
       startSum: 0,
       sumPayments: 0,
@@ -277,43 +276,32 @@ async function aggregatedList(req, res, next) {
     };
   });
 
-  let sumAllOrders = 0;
-  let sumEatOrders = 0;
-  let sumFastFoodOrders = 0;
-  let sumExcessOrders = 0;
-  let lastMonthDate = new Date(finishDateToCalculate.getTime());
-  lastMonthDate.setDate(lastMonthDate.getDate() - 1);
-  let dayCount = lastMonthDate.getDate();
-  let thisMonthMondays = [];
-  let thisMonthDates = getDaysArray(startDateToCalculate, lastMonthDate, thisMonthMondays);
-
-
-  serviceOrderList.forEach((sOrder) => {
+  dataObject.serviceOrderList.forEach((sOrder) => {
     if (sOrder.AccountIn){
       if (sOrder.AccountIn.IsMoneyBox){
-        accList[sOrder.AccountOut.Name].sumOutSOrdersToMB = accList[sOrder.AccountOut.Name].sumOutSOrdersToMB + sOrder.Value;
+        accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersToMB += sOrder.Value;
         if (sOrder.AccountOut.Currency === Helper.Currencies.Dram){
-          sumAllOrders = sumAllOrders + sOrder.Value;
+          statObj.sumAllOrders += sOrder.Value;
         }
       }
-      accList[sOrder.AccountIn.Name].sumInSOrders = accList[sOrder.AccountIn.Name].sumInSOrders + sOrder.Value;
+      accRes.accList[sOrder.AccountIn.Name].sumInSOrders += sOrder.Value;
       if (sOrder.Type !== Helper.sOrderTypes.between){
-        accList[sOrder.AccountIn.Name].sumInSOrdersClean = accList[sOrder.AccountIn.Name].sumInSOrdersClean + sOrder.Value;
+        accRes.accList[sOrder.AccountIn.Name].sumInSOrdersClean += sOrder.Value;
       }
     }
     if (sOrder.AccountOut){
       if (sOrder.AccountOut.IsMoneyBox){
-        accList[sOrder.AccountIn.Name].sumInSOrdersFromMB = accList[sOrder.AccountIn.Name].sumInSOrdersFromMB + sOrder.Value;
+        accRes.accList[sOrder.AccountIn.Name].sumInSOrdersFromMB += sOrder.Value;
       }
-      accList[sOrder.AccountOut.Name].sumOutSOrders = accList[sOrder.AccountOut.Name].sumOutSOrders + sOrder.Value;
+      accRes.accList[sOrder.AccountOut.Name].sumOutSOrders += sOrder.Value;
       if (sOrder.Type !== Helper.sOrderTypes.between){
-        accList[sOrder.AccountOut.Name].sumOutSOrdersClean = accList[sOrder.AccountOut.Name].sumOutSOrdersClean + sOrder.Value;
+        accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersClean += sOrder.Value;
       }
     }
   });
-  sumAllOrders = sumAllOrders + orderList.reduce(function(accumulator, order) {
+  statObj.sumAllOrders = statObj.sumAllOrders + dataObject.orderList.reduce(function(accumulator, order) {
     let orderAccount = order.PaymentAccount;
-    accList[orderAccount.Name].sumPayments = accList[orderAccount.Name].sumPayments + order.Value;
+    accRes.accList[orderAccount.Name].sumPayments += order.Value;
 
     if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
       return accumulator;
@@ -325,62 +313,87 @@ async function aggregatedList(req, res, next) {
       return accumulator;
     }
     if (order.ParentTag.LocalId === 1) {
-      sumEatOrders = sumEatOrders + order.Value;
+      statObj.sumEatOrders += order.Value;
     }
     if (order.ParentTag.LocalId === 2037){
-      sumFastFoodOrders = sumFastFoodOrders + order.Value;
+      statObj.sumFastFoodOrders += order.Value;
     }
     if (order.IsExcess === true){
-      sumExcessOrders = sumExcessOrders + order.Value;
+      statObj.sumExcessOrders += order.Value;
     }
-    thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
+    monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
     return accumulator + order.Value;
   }, 0);
 
-  fixRecordsList.forEach((fixRecord) => {
-    if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= startDateToCalculate){
-      accList[fixRecord.Account.Name].startSum = fixRecord.Value;
+  dataObject.fixRecordsList.forEach((fixRecord) => {
+    if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= dateObject.startDateToCalculate){
+      accRes.accList[fixRecord.Account.Name].startSum = fixRecord.Value;
     }
     if (fixRecord.Type === FixRecordController.FRecordTypes.Check){
-      accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
-      accList[fixRecord.Account.Name].lastCheckValue = fixRecord.Value;
+      accRes.accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
+      accRes.accList[fixRecord.Account.Name].lastCheckValue = fixRecord.Value;
     }
   });
-  accList = Object.values(accList);
-
-
-
-  let accListObject = await tuneAccountListAndPrepareStatObject(startDateToCalculate, accList);
-  accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
-
-  let ali = accListObject.accList.find(el => el.name === 'TinkoffAli');
-  if (ali != null){
-    let alires = ali.result;
-    ali.result = alires + ' (' + (Number(alires) + 50000) + ')';
-  }
-  let sberCredit = accListObject.accList.find(el => el.name === 'SberCredit');
-  if (sberCredit != null){
-    let sberCreditres = sberCredit.result;
-    sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
-  }
-
-  // dates list
-
-
-  let statisticObject = await getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAllOrders, sumEatOrders, sumFastFoodOrders, sumExcessOrders);
-
-  let currMonthName = Helper.getMonthName(startDateToCalculate);
-  let targetMonthData = {};
-  let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'prev');
-  let nextMonthStartDate = Helper.getFirstDateOfShifterMonth(startDateToCalculate, 'next');
-  targetMonthData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate);
-  targetMonthData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate);
-  targetMonthData.MonthName = currMonthName;
-  console.timeEnd('doSomething');
-  res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 
-async function getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAllOrders, sumEatOrders, sumFastFoodOrders, sumExcessOrders) {
+async function getDateObject(req){
+  let dateData = {};
+
+  // let startDateToCalculate;
+  // let finishDateToCalculate;
+  let dateObjectFromQuery = Helper.getDateObjectFromUrl(req);
+  if (!dateObjectFromQuery.hasDateParameter){
+    dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
+    dateData.finishDateToCalculate = Helper.getTomorrow();
+    let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
+    if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
+      // await createStartMonthRecords(dateData.startDateToCalculate); //! Rewrite!
+    }
+  } else {
+    dateData.startDateToCalculate = dateObjectFromQuery.startDate;
+    if (dateData.startDateToCalculate > Helper.getToday()){
+      dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
+    }
+    dateData.finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObjectFromQuery.startDate, 'next');
+  }
+  dateData.lastMonthDate = new Date(dateData.finishDateToCalculate.getTime());
+  dateData.lastMonthDate.setDate(dateData.lastMonthDate.getDate() - 1);
+  dateData.dayCount = dateData.lastMonthDate.getDate();
+  let currMonthName = Helper.getMonthName(dateData.startDateToCalculate);
+
+  let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(dateData.startDateToCalculate, 'prev');
+  let nextMonthStartDate = Helper.getFirstDateOfShifterMonth(dateData.startDateToCalculate, 'next');
+  dateData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate);
+  dateData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate);
+  dateData.MonthName = currMonthName;
+  return dateData;
+}
+
+async function aggregatedList(req, res, next) {
+  console.time('doSomething');
+  let dateObject = await getDateObject(req);
+  let dataObject = await prepareDataToBuildAccountList(dateObject.startDateToCalculate, dateObject.finishDateToCalculate);
+  let accountResultObject = {};
+  let statisticObject = {
+    sumAllOrders: 0,
+    sumEatOrders: 0,
+    sumFastFoodOrders: 0,
+    sumExcessOrders: 0,
+  };
+  let monthObject = {
+    thisMonthMondays: [],
+    thisMonthDates: {},
+
+  };
+  prepareEmptyMonthObject(dateObject, monthObject);
+  iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject, dateObject);
+  tuneAccountResultObject(accountResultObject, dateObject);
+  processStatisticObjectAndMonthDates(dateObject, monthObject, statisticObject);
+  console.timeEnd('doSomething');
+  res.render('account_list_aggregate', { dateObject: dateObject, accListObject: accountResultObject, statObject: statisticObject, monthObject: monthObject });
+}
+
+async function processStatisticObjectAndMonthDates(dateObject, monthObject, statObj) {
   const normEatPerDay = 4000;
   const normFastFoodPerDay = 1000;
   const normExcessPerDay = 2000;
@@ -388,56 +401,50 @@ async function getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAl
   const mortGagePayment = 0;
 
 
-  processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
+  processthisMonthDates(monthObject.thisMonthDates, normAllPerDay, mortGagePayment);
   let monthDayCount = Helper.getCurrentMonthDaysCount();
-  let leftDayCount = monthDayCount - dayCount;
+  let leftDayCount = monthDayCount - dateObject.dayCount;
   if (leftDayCount < 1)
     leftDayCount = 1;
   let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
   let desiredEatSumForMonth = normEatPerDay * monthDayCount;
   let desiredFastFoodSumForMonth = normFastFoodPerDay * monthDayCount;
   let desiredExcessSumForMonth = normExcessPerDay * monthDayCount;
-  let statisticObject =
-  {
-    spendEat: sumEatOrders,
-    normEat: normEatPerDay * dayCount,
-    normEatMonth: desiredEatSumForMonth,
-    spendFastFood: sumFastFoodOrders,
-    spendExcess: sumExcessOrders,
-    normFastFood: normFastFoodPerDay * dayCount,
-    normFastFoodMonth: desiredFastFoodSumForMonth,
-    normExcess: normExcessPerDay * dayCount,
-    normExcessMonth: desiredExcessSumForMonth,
-    spendAll: sumAllOrders,
-    normAll: normAllPerDay * dayCount + mortGagePayment,
-    normAllMonth: desiredAllSumForMonth,
-  };
-  statisticObject.diffEat = statisticObject.normEat - statisticObject.spendEat;
-  statisticObject.diffEatMonth = statisticObject.normEatMonth - statisticObject.spendEat;
-  statisticObject.moneyLeftEat = Math.round(statisticObject.diffEatMonth / leftDayCount);
 
-  statisticObject.diffFastFood = statisticObject.normFastFood - statisticObject.spendFastFood;
-  statisticObject.diffFastFoodMonth = statisticObject.normFastFoodMonth - statisticObject.spendFastFood;
-  statisticObject.moneyLeftFastFood = Math.round(statisticObject.diffFastFoodMonth / leftDayCount);
+  statObj.spendEat = statObj.sumEatOrders;
+  statObj.normEat = normEatPerDay * dateObject.dayCount;
+  statObj.normEatMonth = desiredEatSumForMonth;
+  statObj.spendFastFood = statObj.sumFastFoodOrders;
+  statObj.spendExcess = statObj.sumExcessOrders;
+  statObj.normFastFood = normFastFoodPerDay * dateObject.dayCount;
+  statObj.normFastFoodMonth = desiredFastFoodSumForMonth;
+  statObj.normExcess = normExcessPerDay * dateObject.dayCount;
+  statObj.normExcessMonth = desiredExcessSumForMonth;
+  statObj.spendAll = statObj.sumAllOrders;
+  statObj.normAll = normAllPerDay * dateObject.dayCount + mortGagePayment;
+  statObj.normAllMonth = desiredAllSumForMonth;
 
-  statisticObject.diffExcess = statisticObject.normExcess - statisticObject.spendExcess;
-  statisticObject.diffExcessMonth = statisticObject.normExcessMonth - statisticObject.spendExcess;
-  statisticObject.moneyLeftExcess = Math.round(statisticObject.diffExcessMonth / leftDayCount);
+  statObj.diffEat = statObj.normEat - statObj.spendEat;
+  statObj.diffEatMonth = statObj.normEatMonth - statObj.spendEat;
+  statObj.moneyLeftEat = Math.round(statObj.diffEatMonth / leftDayCount);
+
+  statObj.diffFastFood = statObj.normFastFood - statObj.spendFastFood;
+  statObj.diffFastFoodMonth = statObj.normFastFoodMonth - statObj.spendFastFood;
+  statObj.moneyLeftFastFood = Math.round(statObj.diffFastFoodMonth / leftDayCount);
+
+  statObj.diffExcess = statObj.normExcess - statObj.spendExcess;
+  statObj.diffExcessMonth = statObj.normExcessMonth - statObj.spendExcess;
+  statObj.moneyLeftExcess = Math.round(statObj.diffExcessMonth / leftDayCount);
 
 
-  statisticObject.diffAll = statisticObject.normAll - statisticObject.spendAll;
-  statisticObject.diffAllMonth = statisticObject.normAllMonth - statisticObject.spendAll;
-  statisticObject.moneyLeftAll = Math.round(statisticObject.diffAllMonth / leftDayCount);
+  statObj.diffAll = statObj.normAll - statObj.spendAll;
+  statObj.diffAllMonth = statObj.normAllMonth - statObj.spendAll;
+  statObj.moneyLeftAll = Math.round(statObj.diffAllMonth / leftDayCount);
 
-  statisticObject.allColorAttribute = statisticObject.diffAll < 0;
-  statisticObject.eatColorAttribute = statisticObject.diffEat < 0;
-  statisticObject.fastFoodColorAttribute = statisticObject.diffFastFood < 0;
-  statisticObject.excessColorAttribute = statisticObject.diffExcess < 0;
-
-  statisticObject.thisMonthDates = thisMonthDates;
-  statisticObject.thisMonthMondays = thisMonthMondays;
-
-  return statisticObject;
+  statObj.allColorAttribute = statObj.diffAll < 0;
+  statObj.eatColorAttribute = statObj.diffEat < 0;
+  statObj.fastFoodColorAttribute = statObj.diffFastFood < 0;
+  statObj.excessColorAttribute = statObj.diffExcess < 0;
 }
 function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
   let allResult = 0;
@@ -461,13 +468,11 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
 //   }
 // }
 
-function getDaysArray(start, end, listMondays) {
-
-
+function prepareEmptyMonthObject(dateObject, monthObject) {
   let arr = {};
-  let dt = new Date(start);
+  let dt = new Date(dateObject.startDateToCalculate);
 
-  while (dt <= end) {
+  while (dt <= dateObject.lastMonthDate) {
     let dateSt = moment(dt).format('DD MMM YY');
     let currDt = new Date(dt.getTime());
     arr[dt] = {
@@ -480,7 +485,7 @@ function getDaysArray(start, end, listMondays) {
     if (dt.getDay() === 1){
       let monDate = new Date();
       monDate.setTime(currDt.getTime() - 12 * 60 * 60 * 1000);
-      listMondays.push({
+      monthObject.thisMonthMondays.push({
         label: {
           text: dateSt,
         },
@@ -492,7 +497,7 @@ function getDaysArray(start, end, listMondays) {
 
     dt.setDate(dt.getDate() + 1);
   }
-  return arr;
+  monthObject.thisMonthDates = arr;
 };
 
 function update_get(req, res, next) {
