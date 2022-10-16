@@ -76,7 +76,7 @@ function list(req, res, next) {
   });
 };
 
-async function getAggregatedAccList(startDate, accList){
+async function tuneAccountListAndPrepareStatObject(startDate, accList){
   accList.sort(function(a, b) {
     let aNumber = a.ordernumber;
     let bNumber = b.ordernumber;
@@ -138,7 +138,7 @@ async function asyncForEach(array, callback) {
 
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let accListObject = await getAggregatedAccList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
+  let accListObject = await tuneAccountListAndPrepareStatObject(firsDayOfPrevMonth, firstDateOfCurrentMonth);
   let totalSum = {};
   let totalIncoming = {};
   let totalExpense = {};
@@ -220,6 +220,8 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
 
 async function aggregatedList(req, res, next) {
   console.time('doSomething');
+
+  // prepare dates
   let startDateToCalculate;
   let finishDateToCalculate;
   let dateObject = Helper.getDateObjectFromUrl(req);
@@ -238,6 +240,8 @@ async function aggregatedList(req, res, next) {
     finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObject.startDate, 'next');
   }
 
+  // get data
+
   let orderList = await Order.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
     .populate('PaymentAccount').populate('ParentTag');
   let serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDateToCalculate }}, {DateOrder: { $lte: finishDateToCalculate }}]})
@@ -248,6 +252,7 @@ async function aggregatedList(req, res, next) {
     .populate('Account').sort('DateTime');
   let accountList = await Account.find();
 
+  // account list + sum account Object
 
   let accList = {};
   accountList.forEach((acc) => {
@@ -331,11 +336,7 @@ async function aggregatedList(req, res, next) {
     thisMonthDates[order.DateOrder].Value = thisMonthDates[order.DateOrder].Value + order.Value;
     return accumulator + order.Value;
   }, 0);
-  // orderList.forEach((order) => {
-  //   let orderAccount = order.PaymentAccount;
-  //   accList[orderAccount.Name].sumPayments = accList[orderAccount.Name].sumPayments + order.Value;
 
-  // });
   fixRecordsList.forEach((fixRecord) => {
     if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= startDateToCalculate){
       accList[fixRecord.Account.Name].startSum = fixRecord.Value;
@@ -346,8 +347,12 @@ async function aggregatedList(req, res, next) {
     }
   });
   accList = Object.values(accList);
-  let accListObject = await getAggregatedAccList(startDateToCalculate, accList);
+
+
+
+  let accListObject = await tuneAccountListAndPrepareStatObject(startDateToCalculate, accList);
   accListObject.accList = accListObject.accList.filter(x => !x.isarchived);
+
   let ali = accListObject.accList.find(el => el.name === 'TinkoffAli');
   if (ali != null){
     let alires = ali.result;
@@ -358,6 +363,10 @@ async function aggregatedList(req, res, next) {
     let sberCreditres = sberCredit.result;
     sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
   }
+
+  // dates list
+
+
   let statisticObject = await getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAllOrders, sumEatOrders, sumFastFoodOrders, sumExcessOrders);
 
   let currMonthName = Helper.getMonthName(startDateToCalculate);
@@ -367,7 +376,7 @@ async function aggregatedList(req, res, next) {
   targetMonthData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate);
   targetMonthData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate);
   targetMonthData.MonthName = currMonthName;
-  console.timeEnd('doSomething')
+  console.timeEnd('doSomething');
   res.render('account_list_aggregate', { currMonthData: targetMonthData, accListObject: accListObject, statObject: statisticObject });
 }
 
@@ -377,7 +386,6 @@ async function getStaticObject(dayCount, thisMonthDates, thisMonthMondays, sumAl
   const normExcessPerDay = 2000;
   const normAllPerDay = 6000;
   const mortGagePayment = 0;
-
 
 
   processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment);
