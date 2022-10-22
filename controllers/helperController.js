@@ -111,7 +111,7 @@ function sortListByGroupedList(listToSort, groupedList) {
 
 function getCutDate(){
   let cutDate = getToday();
-  cutDate.setDate(cutDate.getDate() - 60);
+  cutDate.setDate(cutDate.getDate() - 30);
   return cutDate;
 }
 
