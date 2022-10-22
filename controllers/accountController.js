@@ -157,11 +157,7 @@ async function asyncForEach(array, callback) {
 
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let lastDateToCalculate = new Date();
-
-  lastDateToCalculate.setDate(firstDateOfCurrentMonth.getDate());
-  lastDateToCalculate.setHours(0, 0, 0, 0);
-  let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, lastDateToCalculate);
+  let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
   let accListObject = {};
  
   await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, () => {}, {startDateToCalculate: firsDayOfPrevMonth});
@@ -247,14 +243,14 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
 
 async function prepareDataToBuildAccountList(startDate, finishDate){
   let dataObject = {};
-  dataObject.orderList = await Order.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]})
+  dataObject.orderList = await Order.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lt: finishDate }}]})
   // .populate('PaymentAccount').populate('ParentTag');
     .populate('ParentTag');
-  dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]});
+  dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lt: finishDate }}]});
   // .populate('AccountIn').populate('AccountOut');
   dataObject.lastCheckDate = new Date(startDate.getTime());
   dataObject.lastCheckDate.setDate(dataObject.lastCheckDate.getDate() - 45);
-  dataObject.fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: dataObject.lastCheckDate }}, {DateTime: { $lte: finishDate }}]})
+  dataObject.fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: dataObject.lastCheckDate }}, {DateTime: { $lt: finishDate }}]})
   // .populate('Account')
     .sort('DateTime');
   dataObject.accountList = await Account.find();
