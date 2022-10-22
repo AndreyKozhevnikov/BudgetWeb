@@ -330,10 +330,7 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
     }
     statObj.sumAllOrders += order.Value;
   });
-  // let dateToCheckStartMonthRecords = new Date(dateObject.startDateToCalculate.getTime());
-  // dateToCheckStartMonthRecords.setDate(dateToCheckStartMonthRecords.getDate() - 1);
   dataObject.fixRecordsList.forEach((fixRecord) => {
-    // if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth && fixRecord.DateTime >= dateObject.startDateToCalculate){
     if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth){
       if (fixRecord.DateTime >= dateObject.startDateToCalculate){
         accRes.accList[fixRecord.Account.Name].startSum = fixRecord.Value;
@@ -348,16 +345,13 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
 
 async function getDateObject(req){
   let dateData = {};
-
-  // let startDateToCalculate;
-  // let finishDateToCalculate;
   let dateObjectFromQuery = Helper.getDateObjectFromUrl(req);
   if (!dateObjectFromQuery.hasDateParameter){
     dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
     dateData.finishDateToCalculate = Helper.getTomorrow();
     let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
     if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
-      await createStartMonthRecords(dateData.startDateToCalculate); //! Rewrite!
+      await createStartMonthRecords(dateData.startDateToCalculate);
     }
   } else {
     dateData.startDateToCalculate = dateObjectFromQuery.startDate;
