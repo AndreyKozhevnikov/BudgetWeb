@@ -243,16 +243,35 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
 async function prepareDataToBuildAccountList(startDate, finishDate){
   let dataObject = {};
   dataObject.orderList = await Order.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]})
-    .populate('PaymentAccount').populate('ParentTag');
-  dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]})
-    .populate('AccountIn').populate('AccountOut');
+  // .populate('PaymentAccount').populate('ParentTag');
+    .populate('ParentTag');
+  dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lte: finishDate }}]});
+  // .populate('AccountIn').populate('AccountOut');
   dataObject.lastCheckDate = new Date(startDate.getTime());
   dataObject.lastCheckDate.setDate(dataObject.lastCheckDate.getDate() - 45);
   dataObject.fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: dataObject.lastCheckDate }}, {DateTime: { $lte: finishDate }}]})
-    .populate('Account').sort('DateTime');
+  // .populate('Account')
+    .sort('DateTime');
   dataObject.accountList = await Account.find();
+  console.time('iterate');
+  dataObject.orderList.forEach((order) => {
+    let realAcc = dataObject.accountList.find(acc => acc._id.equals(order.PaymentAccount));
+    order.PaymentAccount = realAcc;
+  });
 
+  dataObject.serviceOrderList.forEach((sOrder) => {
+    let realAccIn = dataObject.accountList.find(acc => acc._id.equals(sOrder.AccountIn));
+    sOrder.AccountIn = realAccIn;
 
+    let realAccOut = dataObject.accountList.find(acc => acc._id.equals(sOrder.AccountOut));
+    sOrder.AccountOut = realAccOut;
+  });
+
+  dataObject.fixRecordsList.forEach((fRecord) => {
+    let realAcc = dataObject.accountList.find(acc => acc._id.equals(fRecord.Account));
+    fRecord.Account = realAcc;
+  });
+  console.timeEnd('iterate');
   return dataObject;
 }
 
@@ -374,7 +393,7 @@ async function getDateObject(req){
 }
 
 async function aggregatedList(req, res, next) {
-  console.time('doSomething');
+  console.time('aggregatedList');
   let dateObject = await getDateObject(req);
   let dataObject = await prepareDataToBuildAccountList(dateObject.startDateToCalculate, dateObject.finishDateToCalculate);
   let accountResultObject = {};
@@ -393,7 +412,7 @@ async function aggregatedList(req, res, next) {
   iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject, dateObject);
   tuneAccountResultObject(accountResultObject, dateObject);
   processStatisticObjectAndMonthDates(dateObject, monthObject, statisticObject);
-  console.timeEnd('doSomething');
+  console.timeEnd('aggregatedList');
   res.render('account_list_aggregate', { dateObject: dateObject, accListObject: accountResultObject, statObject: statisticObject, monthObject: monthObject });
 }
 
