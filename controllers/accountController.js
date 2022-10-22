@@ -164,7 +164,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, lastDateToCalculate);
   let accListObject = {};
  
-  await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, {}, {startDateToCalculate: firsDayOfPrevMonth}, true);
+  await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, () => {}, {startDateToCalculate: firsDayOfPrevMonth});
   await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth }, true);
   let totalSum = {};
   let totalIncoming = {};
@@ -280,7 +280,7 @@ async function prepareDataToBuildAccountList(startDate, finishDate){
   return dataObject;
 }
 
-async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statObj, monthObject, dateObject, isCreateFirstMonth){
+async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statObj, monthObjectConsumeOrderFunction, dateObject){
   accRes.accList = {};
   dataObject.accountList.forEach((acc) => {
     accRes.accList[acc.Name] = {
@@ -349,9 +349,8 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
     if (order.IsExcess === true){
       statObj.sumExcessOrders += order.Value;
     }
-    if (!isCreateFirstMonth){
-      monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
-    }
+    monthObjectConsumeOrderFunction(order);
+
     statObj.sumAllOrders += order.Value;
   });
   dataObject.fixRecordsList.forEach((fixRecord) => {
@@ -411,10 +410,12 @@ async function aggregatedList(req, res, next) {
   let monthObject = {
     thisMonthMondays: [],
     thisMonthDates: {},
-
+    consumeOrder: function(order) {
+      monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
+    },
   };
   prepareEmptyMonthObject(dateObject, monthObject);
-  iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject, dateObject);
+  iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject.consumeOrder, dateObject);
   tuneAccountResultObject(accountResultObject, dateObject);
   processStatisticObjectAndMonthDates(dateObject, monthObject, statisticObject);
   console.timeEnd('aggregatedList');
