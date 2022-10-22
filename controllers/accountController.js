@@ -157,8 +157,13 @@ async function asyncForEach(array, callback) {
 
 async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
+  let lastDateToCalculate = new Date();
+
+  lastDateToCalculate.setDate(firstDateOfCurrentMonth.getDate());
+  lastDateToCalculate.setHours(0, 0, 0, 0);
+  let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, lastDateToCalculate);
   let accListObject = {};
+ 
   await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, {}, {startDateToCalculate: firsDayOfPrevMonth}, true);
   await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth }, true);
   let totalSum = {};
