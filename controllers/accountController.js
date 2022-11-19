@@ -111,7 +111,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
     let finishDateString = Helper.getUrlDateString(Helper.getFirstDateOfShifterMonth(startDate, 'next'));
     item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
-    if (item.lastCheckDate.toDateString() !== dateObject.today.toDateString()){
+    if ((item.lastCheckDate.getTime() - dateObject.today.getTime()) / (1000 * 60 * 60 * 24) > 7){
       item.checkState = 'checkStateYellow';
     }
     if (item.lastCheckValue !== item.result){
@@ -493,7 +493,7 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
 
 
     thisMonthDates[dateData].orderList.sort((a, b) => { return b.value - a.value; });
-   // thisMonthDates[dateData].orderList = thisMonthDates[dateData].orderList.slice(0, 3);
+    // thisMonthDates[dateData].orderList = thisMonthDates[dateData].orderList.slice(0, 3);
   }
 
 
