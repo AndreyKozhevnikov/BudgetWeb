@@ -100,9 +100,9 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
   };
   accRes.accList.forEach((item) => {
     if (item.lastCheckDate.getFullYear() < 2000){
-      item.lastCheckDate = '--';
+      item.lastCheckDateString = '--';
     } else {
-      item.lastCheckDate = Helper.getUrlDateString(item.lastCheckDate);
+      item.lastCheckDateString = Helper.getUrlDateString(item.lastCheckDate);
     }
     item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
     item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
@@ -111,6 +111,12 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
     let finishDateString = Helper.getUrlDateString(Helper.getFirstDateOfShifterMonth(startDate, 'next'));
     item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
+    if (item.lastCheckDate.toDateString() !== dateObject.today.toDateString()){
+      item.checkState = 'checkStateYellow';
+    }
+    if (item.lastCheckValue !== item.result){
+      item.checkState = 'checkStateRed';
+    }
     if (item.isuntouchable !== true && item.isarchived !== true) {
       let currency = item.currency;
       if (!currency){
@@ -159,7 +165,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
   let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
   let accListObject = {};
- 
+
   await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, () => {}, {startDateToCalculate: firsDayOfPrevMonth});
   await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth }, true);
   let totalSum = {};
@@ -364,6 +370,7 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
 
 async function getDateObject(req){
   let dateData = {};
+  dateData.today = Helper.getToday();
   let dateObjectFromQuery = Helper.getDateObjectFromUrl(req);
   if (!dateObjectFromQuery.hasDateParameter){
     dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
