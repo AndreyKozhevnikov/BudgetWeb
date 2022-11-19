@@ -415,6 +415,7 @@ async function aggregatedList(req, res, next) {
     thisMonthDates: {},
     consumeOrder: function(order) {
       monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
+      monthObject.thisMonthDates[order.DateOrder].orderList.push({description: order.Description, value: order.Value});
     },
   };
   prepareEmptyMonthObject(dateObject, monthObject);
@@ -489,6 +490,10 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
     }
     allResult = allResult + thisMonthDates[dateData].Diff;
     thisMonthDates[dateData].TempResult = allResult;
+
+
+    thisMonthDates[dateData].orderList.sort((a, b) => { return b.value - a.value; });
+   // thisMonthDates[dateData].orderList = thisMonthDates[dateData].orderList.slice(0, 3);
   }
 
 
@@ -512,6 +517,7 @@ function prepareEmptyMonthObject(dateObject, monthObject) {
       Date: currDt,
       DateString: dateSt,
       getDateUrl: '/mixorders/?startDate=' + Helper.getUrlDateString(dt),
+      orderList: [],
     };
 
     if (dt.getDay() === 1){

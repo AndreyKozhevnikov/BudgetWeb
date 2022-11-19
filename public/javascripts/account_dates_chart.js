@@ -38,8 +38,12 @@ window.onload = function() {
     tooltip: {
       enabled: true,
       customizeTooltip: function(arg) {
+        let addText = '';
+        arg.point.data.orderList.forEach(element => {
+          addText = addText + element.description + ' ' + element.value + '<br>';
+        });
         return {
-          text: arg.point.data.DateString + '<br> <br>' + arg.valueText,
+          text: arg.point.data.DateString + '<br> <br>' + arg.valueText + '<br> <br>' + addText,
         };
       },
     },
