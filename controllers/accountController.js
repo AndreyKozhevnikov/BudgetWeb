@@ -167,7 +167,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   let accListObject = {};
 
   await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, () => {}, {startDateToCalculate: firsDayOfPrevMonth});
-  await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth }, true);
+  await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth,today = Helper.getToday() }, true);
   let totalSum = {};
   let totalIncoming = {};
   let totalExpense = {};
