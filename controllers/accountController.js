@@ -147,7 +147,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
     let sberCredit = accRes.accList.find(el => el.name === 'SberCredit');
     if (sberCredit != null){
       let sberCreditres = sberCredit.result;
-      sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 100000) + ')';
+      sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 135000) + ')';
     }
   }
 
