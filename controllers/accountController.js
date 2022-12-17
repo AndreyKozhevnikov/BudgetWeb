@@ -182,7 +182,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   let start = async () => {
     await asyncForEach(accListObject.accList, async (accRecord) => {
       let currentCurrency = accRecord.currency;
-      if (currentCurrency == null){
+      if (!currentCurrency){
         currentCurrency = Helper.Currencies.Rub;
       }
       if (!accRecord.IsMoneyBox){
