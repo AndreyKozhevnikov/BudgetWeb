@@ -167,7 +167,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth){
   let accListObject = {};
 
   await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, () => {}, {startDateToCalculate: firsDayOfPrevMonth});
-  await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth,today:Helper.getToday() }, true);
+  await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth, today: Helper.getToday() }, true);
   let totalSum = {};
   let totalIncoming = {};
   let totalExpense = {};
@@ -413,9 +413,16 @@ async function aggregatedList(req, res, next) {
   let monthObject = {
     thisMonthMondays: [],
     thisMonthDates: {},
+    thisMonthSpendGroups: {},
     consumeOrder: function(order) {
       monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
       monthObject.thisMonthDates[order.DateOrder].orderList.push({description: order.Description, value: order.Value});
+      if (monthObject.thisMonthSpendGroups[order.ParentTag.Name]){
+        monthObject.thisMonthSpendGroups[order.ParentTag.Name].Value += order.Value;
+      } else {
+        monthObject.thisMonthSpendGroups[order.ParentTag.Name] = {Name: order.ParentTag.Name, Value: order.Value};
+      }
+
     },
   };
   prepareEmptyMonthObject(dateObject, monthObject);

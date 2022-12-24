@@ -8,7 +8,9 @@ block scripts
       dtObj.Date=new Date(dtObj.Date);
      }
      let thisMonthMondays=!{JSON.stringify(monthObject.thisMonthMondays)}; 
-   script(src='/javascripts/account_dates_chart.js')
+     let thisMonthSpendGroups=!{JSON.stringify(monthObject.thisMonthSpendGroups)}; 
+   script(src='/javascripts/account_dates_chart.js')     
+   script(src='/javascripts/account_pie_chart.js')
 block content
   div(style='display:flex; align-items: center;')
     a(href='/account/aggregatedList/?startDate=' + dateObject.prevMonthStartDate,style='width:33%') Prev
@@ -147,6 +149,7 @@ block content
           td
             label #{fN(dateObject.TempResult)}
 block wideContent            
-  div#thisMonthDatesContainer            
+  div#thisMonthDatesContainer
+  div#thisMonthPieChartContainer                   
             
         
