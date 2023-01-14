@@ -46,11 +46,14 @@ function processKeyDown() {
 
 function focusDescriptionAfterEnterNonNumberInValue() {
   valueInput.onkeydown = function(keyBoardEvent) {
-    let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace', '-', 'Home', 'End'];
+    let notHandledKeys = ['Tab', 'ArrowRight', 'ArrowLeft', 'Delete', 'Backspace', '-', 'Home', 'End', 'NumLock', 'Control'];
     if (notHandledKeys.indexOf(keyBoardEvent.key) > -1) {
       return true;
     }
     let isNumber = isFinite(keyBoardEvent.key);
+    // console.log('isfinite - '+isNumber);
+    // console.log('key - '+keyBoardEvent.key);
+    // console.log('code - '+keyBoardEvent.code);
     let isSpace = keyBoardEvent.code === 'Space';
     if (!isNumber || isSpace) {
       let descriptionInput = document.getElementById('txDescr');
