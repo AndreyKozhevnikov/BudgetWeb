@@ -418,8 +418,9 @@ function isDateInThisWeek(date) {
 }
 
 function populateColors(orderGroups){
+//  return;
   let colorDict = {
-    Eat: '#ff7c7c',
+    Eat: '#1db2f5',
     FastFood: '#6b5b95',
     Rest: '#36a3a6',
     Utilities: '#9ab57e',

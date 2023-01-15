@@ -6,7 +6,7 @@ let oldonload = window.onload;
 function createPieChart(divName, collection){
   $(divName).dxPieChart({
     dataSource: Object.values(collection),
-    palette: 'bright',
+    palette: 'dark',
     series: [
       {
         argumentField: 'Name',
