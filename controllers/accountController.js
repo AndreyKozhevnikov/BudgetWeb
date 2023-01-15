@@ -422,7 +422,7 @@ function populateColors(orderGroups){
     Eat: '#ff7c7c',
     FastFood: '#6b5b95',
     Rest: '#36a3a6',
-    Utilities: '##9ab57e',
+    Utilities: '#9ab57e',
     Taxi: '#e97f02',
     Mobile: '#bd1550',
     Health: '#36a3a6',
