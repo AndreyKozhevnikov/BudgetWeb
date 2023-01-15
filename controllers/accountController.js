@@ -426,6 +426,9 @@ function populateColors(orderGroups){
     Taxi: '#e97f02',
     Mobile: '#bd1550',
     Health: '#36a3a6',
+    Clothes: '#7e4452',
+    Beauty: '#9d419c',
+    Other: '#70c92f',
   };
   for (const [key, group] of Object.entries(orderGroups)){
     if (colorDict.hasOwnProperty(key)){
