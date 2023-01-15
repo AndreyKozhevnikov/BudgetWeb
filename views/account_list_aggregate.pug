@@ -9,8 +9,10 @@ block scripts
      }
      let thisMonthMondays=!{JSON.stringify(monthObject.thisMonthMondays)}; 
      let thisMonthSpendGroups=!{JSON.stringify(monthObject.thisMonthSpendGroups)}; 
+     let lastWeekSpendGroups=!{JSON.stringify(monthObject.lastWeekSpendGroups)}; 
    script(src='/javascripts/account_dates_chart.js')     
    script(src='/javascripts/account_pie_chart.js')
+   script(src='/javascripts/account_pie_chart_week.js')
 block content
   div(style='display:flex; align-items: center;')
     a(href='/account/aggregatedList/?startDate=' + dateObject.prevMonthStartDate,style='width:33%') Prev
@@ -150,6 +152,8 @@ block content
             label #{fN(dateObject.TempResult)}
 block wideContent            
   div#thisMonthDatesContainer
-  div#thisMonthPieChartContainer                   
+  div(style="display: table-row")
+    div#thisMonthPieChartContainer(style="width: 600px; display: table-cell;")                   
+    div#lastWeekPieChartContainer(style="width: 600px;display: table-cell;")                      
             
         

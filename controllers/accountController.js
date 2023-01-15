@@ -398,6 +398,41 @@ async function getDateObject(req){
   dateData.MonthName = currMonthName;
   return dateData;
 }
+function isDateInThisWeek(date) {
+  const todayObj = Helper.getToday();
+  const todayDate = todayObj.getDate();
+  let todayDay = todayObj.getDay();
+  if (todayDay === 0){
+    todayDay = 7;
+  }
+
+  // get first date of week
+  const firstDayOfWeek = new Date(todayObj.setDate(todayDate - todayDay + 1));
+
+  // get last date of week
+  const lastDayOfWeek = new Date(firstDayOfWeek);
+  lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
+
+  // if date is equal or within the first and last dates of the week
+  return date >= firstDayOfWeek && date <= lastDayOfWeek;
+}
+
+function populateColors(orderGroups){
+  let colorDict = {
+    Eat: '#ff7c7c',
+    FastFood: '#6b5b95',
+    Rest: '#36a3a6',
+    Utilities: '##9ab57e',
+    Taxi: '#e97f02',
+    Mobile: '#bd1550',
+    Health: '#36a3a6',
+  };
+  for (const [key, group] of Object.entries(orderGroups)){
+    if (colorDict.hasOwnProperty(key)){
+      group.Color = colorDict[key];
+    }
+  }
+}
 
 async function aggregatedList(req, res, next) {
   console.time('aggregatedList');
@@ -414,6 +449,7 @@ async function aggregatedList(req, res, next) {
     thisMonthMondays: [],
     thisMonthDates: {},
     thisMonthSpendGroups: {},
+    lastWeekSpendGroups: {},
     consumeOrder: function(order) {
       monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
       monthObject.thisMonthDates[order.DateOrder].orderList.push({description: order.Description, value: order.Value});
@@ -422,11 +458,20 @@ async function aggregatedList(req, res, next) {
       } else {
         monthObject.thisMonthSpendGroups[order.ParentTag.Name] = {Name: order.ParentTag.Name, Value: order.Value};
       }
+      if (isDateInThisWeek(order.DateOrder)){
+        if (monthObject.lastWeekSpendGroups[order.ParentTag.Name]){
+          monthObject.lastWeekSpendGroups[order.ParentTag.Name].Value += order.Value;
+        } else {
+          monthObject.lastWeekSpendGroups[order.ParentTag.Name] = {Name: order.ParentTag.Name, Value: order.Value};
+        }
+      }
 
     },
   };
   prepareEmptyMonthObject(dateObject, monthObject);
   iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject.consumeOrder, dateObject);
+  populateColors(monthObject.thisMonthSpendGroups);
+  populateColors(monthObject.lastWeekSpendGroups);
   tuneAccountResultObject(accountResultObject, dateObject);
   processStatisticObjectAndMonthDates(dateObject, monthObject, statisticObject);
   console.timeEnd('aggregatedList');

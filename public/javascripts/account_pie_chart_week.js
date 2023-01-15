@@ -1,15 +1,16 @@
-/*global thisMonthSpendGroups  $ */
+/*global lastWeekSpendGroups  $ */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict';
 // console.log('pie');
-let oldonload = window.onload;
+let oldonload2 = window.onload;
 window.onload = function() {
-  oldonload();
+  oldonload2();
   //  let chartElement = document.getElementById('thisMonthPieChartContainer');
   //  console.log(chartElement);
   // new DevExpress.ui.dxChart(chartElement, {
-  $('#thisMonthPieChartContainer').dxPieChart({
-    dataSource: Object.values(thisMonthSpendGroups),
+  console.dir(lastWeekSpendGroups);
+  $('#lastWeekPieChartContainer').dxPieChart({
+    dataSource: Object.values(lastWeekSpendGroups),
     palette: 'bright',
     series: [
       {
