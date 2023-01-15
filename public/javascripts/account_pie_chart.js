@@ -24,12 +24,12 @@ window.onload = function() {
         },
       },
     ],
-    tooltip:{
+    tooltip: {
       enabled: true,
       customizeTooltip: function(point){
         return {text: point.argument};
-      }
-    }
+      },
+    },
   });
 
 };
