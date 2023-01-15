@@ -52,7 +52,7 @@ async function listByAcc(req, res, next) {
 async function listByDate(req, res, next) {
   let dateObject = Helper.getDateObjectFromUrl(req);
   if (!dateObject.hasDateParameter){
-    Helper.redirectToLastWeek(req, res);
+    Helper.redirectToLastMonth(req, res);
     return;
   }
   let startDate = dateObject.startDate;

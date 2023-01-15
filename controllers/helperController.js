@@ -140,9 +140,9 @@ function getDateObjectFromUrl(req){
 function getUrlDateString(startDate){
   return moment(startDate).format('YYYY-MM-DD');
 }
-function redirectToLastWeek(req, res){
+function redirectToLastMonth(req, res){
   let tempDate = getToday();
-  tempDate.setDate(tempDate.getDate() - 8);
+  tempDate.setDate(tempDate.getDate() - 31);
   res.redirect(req.originalUrl + '?startDate=' + getUrlDateString(tempDate));
 }
 
@@ -167,7 +167,7 @@ exports.dateForOrders = dateForOrders;
 exports.canDeleteEntities = canDeleteEntities;
 exports.getDateObjectFromUrl = getDateObjectFromUrl;
 exports.getUrlDateString = getUrlDateString;
-exports.redirectToLastWeek = redirectToLastWeek;
+exports.redirectToLastMonth = redirectToLastMonth;
 exports.Currencies = Currencies;
 
 

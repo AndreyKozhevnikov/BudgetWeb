@@ -158,7 +158,7 @@ async function populateLists() {
 function list(req, res, next) {
   let dateObject = Helper.getDateObjectFromUrl(req);
   if (!dateObject.hasDateParameter){
-    Helper.redirectToLastWeek(req, res);
+    Helper.redirectToLastMonth(req, res);
     return;
   }
   let startDate = dateObject.startDate;
