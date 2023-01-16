@@ -400,6 +400,7 @@ async function getDateObject(req){
 }
 function isDateInThisWeek(date) {
   let todayObj = Helper.getToday();
+  console.log('my todey  - ' + todayObj);
   todayObj.setHours(0);
   const todayDate = todayObj.getDate();
   let todayDay = todayObj.getDay();
