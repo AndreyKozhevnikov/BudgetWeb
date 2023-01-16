@@ -400,8 +400,11 @@ async function getDateObject(req){
 }
 function isDateInThisWeek(date) {
   let todayObj = Helper.getToday();
-  console.log('my todey  - ' + todayObj);
+
   todayObj.setHours(0);
+  todayObj.setMinutes(0);
+  todayObj.setSeconds(0);
+
   const todayDate = todayObj.getDate();
   let todayDay = todayObj.getDay();
   if (todayDay === 0){
@@ -417,7 +420,9 @@ function isDateInThisWeek(date) {
   lastDayOfWeek.setHours(23);
   lastDayOfWeek.setMinutes(59);
   // if date is equal or within the first and last dates of the week
-  return date >= firstDayOfWeek && date <= lastDayOfWeek;
+  let res = date >= firstDayOfWeek && date <= lastDayOfWeek;
+  console.log('my todey  - ' + todayObj + ' date -' + date + ' res -' + res);
+  return res;
 }
 
 function populateColors(orderGroups){
