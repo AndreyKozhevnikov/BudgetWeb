@@ -4,6 +4,7 @@
 // console.log('pie');
 let oldonload = window.onload;
 function createPieChart(divName, collection){
+  // console.dir(collection);
   $(divName).dxPieChart({
     dataSource: Object.values(collection),
     palette: 'dark',
