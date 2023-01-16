@@ -439,7 +439,20 @@ function populateColors(orderGroups){
     }
   }
 }
-
+function sortGroups(orderGroups){
+  let sortable = [];
+  for (const [key, value] of Object.entries(orderGroups)){
+    sortable.push(value);
+  }
+  sortable.sort(function(a, b) {
+    return a.Name.localeCompare(b.Name);
+  });
+  let objSorted = {};
+  sortable.forEach(function(item){
+    objSorted[item.Name] = item;
+  });
+  return objSorted;
+}
 async function aggregatedList(req, res, next) {
   console.time('aggregatedList');
   let dateObject = await getDateObject(req);
@@ -478,6 +491,8 @@ async function aggregatedList(req, res, next) {
   iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject.consumeOrder, dateObject);
   populateColors(monthObject.thisMonthSpendGroups);
   populateColors(monthObject.lastWeekSpendGroups);
+  monthObject.thisMonthSpendGroups = sortGroups(monthObject.thisMonthSpendGroups);
+  monthObject.lastWeekSpendGroups = sortGroups(monthObject.lastWeekSpendGroups);
   tuneAccountResultObject(accountResultObject, dateObject);
   processStatisticObjectAndMonthDates(dateObject, monthObject, statisticObject);
   console.timeEnd('aggregatedList');
