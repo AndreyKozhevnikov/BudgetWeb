@@ -404,6 +404,7 @@ function isDateInThisWeek(date) {
   todayObj.setHours(0);
   todayObj.setMinutes(0);
   todayObj.setSeconds(0);
+  todayObj.setMilliseconds(0);
 
   const todayDate = todayObj.getDate();
   let todayDay = todayObj.getDay();
