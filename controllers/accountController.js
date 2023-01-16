@@ -421,7 +421,7 @@ function isDateInThisWeek(date) {
   lastDayOfWeek.setMinutes(59);
   // if date is equal or within the first and last dates of the week
   let res = date >= firstDayOfWeek && date <= lastDayOfWeek;
-  console.log('my todey  - ' + todayObj + ' date -' + date + ' res -' + res);
+  console.log('my todey  - ' + todayObj + ' firstDayOfWeek -' + firstDayOfWeek + ' res -' + res);
   return res;
 }
 
