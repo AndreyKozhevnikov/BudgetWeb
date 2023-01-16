@@ -441,6 +441,7 @@ function populateColors(orderGroups){
 }
 function sortGroups(orderGroups){
   let sortable = [];
+  // eslint-disable-next-line no-unused-vars
   for (const [key, value] of Object.entries(orderGroups)){
     sortable.push(value);
   }
