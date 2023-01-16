@@ -399,7 +399,8 @@ async function getDateObject(req){
   return dateData;
 }
 function isDateInThisWeek(date) {
-  const todayObj = Helper.getToday();
+  let todayObj = Helper.getToday();
+  todayObj.setHours(0);
   const todayDate = todayObj.getDate();
   let todayDay = todayObj.getDay();
   if (todayDay === 0){
@@ -412,7 +413,8 @@ function isDateInThisWeek(date) {
   // get last date of week
   const lastDayOfWeek = new Date(firstDayOfWeek);
   lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
-
+  lastDayOfWeek.setHours(23);
+  lastDayOfWeek.setMinutes(59);
   // if date is equal or within the first and last dates of the week
   return date >= firstDayOfWeek && date <= lastDayOfWeek;
 }
