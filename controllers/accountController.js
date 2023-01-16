@@ -420,8 +420,11 @@ function isDateInThisWeek(date) {
   lastDayOfWeek.setHours(23);
   lastDayOfWeek.setMinutes(59);
   // if date is equal or within the first and last dates of the week
+  let t1=new Date('Mon Jan 16 2023 00:00:00 GMT+0000');
+  let t2=new Date('Mon Jan 16 2023 00:00:00 GMT+0000');
+  var r1=t1>=t2;
   let res = date.getTime() >= firstDayOfWeek.getTime() && date.getTime() <= lastDayOfWeek.getTime();
-  console.log('my todey  - ' + todayObj + ' firstDayOfWeek -' + firstDayOfWeek + ' res -' + res);
+  console.log('my todey  - ' + todayObj + ' firstDayOfWeek -' + firstDayOfWeek.getTime() + 'date - '+date+ ' res -' + res);
   return res;
 }
 
