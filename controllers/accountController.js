@@ -111,7 +111,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
     let finishDateString = Helper.getUrlDateString(Helper.getFirstDateOfShifterMonth(startDate, 'next'));
     item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
-    if ((item.lastCheckDate.getTime() - dateObject.today.getTime()) / (1000 * 60 * 60 * 24) > 7){
+    if ((dateObject.today.getTime() - item.lastCheckDate.getTime()) / (1000 * 60 * 60 * 24) > 7){
       item.checkState = 'checkStateYellow';
     }
     if (item.lastCheckValue !== item.result){
