@@ -72,6 +72,9 @@ function list(req, res, next) {
     if (err) {
       return next(err);
     }
+    list_account.sort(function(a, b) {
+      return a.OrderNumber - b.OrderNumber;
+    });
     res.render('account_list', { title: 'Account List', list_account: list_account });
   });
 };

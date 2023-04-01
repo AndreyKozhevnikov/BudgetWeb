@@ -7,7 +7,7 @@ block content
   each acc in list_account
     li 
       a(href=acc.url) #{acc.Name}  
-      | (#{acc._id}) #{acc.Balance}
+      | (#{acc._id}) #{acc.OrderNumber}
 
   else
     li There are no accounts.
