@@ -107,7 +107,9 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
     item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
     item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
     item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-    let startDateString = Helper.getUrlDateString(startDate);
+    let dateToAccShow = new Date(); '';
+    dateToAccShow.setDate(dateObject.today.getDate() - 31);
+    let startDateString = Helper.getUrlDateString(dateToAccShow);
     let finishDateString = Helper.getUrlDateString(Helper.getFirstDateOfShifterMonth(startDate, 'next'));
     item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`;
     item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
