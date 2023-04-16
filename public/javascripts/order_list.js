@@ -26,14 +26,15 @@ window.onload = function() {
           dataType: 'date',
           format: 'dd-MMM-yy EEE',
           caption: 'Date',
-          width: '29%',
+          width: '10%',
         },
         {
           dataField: 'Value',
-          width: '19%',
-          cellTemplate: (container, options) => {
-            buildValueContainerForOrder(container, options.data, document);
-          },
+          width: '10%',
+        },
+        {
+          dataField: 'PaymentAccount.Name',
+          caption: 'Account',
         },
         {
           dataField: 'Description',
@@ -74,8 +75,10 @@ window.onload = function() {
           dataField: 'Tags',
         },
         {
-          dataField: 'IsExcess',
+          dataField: 'PaymentAccount.Currency',
+          caption: 'Currency',
         },
+        
       ],
       wordWrapEnabled: true,
     }
