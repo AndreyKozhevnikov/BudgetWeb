@@ -439,6 +439,7 @@ function populateColors(orderGroups){
     Clothes: '#7e4452',
     Beauty: '#9d419c',
     Other: '#70c92f',
+    Sport: '#f5564a',
   };
   for (const [key, group] of Object.entries(orderGroups)){
     if (colorDict.hasOwnProperty(key)){
