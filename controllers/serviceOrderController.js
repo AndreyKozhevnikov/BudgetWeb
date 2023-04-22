@@ -3,8 +3,7 @@ let ServiceOrder = require('../models/serviceOrder.js');
 let Account = require('../models/account.js');
 let Helper = require('../controllers/helperController.js');
 
-const { body, validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, validationResult } = require('express-validator');
 
 let accountList;
 let accountInList;
@@ -85,13 +84,13 @@ function create_post(req, res, next) {
 };
 
 let create_post_array = [
-  sanitizeBody('LocalId_frm')
+  body('LocalId_frm')
     .trim()
     .escape(),
-  sanitizeBody('Value_frm')
+  body('Value_frm')
     .trim()
     .escape(),
-  sanitizeBody('Description_frm')
+  body('Description_frm')
     .trim()
     .escape(),
   (req, res, next) => create_post(req, res, next),
@@ -217,14 +216,14 @@ let update_post_array = [
     .isISO8601(),
   // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
   // Sanitize fields.
-  sanitizeBody('fDate').toDate(),
-  sanitizeBody('Value_frm')
+  body('fDate').toDate(),
+  body('Value_frm')
     .trim()
     .escape(),
-  sanitizeBody('Description_frm')
+  body('Description_frm')
     .trim()
     .escape(),
-  sanitizeBody('LocalId_frm')
+  body('LocalId_frm')
     .trim()
     .escape(),
   (req, res, next) => update_post(req, res, next),

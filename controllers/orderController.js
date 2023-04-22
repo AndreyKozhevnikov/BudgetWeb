@@ -16,8 +16,7 @@ let popularPlaceList;
 let objectList;
 
 
-const { body, validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, validationResult } = require('express-validator');
 
 function getObjectToShowForm(mTitle, mOrder, mErrors) {
   let objToShow = {
@@ -146,14 +145,14 @@ let order_create_post_array = [
     .isISO8601(),
   // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
   // Sanitize fields.
-  sanitizeBody('fDate').toDate(),
-  sanitizeBody('fValue')
+  body('fDate').toDate(),
+  body('fValue')
     .trim()
     .escape(),
-  sanitizeBody('fDescription')
+  body('fDescription')
     .trim()
     .escape(),
-  sanitizeBody('fTags')
+  body('fTags')
     .trim()
     .escape(),
   (req, res, next) => order_create_post(req, res, next),
@@ -243,17 +242,17 @@ let order_update_post_array = [
     .isISO8601(),
   // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
   // Sanitize fields.
-  sanitizeBody('fDate').toDate(),
-  sanitizeBody('fValue')
+  body('fDate').toDate(),
+  body('fValue')
     .trim()
     .escape(),
-  sanitizeBody('fDescription')
+  body('fDescription')
     .trim()
     .escape(),
-  sanitizeBody('fTags')
+  body('fTags')
     .trim()
     .escape(),
-  sanitizeBody('fLocalId')
+  body('fLocalId')
     .trim()
     .escape(),
   (req, res, next) => order_update_post(req, res, next),

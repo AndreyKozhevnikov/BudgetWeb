@@ -1,7 +1,6 @@
 'use strict';
 let OrderPlace = require('../models/orderPlace.js');
-const { body, validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, validationResult } = require('express-validator');
 
 function orderPlace_list(req, res, next) {
   OrderPlace.find().exec(function(err, result_list) {
@@ -55,10 +54,10 @@ let create_post_array = [
   body('NameFromForm', 'name required')
     .isLength({ min: 1 })
     .trim(),
-  sanitizeBody('NameFromForm')
+  body('NameFromForm')
     .trim()
     .escape(),
-  sanitizeBody('LocalIdFromForm')
+  body('LocalIdFromForm')
     .trim()
     .escape(),
   (req, res, next) => create_post(req, res, next),
@@ -108,10 +107,10 @@ function update_post(req, res, next) {
   }
 }
 let update_post_array = [
-  sanitizeBody('LocalIdFromForm')
+  body('LocalIdFromForm')
     .trim()
     .escape(),
-  sanitizeBody('NameFromForm')
+  body('NameFromForm')
     .trim()
     .escape(),
   (req, res, next) => update_post(req, res, next),

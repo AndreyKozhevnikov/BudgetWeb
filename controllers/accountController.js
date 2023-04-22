@@ -9,8 +9,7 @@ let FixRecord = require('../models/fixRecord.js');
 let Helper = require('../controllers/helperController.js');
 let FixRecordController = require('../controllers/fixRecordController.js');
 
-const { body, validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, validationResult } = require('express-validator');
 
 function create_get(req, res, next) {
   res.render('account_form', {
@@ -58,10 +57,10 @@ let create_post_array = [
   body('Name_frm', 'Tag name required')
     .isLength({ min: 1 })
     .trim(),
-  sanitizeBody('Name_frm')
+  body('Name_frm')
     .trim()
     .escape(),
-  sanitizeBody('LocalId_frm')
+  body('LocalId_frm')
     .trim()
     .escape(),
   (req, res, next) => create_post(req, res, next),
@@ -687,10 +686,10 @@ async function getAccountName(accId) {
 }
 
 let update_post_array = [
-  sanitizeBody('LocalId_frm')
+  body('LocalId_frm')
     .trim()
     .escape(),
-  sanitizeBody('Name_frm')
+  body('Name_frm')
     .trim()
     .escape(),
   (req, res, next) => update_post(req, res, next),

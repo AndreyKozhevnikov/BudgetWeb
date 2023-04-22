@@ -1,7 +1,6 @@
 'use strict';
 let Tag = require('../models/tag.js');
-const { body, validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, validationResult } = require('express-validator');
 
 function tag_list(req, res, next) {
   Tag.find().exec(function(err, list_tags) {
@@ -53,10 +52,10 @@ let tag_create_post_array = [
   body('NameFromForm', 'Tag name required')
     .isLength({ min: 1 })
     .trim(),
-  sanitizeBody('NameFromForm')
+  body('NameFromForm')
     .trim()
     .escape(),
-  sanitizeBody('LocalIdFromForm')
+  body('LocalIdFromForm')
     .trim()
     .escape(),
   (req, res, next) => tag_create_post(req, res, next),
@@ -99,10 +98,10 @@ function tag_update_post(req, res, next) {
   }
 }
 let tag_update_post_array = [
-  sanitizeBody('LocalIdFromForm')
+  body('LocalIdFromForm')
     .trim()
     .escape(),
-  sanitizeBody('NameFromForm')
+  body('NameFromForm')
     .trim()
     .escape(),
   (req, res, next) => tag_update_post(req, res, next),
