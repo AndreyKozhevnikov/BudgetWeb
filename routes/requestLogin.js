@@ -10,7 +10,7 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
     pass,
     function(error, user) {
       if (error || !user) {
-        let err = new Error('wrong name or pass');
+        let err = new Error('wrong name or pass'+user);
         err.status = 401;
         return next(err);
       } else {
