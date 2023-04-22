@@ -3,6 +3,10 @@ block dateContent
   form#detail_form(method='POST' action='')
     div.form-group
       label(for='dtDateOrder') Date order:
+      br
+      label #{moment(dateForOrders).format('YYYY-MM-DD hh:mm')}
+      br
+      label #{dateForOrders}
       table(style='width:100%')
         tr
           td
