@@ -33,9 +33,6 @@ window.onload = function() {
       },
       {
         dataField: 'value',
-      },
-      {
-        dataField: 'value',
         width: '23%',
         cellTemplate: (container, options) => {
           switch (options.data.type) {
