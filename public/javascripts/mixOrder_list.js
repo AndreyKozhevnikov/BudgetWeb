@@ -10,6 +10,10 @@ window.onload = function() {
       visible: true,
       applyFilter: 'auto',
     },
+    export: {
+      enabled: true,
+      allowExportSelectedData: true,
+    },
     rowAlternationEnabled: true,
     showRowLines: true,
     showColumnLines: true,
@@ -89,7 +93,7 @@ window.onload = function() {
         dataField: 'tags',
       },
       {
-        dataField: 'isExcess',
+        dataField: 'viewType',
       },
     ],
     wordWrapEnabled: true,

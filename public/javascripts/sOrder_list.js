@@ -11,6 +11,10 @@ window.onload = function() {
         visible: true,
         applyFilter: 'auto',
       },
+      export: {
+        enabled: true,
+        allowExportSelectedData: true,
+      },
       rowAlternationEnabled: true,
       showRowLines: true,
       showColumnLines: true,
