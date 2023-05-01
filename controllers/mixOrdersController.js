@@ -83,6 +83,7 @@ function getMixListFromOrders(orderList) {
       accountOut: order.PaymentAccount.Name,
       tags: order.Tags,
       isExcess: order.IsExcess,
+      value: order.Value,
     };
     if (order.Place) {
       mixRecord.place = order.Place.Name;
@@ -106,6 +107,7 @@ function getMixListFromSOrders(sOrderList, accId) {
       date: sOrder.DateOrder,
       description: sOrder.Description,
       createdtime: sOrder.CreatedTime,
+      value: sOrder.Value,
     };
     switch (sOrder.Type) {
       case Helper.sOrderTypes.in:
@@ -149,6 +151,7 @@ function getMixListFromFixRecords(fixRecordsList) {
       createdtime: fRecord.DateTime,
       viewType: 'Check',
       viewData: fRecord.Type,
+      value: fRecord.Value,
     };
     mixRecord.entity = fRecord;
     mixRecord.type = Helper.mixOrderTypes.fixrecord;
