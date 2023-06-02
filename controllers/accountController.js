@@ -508,10 +508,10 @@ async function aggregatedList(req, res, next) {
 }
 
 async function processStatisticObjectAndMonthDates(dateObject, monthObject, statObj) {
-  const normEatPerDay = 4000;
-  const normFastFoodPerDay = 1000;
+  const normEatPerDay = 10000;
+  const normFastFoodPerDay = 5000;
   const normExcessPerDay = 2000;
-  const normAllPerDay = 6000;
+  const normAllPerDay = 20000;
   const mortGagePayment = 0;
 
 
