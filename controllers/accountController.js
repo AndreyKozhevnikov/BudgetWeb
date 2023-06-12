@@ -146,7 +146,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
     let ali = accRes.accList.find(el => el.name === 'TinkoffAli');
     if (ali != null){
       let alires = ali.result;
-      ali.result = alires + ' (' + (Number(alires) + 61000) + ')';
+      ali.result = alires + ' (' + (Number(alires) + 87000) + ')';
     }
     let sberCredit = accRes.accList.find(el => el.name === 'SberCredit');
     if (sberCredit != null){
