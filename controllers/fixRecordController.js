@@ -46,10 +46,10 @@ function deleteTypes(req, res, next) {
   });
 }
 function deleteStartMonthRecords(req, res, next) {
-  if (!Helper.canDeleteEntities()) {
-    res.send('cant delete objects');
-    return;
-  }
+  //if (!Helper.canDeleteEntities()) {
+  //  res.send('cant delete objects');
+  //  return;
+ // }
   deleteCurrMonthStartRecords(req, res, next);
 }
 function deleteCurrMonthStartRecords(req, res, next) {
