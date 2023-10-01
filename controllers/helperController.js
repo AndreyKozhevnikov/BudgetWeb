@@ -118,7 +118,7 @@ function getCutDate(){
 }
 
 function canDeleteEntities() {
-  console.dir(process.env);
+  
   return process.env.CANDELETEENTITIES === 'TRUE';
 }
 
