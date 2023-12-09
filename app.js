@@ -64,7 +64,8 @@ let mongoose = require('mongoose');
 let mongoDB =
  process.env.MONGODB_URI ||
   // 'mongodb://TestUser:TestPassword@testbudgetweb-shard-00-00-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-01-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-02-ppkcc.mongodb.net:27017/test?ssl=true&replicaSet=TestBudgetWeb-shard-0&authSource=admin&retryWrites=true';
- // 'mongodb://127.0.0.1:27017/budgetWebTest';
+  'mongodb://127.0.0.1:27017/budgetWebTest';
+
 if (isDevelopment)
   mongoose.set('debug', true);
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
