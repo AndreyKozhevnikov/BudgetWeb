@@ -62,11 +62,9 @@ app.use('/fixRecord', fixRecordRouter);
 let mongoose = require('mongoose');
 
 let mongoDB =
-// process.env.MONGODB_URI ||
+ process.env.MONGODB_URI ||
   // 'mongodb://TestUser:TestPassword@testbudgetweb-shard-00-00-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-01-ppkcc.mongodb.net:27017,testbudgetweb-shard-00-02-ppkcc.mongodb.net:27017/test?ssl=true&replicaSet=TestBudgetWeb-shard-0&authSource=admin&retryWrites=true';
-  'mongodb://127.0.0.1:27017/budgetWebTest';
-// 'mongodb+srv://budgetweb_user:YM6sqpocHTrNdMtR@budgetwebdb.7lzl2.mongodb.net/budgetwebdb?retryWrites=true&w=majority';
-// 'mongodb://budgetweb_user:YM6sqpocHTrNdMtR@budgetwebdb-shard-00-00.7lzl2.mongodb.net:27017,budgetwebdb-shard-00-01.7lzl2.mongodb.net:27017,budgetwebdb-shard-00-02.7lzl2.mongodb.net:27017/?ssl=true&replicaSet=atlas-q13ax7-shard-0&authSource=admin&retryWrites=true&w=majority';
+ // 'mongodb://127.0.0.1:27017/budgetWebTest';
 if (isDevelopment)
   mongoose.set('debug', true);
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
