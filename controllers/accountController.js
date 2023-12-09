@@ -363,6 +363,8 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
     if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth){
       if (fixRecord.DateTime >= dateObject.startDateToCalculate){
         accRes.accList[fixRecord.Account.Name].startSum = fixRecord.Value;
+        accRes.accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
+        accRes.accList[fixRecord.Account.Name].lastCheckValue = fixRecord.Value;
       }
     }
     if (fixRecord.Type === FixRecordController.FRecordTypes.Check){
