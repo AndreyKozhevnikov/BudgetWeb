@@ -346,6 +346,9 @@ async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statO
     if (order.ParentTag.LocalId === 3039){ // flat rent
       return;
     }
+    if (order.ParentTag.LocalId === 17){ // learning
+      return;
+    }
     if (order.ParentTag.LocalId === 1) {
       statObj.sumEatOrders += order.Value;
     }
