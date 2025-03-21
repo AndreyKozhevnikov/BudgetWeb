@@ -12,7 +12,9 @@
           "anonymous": "never",
           "named": "never",
           "asyncArrow": "always"
-      }]
+      }],
+      "semi": "off",
+      "indent": ["error", 4] 
     },
     "parserOptions": {
       "ecmaVersion": 2017
