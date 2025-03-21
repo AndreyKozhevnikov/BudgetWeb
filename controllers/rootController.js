@@ -123,10 +123,10 @@ async function fullRestore(req, res, next) {
       // if (savedEntity.Type !== 'Check'){
       //   continue;
       // }
-      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-aug-22')){
+      if (savedEntity.DateOrder != null && new Date(savedEntity.DateOrder) < new Date('01-jan-25')){
         continue;
       }
-      if (savedEntity.DateTime != null && new Date(savedEntity.DateTime) < new Date('01-aug-22')){
+      if (savedEntity.DateTime != null && new Date(savedEntity.DateTime) < new Date('01-jan-25')){
         continue;
       }
       let constructor = constructors[entityCollectionProperty];
