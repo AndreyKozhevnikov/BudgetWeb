@@ -10,6 +10,11 @@ block scripts
      let thisMonthMondays=!{JSON.stringify(monthObject.thisMonthMondays)}; 
      let thisMonthSpendGroups=!{JSON.stringify(monthObject.thisMonthSpendGroups)}; 
      let lastWeekSpendGroups=!{JSON.stringify(monthObject.lastWeekSpendGroups)}; 
+   script.
+      window.env = {
+        dxkey: "#{process.env.DX_LICENSE_KEY}"
+      }
+   script(src='/javascripts/dxlicense.js')
    script(src='/javascripts/account_dates_chart.js')     
    script(src='/javascripts/account_pie_chart.js')
 block content

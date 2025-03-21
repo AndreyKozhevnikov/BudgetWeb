@@ -1,0 +1,1 @@
+DevExpress.config({ licenseKey: window.env.dxkey });
