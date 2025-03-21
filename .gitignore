@@ -2,4 +2,5 @@
 # Build results
 
 node_modules/
-
+.env
+setVariables.bat
