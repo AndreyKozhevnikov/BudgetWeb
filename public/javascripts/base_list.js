@@ -1,53 +1,53 @@
 /*eslint no-unused-vars: ["off"]*/
-'use strict';
+'use strict'
 function formatNumber(num) {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 function buildDataContainerForSOrder(container, sOrder, document) {
-  if (sOrder.AccountOut) {
-    let lblOutAccount = document.createElement('label');
-    lblOutAccount.classList.add('OutAccountLabel');
-    lblOutAccount.classList.add('plainLabel');
-    lblOutAccount.innerHTML = sOrder.AccountOut.Name;
-    container[0].appendChild(lblOutAccount);
-    let br = document.createElement('br');
-    container[0].appendChild(br);
-  }
-  if (sOrder.AccountIn) {
-    let lblInAccount = document.createElement('label');
-    lblInAccount.classList.add('InAccountLabel');
-    lblInAccount.classList.add('plainLabel');
-    let labelString = sOrder.AccountIn.Name;
-    lblInAccount.innerHTML = labelString;
-    container[0].appendChild(lblInAccount);
-  }
+    if (sOrder.AccountOut) {
+        let lblOutAccount = document.createElement('label')
+        lblOutAccount.classList.add('OutAccountLabel')
+        lblOutAccount.classList.add('plainLabel')
+        lblOutAccount.innerHTML = sOrder.AccountOut.Name
+        container[0].appendChild(lblOutAccount)
+        let br = document.createElement('br')
+        container[0].appendChild(br)
+    }
+    if (sOrder.AccountIn) {
+        let lblInAccount = document.createElement('label')
+        lblInAccount.classList.add('InAccountLabel')
+        lblInAccount.classList.add('plainLabel')
+        let labelString = sOrder.AccountIn.Name
+        lblInAccount.innerHTML = labelString
+        container[0].appendChild(lblInAccount)
+    }
 }
 function buildValueContainerForOrder(container, order, document) {
-  let valueString = formatNumber(order.Value);
-  if (!order.LocalId) {
-    valueString = valueString + '*';
-  }
-  let a = document.createElement('a');
-  a.classList.add('dx-link');
-  a.text = valueString;
-  a.href = '/order/' + order._id + '/update';
-  a.style.wordWrap = 'break-word';
-  container[0].appendChild(a);
-  if (order.PaymentAccount) {
-    let br = document.createElement('br');
-    let lbl = document.createElement('label');
-    lbl.classList.add('plainLabel');
-    lbl.innerHTML = order.PaymentAccount.Name;
-    container[0].appendChild(br);
-    container[0].appendChild(lbl);
-  }
+    let valueString = formatNumber(order.Value)
+    if (!order.LocalId) {
+        valueString = valueString + '*'
+    }
+    let a = document.createElement('a')
+    a.classList.add('dx-link')
+    a.text = valueString
+    a.href = '/order/' + order._id + '/update'
+    a.style.wordWrap = 'break-word'
+    container[0].appendChild(a)
+    if (order.PaymentAccount) {
+        let br = document.createElement('br')
+        let lbl = document.createElement('label')
+        lbl.classList.add('plainLabel')
+        lbl.innerHTML = order.PaymentAccount.Name
+        container[0].appendChild(br)
+        container[0].appendChild(lbl)
+    }
 }
 
 function buildValueContainerForSOrder(container, sOrder, document) {
-  let a = document.createElement('a');
-  a.classList.add('dx-link');
-  a.text = formatNumber(sOrder.Value);
-  a.href = '/serviceOrder/' + sOrder._id + '/update';
-  a.style.wordWrap = 'break-word';
-  container[0].appendChild(a);
+    let a = document.createElement('a')
+    a.classList.add('dx-link')
+    a.text = formatNumber(sOrder.Value)
+    a.href = '/serviceOrder/' + sOrder._id + '/update'
+    a.style.wordWrap = 'break-word'
+    container[0].appendChild(a)
 }

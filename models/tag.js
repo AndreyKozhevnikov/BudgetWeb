@@ -1,12 +1,12 @@
-'use strict';
-let mongoose = require('mongoose');
+'use strict'
+let mongoose = require('mongoose')
 
-let Schema = mongoose.Schema;
+let Schema = mongoose.Schema
 
 let TagSchema = new Schema({
-  Name: {type: String, required: true, max: 100},
-  LocalId: {type: Number},
-});
+    Name: { type: String, required: true, max: 100 },
+    LocalId: { type: Number },
+})
 
 // Virtual for author's full name
 // OrderSchema
@@ -17,8 +17,8 @@ let TagSchema = new Schema({
 
 // Virtual for author's URL
 TagSchema.virtual('url').get(function() {
-  return '/tag/' + this._id + '/update';
-});
+    return '/tag/' + this._id + '/update'
+})
 
 // Export model
-module.exports = mongoose.model('Tag', TagSchema);
+module.exports = mongoose.model('Tag', TagSchema)

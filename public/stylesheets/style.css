@@ -1,132 +1,128 @@
 .sidebar-nav {
-  margin-top: 20px;
-  padding: 0;
-  list-style: none;
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
 }
-.mainLink
-{
-  text-decoration:none;
-  border:1px solid #4285f4;
-  background:#4285f4;
-  display: inline-block;
-  line-height: 50px;
-  font-size: 15px;
-  border-radius: 12px;
-  cursor: default;
-  color: #fff;
-  position: relative;
-  text-align: center;
-  width: 100%;
+.mainLink {
+    text-decoration: none;
+    border: 1px solid #4285f4;
+    background: #4285f4;
+    display: inline-block;
+    line-height: 50px;
+    font-size: 15px;
+    border-radius: 12px;
+    cursor: default;
+    color: #fff;
+    position: relative;
+    text-align: center;
+    width: 100%;
 }
-.tdLinkHolder{
-  padding: 3px;
+.tdLinkHolder {
+    padding: 3px;
 }
-.col-lg-5{
-  float: none;
+.col-lg-5 {
+    float: none;
 }
-.mainLink:hover
-{
-text-decoration: none;
+.mainLink:hover {
+    text-decoration: none;
 }
-#btnDisableAfterClick
-{
-	width: 100%;
-	height: 60px;
+#btnDisableAfterClick {
+    width: 100%;
+    height: 60px;
 }
-.btnSetDate
-{
-	height: 34px;
+.btnSetDate {
+    height: 34px;
 }
 .dx-datagrid-rowsview,
-.dx-datagrid-scroll-container
-{
-  overflow: visible;
+.dx-datagrid-scroll-container {
+    overflow: visible;
 }
-.untouch{
-  background: #f7e2bc;
+.untouch {
+    background: #f7e2bc;
 }
-.statisticTable
-{
-  width: 100%;
+.statisticTable {
+    width: 100%;
 }
-.statisticTable tr, .statisticTable td, .statisticTable  th
-{
-  border: 1px solid black;
+.statisticTable tr,
+.statisticTable td,
+.statisticTable th {
+    border: 1px solid black;
 }
-.statisticTable td, .statisticTable  th
-{
-  text-align:center
+.statisticTable td,
+.statisticTable th {
+    text-align: center;
 }
-.spentLabel
-{
-  color:rgb(153, 211, 66);
+.spentLabel {
+    color: rgb(153, 211, 66);
 }
-.spentLabel[overflownorm]
-{
-  color:red;
+.spentLabel[overflownorm] {
+    color: red;
 }
-.plainLabel
-{
-  font-weight: normal;
+.plainLabel {
+    font-weight: normal;
 }
-.OutAccountLabel
-{
-  color: red;
+.OutAccountLabel {
+    color: red;
 }
-.InAccountLabel
-{
-  color: green;
+.InAccountLabel {
+    color: green;
 }
-.dx-datagrid .dx-row-alt > td.In, td.In{
-  background-color: lightgreen;
+.dx-datagrid .dx-row-alt > td.In,
+td.In {
+    background-color: lightgreen;
 }
-.dx-datagrid .dx-row-alt > td.Out, td.Out{
-  background-color: rgb(202, 44, 68);
+.dx-datagrid .dx-row-alt > td.Out,
+td.Out {
+    background-color: rgb(202, 44, 68);
 }
-.dx-datagrid .dx-row-alt > td.BetweenIn, td.BetweenIn{
-  background-color: lightgreen;
+.dx-datagrid .dx-row-alt > td.BetweenIn,
+td.BetweenIn {
+    background-color: lightgreen;
 }
-.dx-datagrid .dx-row-alt > td.BetweenOut, td.BetweenOut{
-  background-color: rgb(237, 182, 255);
+.dx-datagrid .dx-row-alt > td.BetweenOut,
+td.BetweenOut {
+    background-color: rgb(237, 182, 255);
 }
-.dx-datagrid .dx-row-alt > td.Check, td.Check{
-  background-color: #eff587;
+.dx-datagrid .dx-row-alt > td.Check,
+td.Check {
+    background-color: #eff587;
 }
-.dx-datagrid .dx-row-alt > td.Order, td.Order{
-  background-color:lightpink;
+.dx-datagrid .dx-row-alt > td.Order,
+td.Order {
+    background-color: lightpink;
 }
-#cmbAccountIn{
-  background: aquamarine;
+#cmbAccountIn {
+    background: aquamarine;
 }
 #cmbAccountIn:disabled {
-  background: inherit;
+    background: inherit;
 }
-#cmbAccountOut{
-  background: pink;
+#cmbAccountOut {
+    background: pink;
 }
-#cmbAccountOut:disabled{
-  background: inherit;
+#cmbAccountOut:disabled {
+    background: inherit;
 }
-label[selected]{
-  background: #bbb970;
+label[selected] {
+    background: #bbb970;
 }
-.hiddenRB{
-  position:absolute;
-  left:-999em;
+.hiddenRB {
+    position: absolute;
+    left: -999em;
 }
-a.withoutWrap{
-  white-space: nowrap;
+a.withoutWrap {
+    white-space: nowrap;
 }
-.buttonGrid{
-  display: flex;
-  flex-wrap: wrap;
+.buttonGrid {
+    display: flex;
+    flex-wrap: wrap;
 }
-.MoneyBoxRow{
-  color: lightgray;
+.MoneyBoxRow {
+    color: lightgray;
 }
-.checkStateYellow{
-  background-color: rgb(245, 237, 0);
+.checkStateYellow {
+    background-color: rgb(245, 237, 0);
 }
-.checkStateRed{
-  background-color: rgb(241, 134, 134);
+.checkStateRed {
+    background-color: rgb(241, 134, 134);
 }

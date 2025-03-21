@@ -1,22 +1,30 @@
 {
-    "env":{
+    "env": {
         "node": true,
         "es6": true,
         "browser": true,
         "mocha": true
     },
     "extends": "strongloop",
-    "rules":{
-        "max-len":[2,150,4,{"ignoreStrings":true,"ignoreComments":true}],
-        "space-before-function-paren": ["error", {
-          "anonymous": "never",
-          "named": "never",
-          "asyncArrow": "always"
-      }],
-      "semi": "off",
-      "indent": ["error", 4] 
+    "rules": {
+        "max-len": [
+            2,
+            150,
+            4,
+            { "ignoreStrings": true, "ignoreComments": true }
+        ],
+        "space-before-function-paren": [
+            "error",
+            {
+                "anonymous": "never",
+                "named": "never",
+                "asyncArrow": "always"
+            }
+        ],
+        "semi": "off",
+        "indent": ["error", 4]
     },
     "parserOptions": {
-      "ecmaVersion": 2017
-    } 
+        "ecmaVersion": 2017
+    }
 }

@@ -1,588 +1,724 @@
-'use strict';
-let moment = require('moment');
+'use strict'
+let moment = require('moment')
 
-let Account = require('../models/account.js');
-let Order = require('../models/order.js');
-let ServiceOrder = require('../models/serviceOrder.js');
-let FixRecord = require('../models/fixRecord.js');
+let Account = require('../models/account.js')
+let Order = require('../models/order.js')
+let ServiceOrder = require('../models/serviceOrder.js')
+let FixRecord = require('../models/fixRecord.js')
 
-let Helper = require('../controllers/helperController.js');
-let FixRecordController = require('../controllers/fixRecordController.js');
+let Helper = require('../controllers/helperController.js')
+let FixRecordController = require('../controllers/fixRecordController.js')
 
-const { body, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator')
 
 function create_get(req, res, next) {
-  res.render('account_form', {
-    title: 'Create Account',
-  });
-};
+    res.render('account_form', {
+        title: 'Create Account',
+    })
+}
 
 function create_post(req, res, next) {
-  const errors = validationResult(req);
+    const errors = validationResult(req)
 
-  var account = createAccountFromRequest(req, false);
+    var account = createAccountFromRequest(req, false)
 
-  if (!errors.isEmpty()) {
-    res.render('account_form', {
-      title: 'Create account(error)',
-      account_frm: account,
-      errors: errors.array(),
-    });
-    return;
-  } else {
-    Account.findOne({ Name: req.body.Name_frm }).exec(function(err, found_acc) {
-      if (err) {
-        return next(err);
-      }
-      if (found_acc) {
-        res.redirect(found_acc.url);
-      } else {
-
-        account.save(function(err, acc) {
-          if (err) {
-            return next(err);
-          }
-          FixRecordController.createFixRecord(
-            FixRecordController.FRecordTypes.StartMonth,
-            Helper.getToday(),
-            acc,
-            0);
-          res.redirect('/account/list');
-        });
-      }
-    });
-  }
-};
+    if (!errors.isEmpty()) {
+        res.render('account_form', {
+            title: 'Create account(error)',
+            account_frm: account,
+            errors: errors.array(),
+        })
+        return
+    } else {
+        Account.findOne({ Name: req.body.Name_frm }).exec(function(
+            err,
+            found_acc,
+        ) {
+            if (err) {
+                return next(err)
+            }
+            if (found_acc) {
+                res.redirect(found_acc.url)
+            } else {
+                account.save(function(err, acc) {
+                    if (err) {
+                        return next(err)
+                    }
+                    FixRecordController.createFixRecord(
+                        FixRecordController.FRecordTypes.StartMonth,
+                        Helper.getToday(),
+                        acc,
+                        0,
+                    )
+                    res.redirect('/account/list')
+                })
+            }
+        })
+    }
+}
 let create_post_array = [
-  body('Name_frm', 'Tag name required')
-    .isLength({ min: 1 })
-    .trim(),
-  body('Name_frm')
-    .trim()
-    .escape(),
-  body('LocalId_frm')
-    .trim()
-    .escape(),
-  (req, res, next) => create_post(req, res, next),
-];
+    body('Name_frm', 'Tag name required')
+        .isLength({ min: 1 })
+        .trim(),
+    body('Name_frm')
+        .trim()
+        .escape(),
+    body('LocalId_frm')
+        .trim()
+        .escape(),
+    (req, res, next) => create_post(req, res, next),
+]
 
 function list(req, res, next) {
-  Account.find().exec(function(err, list_account) {
-    if (err) {
-      return next(err);
-    }
-    list_account.sort(function(a, b) {
-      return a.OrderNumber - b.OrderNumber;
-    });
-    res.render('account_list', { title: 'Account List', list_account: list_account });
-  });
-};
+    Account.find().exec(function(err, list_account) {
+        if (err) {
+            return next(err)
+        }
+        list_account.sort(function(a, b) {
+            return a.OrderNumber - b.OrderNumber
+        })
+        res.render('account_list', {
+            title: 'Account List',
+            list_account: list_account,
+        })
+    })
+}
 
-async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth){
+async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
+    let startDate = dateObject.startDateToCalculate
+    accRes.accList = Object.values(accRes.accList)
+    accRes.accList = accRes.accList.filter(x => !x.isarchived)
+    accRes.accList.sort(function(a, b) {
+        let aNumber = a.ordernumber
+        let bNumber = b.ordernumber
+        if (aNumber === null) aNumber = 999
+        if (bNumber === null) bNumber = 999
+        return aNumber - bNumber
+    })
 
-  let startDate = dateObject.startDateToCalculate;
-  accRes.accList = Object.values(accRes.accList);
-  accRes.accList = accRes.accList.filter(x => !x.isarchived);
-  accRes.accList.sort(function(a, b) {
-    let aNumber = a.ordernumber;
-    let bNumber = b.ordernumber;
-    if (aNumber === null)
-      aNumber = 999;
-    if (bNumber === null)
-      bNumber = 999;
-    return aNumber - bNumber;
-  });
+    let sumObject = {
+        commonSum: {},
+        startSum: {},
+        paymentsSum: {},
+        inputSum: {},
+        outputSum: {},
+    }
+    accRes.accList.forEach(item => {
+        if (item.lastCheckDate.getFullYear() < 2000) {
+            item.lastCheckDateString = '--'
+        } else {
+            item.lastCheckDateString = Helper.getUrlDateString(
+                item.lastCheckDate,
+            )
+        }
+        item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB
+        item.sumInSOrdersCleanWithMB =
+            item.sumInSOrdersClean + item.sumInSOrdersFromMB
+        item.result =
+            item.startSum +
+            item.sumInSOrders -
+            item.sumOutSOrders -
+            item.sumPayments
+        let dateToAccShow = new Date()
+        ;('')
+        dateToAccShow.setDate(dateObject.today.getDate() - 31)
+        let startDateString = Helper.getUrlDateString(dateToAccShow)
+        let finishDateString = Helper.getUrlDateString(
+            Helper.getFirstDateOfShifterMonth(startDate, 'next'),
+        )
+        item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`
+        item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result
+        if (
+            !item.isuntouchable &&
+            (dateObject.today.getTime() - item.lastCheckDate.getTime()) /
+                (1000 * 60 * 60 * 24) >
+                7
+        ) {
+            item.checkState = 'checkStateYellow'
+        }
+        if (item.lastCheckValue !== item.result) {
+            item.checkState = 'checkStateRed'
+        }
+        if (item.isuntouchable !== true && item.isarchived !== true) {
+            let currency = item.currency
+            if (!currency) {
+                currency = Helper.Currencies.Rub
+            }
+            if (!sumObject.commonSum.hasOwnProperty(currency)) {
+                sumObject.commonSum[currency] = 0
+                sumObject.startSum[currency] = 0
+                sumObject.paymentsSum[currency] = 0
+                sumObject.inputSum[currency] = 0
+                sumObject.outputSum[currency] = 0
+            }
+            sumObject.commonSum[currency] =
+                sumObject.commonSum[currency] + item.result
+            sumObject.startSum[currency] =
+                sumObject.startSum[currency] + item.startSum
+            sumObject.paymentsSum[currency] =
+                sumObject.paymentsSum[currency] + item.sumPaymentsWithMB
+            sumObject.inputSum[currency] =
+                sumObject.inputSum[currency] + item.sumInSOrdersCleanWithMB
+            sumObject.outputSum[currency] =
+                sumObject.outputSum[currency] + item.sumOutSOrdersClean
+        }
+    })
+    accRes.sumObject = sumObject
 
-  let sumObject = {
-    commonSum: {},
-    startSum: {},
-    paymentsSum: {},
-    inputSum: {},
-    outputSum: {},
-  };
-  accRes.accList.forEach((item) => {
-    if (item.lastCheckDate.getFullYear() < 2000){
-      item.lastCheckDateString = '--';
-    } else {
-      item.lastCheckDateString = Helper.getUrlDateString(item.lastCheckDate);
+    if (!isCreateFirstMonth) {
+        let ali = accRes.accList.find(el => el.name === 'TinkoffAli')
+        if (ali != null) {
+            let alires = ali.result
+            ali.result = alires + ' (' + (Number(alires) + 285000) + ')'
+        }
+        let sberCredit = accRes.accList.find(el => el.name === 'SberCredit')
+        if (sberCredit != null) {
+            let sberCreditres = sberCredit.result
+            sberCredit.result =
+                sberCreditres + ' (' + (Number(sberCreditres) + 400000) + ')'
+        }
     }
-    item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB;
-    item.sumInSOrdersCleanWithMB = item.sumInSOrdersClean + item.sumInSOrdersFromMB;
-    item.result = item.startSum + item.sumInSOrders - item.sumOutSOrders - item.sumPayments;
-    let dateToAccShow = new Date(); '';
-    dateToAccShow.setDate(dateObject.today.getDate() - 31);
-    let startDateString = Helper.getUrlDateString(dateToAccShow);
-    let finishDateString = Helper.getUrlDateString(Helper.getFirstDateOfShifterMonth(startDate, 'next'));
-    item.getOrdsUrl = `/mixorders/account/${item._id}?startDate=${startDateString}&finishDate=${finishDateString}`;
-    item.createCheckUrl = 'createCheck/' + item._id + '/' + item.result;
-    if (!item.isuntouchable && (dateObject.today.getTime() - item.lastCheckDate.getTime()) / (1000 * 60 * 60 * 24) > 7){
-      item.checkState = 'checkStateYellow';
-    }
-    if (item.lastCheckValue !== item.result){
-      item.checkState = 'checkStateRed';
-    }
-    if (item.isuntouchable !== true && item.isarchived !== true) {
-      let currency = item.currency;
-      if (!currency){
-        currency = Helper.Currencies.Rub;
-      }
-      if (!sumObject.commonSum.hasOwnProperty(currency)){
-        sumObject.commonSum[currency] = 0;
-        sumObject.startSum[currency] = 0;
-        sumObject.paymentsSum[currency] = 0;
-        sumObject.inputSum[currency] = 0;
-        sumObject.outputSum[currency] = 0;
-      }
-      sumObject.commonSum[currency] = sumObject.commonSum[currency] + item.result;
-      sumObject.startSum[currency] = sumObject.startSum[currency] + item.startSum;
-      sumObject.paymentsSum[currency] = sumObject.paymentsSum[currency] + item.sumPaymentsWithMB;
-      sumObject.inputSum[currency] = sumObject.inputSum[currency] + item.sumInSOrdersCleanWithMB;
-      sumObject.outputSum[currency] = sumObject.outputSum[currency] + item.sumOutSOrdersClean;
-    }
-  });
-  accRes.sumObject = sumObject;
 
-  if (!isCreateFirstMonth){
-    let ali = accRes.accList.find(el => el.name === 'TinkoffAli');
-    if (ali != null){
-      let alires = ali.result;
-      ali.result = alires + ' (' + (Number(alires) + 285000) + ')';
-    }
-    let sberCredit = accRes.accList.find(el => el.name === 'SberCredit');
-    if (sberCredit != null){
-      let sberCreditres = sberCredit.result;
-      sberCredit.result = sberCreditres + ' (' + (Number(sberCreditres) + 400000) + ')';
-    }
-  }
-
-  return accRes;
+    return accRes
 }
 
 async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-  // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array)
+    }
+    // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
 }
 
-async function createStartMonthRecords(firstDateOfCurrentMonth){
-  let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth();
-  let dataObject = await prepareDataToBuildAccountList(firsDayOfPrevMonth, firstDateOfCurrentMonth);
-  let accListObject = {};
-
-  await iterateOverDataAndPopulateResultObjects(dataObject, accListObject, {}, () => {}, {startDateToCalculate: firsDayOfPrevMonth});
-  await tuneAccountResultObject(accListObject, {startDateToCalculate: firsDayOfPrevMonth, today: Helper.getToday() }, true);
-  let totalSum = {};
-  let totalIncoming = {};
-  let totalExpense = {};
-  totalSum[Helper.Currencies.Dram] = 0;
-  totalSum[Helper.Currencies.Rub] = 0;
-  totalIncoming[Helper.Currencies.Dram] = 0;
-  totalIncoming[Helper.Currencies.Rub] = 0;
-  totalExpense[Helper.Currencies.Dram] = 0;
-  totalExpense[Helper.Currencies.Rub] = 0;
-
-
-  let start = async () => {
-    await asyncForEach(accListObject.accList, async (accRecord) => {
-      let currentCurrency = accRecord.currency;
-      if (!currentCurrency){
-        currentCurrency = Helper.Currencies.Rub;
-      }
-      if (!accRecord.IsMoneyBox){
-        totalSum[currentCurrency] = totalSum[currentCurrency] + accRecord.result;
-        totalIncoming[currentCurrency] = totalIncoming[currentCurrency] + accRecord.sumInSOrdersCleanWithMB;
-      }
-
-      totalExpense[currentCurrency] = totalExpense[currentCurrency] + accRecord.sumPaymentsWithMB;
-      await FixRecordController.createFixRecord(
-        FixRecordController.FRecordTypes.StartMonth,
+async function createStartMonthRecords(firstDateOfCurrentMonth) {
+    let firsDayOfPrevMonth = Helper.getFirstDayOfLastMonth()
+    let dataObject = await prepareDataToBuildAccountList(
+        firsDayOfPrevMonth,
         firstDateOfCurrentMonth,
-        accRecord._id,
-        accRecord.result,
-        null);
-    });
-  };
-  await start();
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.TotalSum,
-    firstDateOfCurrentMonth,
-    null,
-    totalSum[Helper.Currencies.Rub],
-    Helper.Currencies.Rub,
-  );
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.TotalSum,
-    firstDateOfCurrentMonth,
-    null,
-    totalSum[Helper.Currencies.Dram],
-    Helper.Currencies.Dram,
-  );
-  let dateForPrevMonths = new Date(firsDayOfPrevMonth.getFullYear(), firsDayOfPrevMonth.getMonth(), 15);
+    )
+    let accListObject = {}
 
+    await iterateOverDataAndPopulateResultObjects(
+        dataObject,
+        accListObject,
+        {},
+        () => {},
+        { startDateToCalculate: firsDayOfPrevMonth },
+    )
+    await tuneAccountResultObject(
+        accListObject,
+        { startDateToCalculate: firsDayOfPrevMonth, today: Helper.getToday() },
+        true,
+    )
+    let totalSum = {}
+    let totalIncoming = {}
+    let totalExpense = {}
+    totalSum[Helper.Currencies.Dram] = 0
+    totalSum[Helper.Currencies.Rub] = 0
+    totalIncoming[Helper.Currencies.Dram] = 0
+    totalIncoming[Helper.Currencies.Rub] = 0
+    totalExpense[Helper.Currencies.Dram] = 0
+    totalExpense[Helper.Currencies.Rub] = 0
 
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.TotalIncoming,
-    dateForPrevMonths,
-    null,
-    totalIncoming[Helper.Currencies.Rub],
-    Helper.Currencies.Rub,
-  );
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.TotalIncoming,
-    dateForPrevMonths,
-    null,
-    totalIncoming[Helper.Currencies.Dram],
-    Helper.Currencies.Dram,
-  );
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.TotalExpense,
-    dateForPrevMonths,
-    null,
-    totalExpense[Helper.Currencies.Rub],
-    Helper.Currencies.Rub,
-  );
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.TotalExpense,
-    dateForPrevMonths,
-    null,
-    totalExpense[Helper.Currencies.Dram],
-    Helper.Currencies.Dram,
-  );
+    let start = async () => {
+        await asyncForEach(accListObject.accList, async accRecord => {
+            let currentCurrency = accRecord.currency
+            if (!currentCurrency) {
+                currentCurrency = Helper.Currencies.Rub
+            }
+            if (!accRecord.IsMoneyBox) {
+                totalSum[currentCurrency] =
+                    totalSum[currentCurrency] + accRecord.result
+                totalIncoming[currentCurrency] =
+                    totalIncoming[currentCurrency] +
+                    accRecord.sumInSOrdersCleanWithMB
+            }
+
+            totalExpense[currentCurrency] =
+                totalExpense[currentCurrency] + accRecord.sumPaymentsWithMB
+            await FixRecordController.createFixRecord(
+                FixRecordController.FRecordTypes.StartMonth,
+                firstDateOfCurrentMonth,
+                accRecord._id,
+                accRecord.result,
+                null,
+            )
+        })
+    }
+    await start()
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.TotalSum,
+        firstDateOfCurrentMonth,
+        null,
+        totalSum[Helper.Currencies.Rub],
+        Helper.Currencies.Rub,
+    )
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.TotalSum,
+        firstDateOfCurrentMonth,
+        null,
+        totalSum[Helper.Currencies.Dram],
+        Helper.Currencies.Dram,
+    )
+    let dateForPrevMonths = new Date(
+        firsDayOfPrevMonth.getFullYear(),
+        firsDayOfPrevMonth.getMonth(),
+        15,
+    )
+
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.TotalIncoming,
+        dateForPrevMonths,
+        null,
+        totalIncoming[Helper.Currencies.Rub],
+        Helper.Currencies.Rub,
+    )
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.TotalIncoming,
+        dateForPrevMonths,
+        null,
+        totalIncoming[Helper.Currencies.Dram],
+        Helper.Currencies.Dram,
+    )
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.TotalExpense,
+        dateForPrevMonths,
+        null,
+        totalExpense[Helper.Currencies.Rub],
+        Helper.Currencies.Rub,
+    )
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.TotalExpense,
+        dateForPrevMonths,
+        null,
+        totalExpense[Helper.Currencies.Dram],
+        Helper.Currencies.Dram,
+    )
 }
 
-async function prepareDataToBuildAccountList(startDate, finishDate){
-  let dataObject = {};
-  dataObject.orderList = await Order.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lt: finishDate }}]})
-  // .populate('PaymentAccount').populate('ParentTag');
-    .populate('ParentTag');
-  dataObject.serviceOrderList = await ServiceOrder.find({$and: [{DateOrder: { $gte: startDate }}, {DateOrder: { $lt: finishDate }}]});
-  // .populate('AccountIn').populate('AccountOut');
-  dataObject.lastCheckDate = new Date(startDate.getTime());
-  dataObject.lastCheckDate.setDate(dataObject.lastCheckDate.getDate() - 45);
-  dataObject.fixRecordsList = await FixRecord.find({$and: [{DateTime: { $gte: dataObject.lastCheckDate }}, {DateTime: { $lt: finishDate }}]})
-  // .populate('Account')
-    .sort('DateTime');
-  dataObject.accountList = await Account.find();
-  console.time('iterate');
-  dataObject.orderList.forEach((order) => {
-    let realAcc = dataObject.accountList.find(acc => acc._id.equals(order.PaymentAccount));
-    order.PaymentAccount = realAcc;
-  });
+async function prepareDataToBuildAccountList(startDate, finishDate) {
+    let dataObject = {}
+    dataObject.orderList = await Order.find({
+        $and: [
+            { DateOrder: { $gte: startDate } },
+            { DateOrder: { $lt: finishDate } },
+        ],
+    })
+        // .populate('PaymentAccount').populate('ParentTag');
+        .populate('ParentTag')
+    dataObject.serviceOrderList = await ServiceOrder.find({
+        $and: [
+            { DateOrder: { $gte: startDate } },
+            { DateOrder: { $lt: finishDate } },
+        ],
+    })
+    // .populate('AccountIn').populate('AccountOut');
+    dataObject.lastCheckDate = new Date(startDate.getTime())
+    dataObject.lastCheckDate.setDate(dataObject.lastCheckDate.getDate() - 45)
+    dataObject.fixRecordsList = await FixRecord.find({
+        $and: [
+            { DateTime: { $gte: dataObject.lastCheckDate } },
+            { DateTime: { $lt: finishDate } },
+        ],
+    })
+        // .populate('Account')
+        .sort('DateTime')
+    dataObject.accountList = await Account.find()
+    console.time('iterate')
+    dataObject.orderList.forEach(order => {
+        let realAcc = dataObject.accountList.find(acc =>
+            acc._id.equals(order.PaymentAccount),
+        )
+        order.PaymentAccount = realAcc
+    })
 
-  dataObject.serviceOrderList.forEach((sOrder) => {
-    let realAccIn = dataObject.accountList.find(acc => acc._id.equals(sOrder.AccountIn));
-    sOrder.AccountIn = realAccIn;
+    dataObject.serviceOrderList.forEach(sOrder => {
+        let realAccIn = dataObject.accountList.find(acc =>
+            acc._id.equals(sOrder.AccountIn),
+        )
+        sOrder.AccountIn = realAccIn
 
-    let realAccOut = dataObject.accountList.find(acc => acc._id.equals(sOrder.AccountOut));
-    sOrder.AccountOut = realAccOut;
-  });
+        let realAccOut = dataObject.accountList.find(acc =>
+            acc._id.equals(sOrder.AccountOut),
+        )
+        sOrder.AccountOut = realAccOut
+    })
 
-  dataObject.fixRecordsList.forEach((fRecord) => {
-    let realAcc = dataObject.accountList.find(acc => acc._id.equals(fRecord.Account));
-    fRecord.Account = realAcc;
-  });
-  console.timeEnd('iterate');
-  return dataObject;
+    dataObject.fixRecordsList.forEach(fRecord => {
+        let realAcc = dataObject.accountList.find(acc =>
+            acc._id.equals(fRecord.Account),
+        )
+        fRecord.Account = realAcc
+    })
+    console.timeEnd('iterate')
+    return dataObject
 }
 
-async function iterateOverDataAndPopulateResultObjects(dataObject, accRes, statObj, monthObjectConsumeOrderFunction, dateObject){
-  accRes.accList = {};
-  dataObject.accountList.forEach((acc) => {
-    accRes.accList[acc.Name] = {
-      name: acc.Name,
-      startSum: 0,
-      sumPayments: 0,
-      sumOutSOrdersToMB: 0,
-      sumInSOrdersFromMB: 0,
-      sumOutSOrders: 0,
-      sumOutSOrdersClean: 0,
-      sumInSOrders: 0,
-      sumInSOrdersClean: 0,
-      ordernumber: acc.OrderNumber,
-      fixRecordsLastCheck: 0,
-      lastCheckDate: new Date(-8640000000000000),
-      lastCheckValue: 0,
-      isarchived: acc.IsArchived,
-      isuntouchable: acc.IsUntouchable,
-      currency: acc.Currency,
-      _id: acc._id,
-    };
-  });
-
-  dataObject.serviceOrderList.forEach((sOrder) => {
-    if (sOrder.AccountIn){
-      if (sOrder.AccountIn.IsMoneyBox){
-        accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersToMB += sOrder.Value;
-        if (sOrder.AccountOut.Currency === Helper.Currencies.Dram){
-          statObj.sumAllOrders += sOrder.Value;
+async function iterateOverDataAndPopulateResultObjects(
+    dataObject,
+    accRes,
+    statObj,
+    monthObjectConsumeOrderFunction,
+    dateObject,
+) {
+    accRes.accList = {}
+    dataObject.accountList.forEach(acc => {
+        accRes.accList[acc.Name] = {
+            name: acc.Name,
+            startSum: 0,
+            sumPayments: 0,
+            sumOutSOrdersToMB: 0,
+            sumInSOrdersFromMB: 0,
+            sumOutSOrders: 0,
+            sumOutSOrdersClean: 0,
+            sumInSOrders: 0,
+            sumInSOrdersClean: 0,
+            ordernumber: acc.OrderNumber,
+            fixRecordsLastCheck: 0,
+            lastCheckDate: new Date(-8640000000000000),
+            lastCheckValue: 0,
+            isarchived: acc.IsArchived,
+            isuntouchable: acc.IsUntouchable,
+            currency: acc.Currency,
+            _id: acc._id,
         }
-      }
-      accRes.accList[sOrder.AccountIn.Name].sumInSOrders += sOrder.Value;
-      if (sOrder.Type !== Helper.sOrderTypes.between){
-        accRes.accList[sOrder.AccountIn.Name].sumInSOrdersClean += sOrder.Value;
-      }
-    }
-    if (sOrder.AccountOut){
-      if (sOrder.AccountOut.IsMoneyBox){
-        accRes.accList[sOrder.AccountIn.Name].sumInSOrdersFromMB += sOrder.Value;
-      }
-      accRes.accList[sOrder.AccountOut.Name].sumOutSOrders += sOrder.Value;
-      if (sOrder.Type !== Helper.sOrderTypes.between){
-        accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersClean += sOrder.Value;
-      }
-    }
-  });
-  dataObject.orderList.forEach((order) => {
-    let orderAccount = order.PaymentAccount;
-    accRes.accList[orderAccount.Name].sumPayments += order.Value;
+    })
 
-    if (order.PaymentAccount.Currency !== Helper.Currencies.Dram){ // dram theme
-      return;
-    }
-    if (order.ParentTag.LocalId === 22){ // capital
-      return;
-    }
-    if (order.ParentTag.LocalId === 3039){ // flat rent
-      return;
-    }
-    if (order.ParentTag.LocalId === 17){ // learning
-      return;
-    }
-    if (order.ParentTag.LocalId === 1) {
-      statObj.sumEatOrders += order.Value;
-    }
-    if (order.ParentTag.LocalId === 2037){
-      statObj.sumFastFoodOrders += order.Value;
-    }
-    if (order.IsExcess === true){
-      statObj.sumExcessOrders += order.Value;
-    }
-    monthObjectConsumeOrderFunction(order);
+    dataObject.serviceOrderList.forEach(sOrder => {
+        if (sOrder.AccountIn) {
+            if (sOrder.AccountIn.IsMoneyBox) {
+                accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersToMB +=
+                    sOrder.Value
+                if (sOrder.AccountOut.Currency === Helper.Currencies.Dram) {
+                    statObj.sumAllOrders += sOrder.Value
+                }
+            }
+            accRes.accList[sOrder.AccountIn.Name].sumInSOrders += sOrder.Value
+            if (sOrder.Type !== Helper.sOrderTypes.between) {
+                accRes.accList[sOrder.AccountIn.Name].sumInSOrdersClean +=
+                    sOrder.Value
+            }
+        }
+        if (sOrder.AccountOut) {
+            if (sOrder.AccountOut.IsMoneyBox) {
+                accRes.accList[sOrder.AccountIn.Name].sumInSOrdersFromMB +=
+                    sOrder.Value
+            }
+            accRes.accList[sOrder.AccountOut.Name].sumOutSOrders += sOrder.Value
+            if (sOrder.Type !== Helper.sOrderTypes.between) {
+                accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersClean +=
+                    sOrder.Value
+            }
+        }
+    })
+    dataObject.orderList.forEach(order => {
+        let orderAccount = order.PaymentAccount
+        accRes.accList[orderAccount.Name].sumPayments += order.Value
 
-    statObj.sumAllOrders += order.Value;
-  });
-  dataObject.fixRecordsList.forEach((fixRecord) => {
-    if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth){
-      if (fixRecord.DateTime >= dateObject.startDateToCalculate){
-        accRes.accList[fixRecord.Account.Name].startSum = fixRecord.Value;
-        accRes.accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
-        accRes.accList[fixRecord.Account.Name].lastCheckValue = fixRecord.Value;
-      }
-    }
-    if (fixRecord.Type === FixRecordController.FRecordTypes.Check){
-      accRes.accList[fixRecord.Account.Name].lastCheckDate = fixRecord.DateTime;
-      accRes.accList[fixRecord.Account.Name].lastCheckValue = fixRecord.Value;
-    }
-  });
+        if (order.PaymentAccount.Currency !== Helper.Currencies.Dram) {
+            // dram theme
+            return
+        }
+        if (order.ParentTag.LocalId === 22) {
+            // capital
+            return
+        }
+        if (order.ParentTag.LocalId === 3039) {
+            // flat rent
+            return
+        }
+        if (order.ParentTag.LocalId === 17) {
+            // learning
+            return
+        }
+        if (order.ParentTag.LocalId === 1) {
+            statObj.sumEatOrders += order.Value
+        }
+        if (order.ParentTag.LocalId === 2037) {
+            statObj.sumFastFoodOrders += order.Value
+        }
+        if (order.IsExcess === true) {
+            statObj.sumExcessOrders += order.Value
+        }
+        monthObjectConsumeOrderFunction(order)
+
+        statObj.sumAllOrders += order.Value
+    })
+    dataObject.fixRecordsList.forEach(fixRecord => {
+        if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth) {
+            if (fixRecord.DateTime >= dateObject.startDateToCalculate) {
+                accRes.accList[fixRecord.Account.Name].startSum =
+                    fixRecord.Value
+                accRes.accList[fixRecord.Account.Name].lastCheckDate =
+                    fixRecord.DateTime
+                accRes.accList[fixRecord.Account.Name].lastCheckValue =
+                    fixRecord.Value
+            }
+        }
+        if (fixRecord.Type === FixRecordController.FRecordTypes.Check) {
+            accRes.accList[fixRecord.Account.Name].lastCheckDate =
+                fixRecord.DateTime
+            accRes.accList[fixRecord.Account.Name].lastCheckValue =
+                fixRecord.Value
+        }
+    })
 }
 
-async function getDateObject(req){
-  let dateData = {};
-  dateData.today = Helper.getToday();
-  let dateObjectFromQuery = Helper.getDateObjectFromUrl(req);
-  if (!dateObjectFromQuery.hasDateParameter){
-    dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
-    dateData.finishDateToCalculate = Helper.getTomorrow();
-    let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate();
-    if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
-      await createStartMonthRecords(dateData.startDateToCalculate);
+async function getDateObject(req) {
+    let dateData = {}
+    dateData.today = Helper.getToday()
+    let dateObjectFromQuery = Helper.getDateObjectFromUrl(req)
+    if (!dateObjectFromQuery.hasDateParameter) {
+        dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth()
+        dateData.finishDateToCalculate = Helper.getTomorrow()
+        let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate()
+        if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
+            await createStartMonthRecords(dateData.startDateToCalculate)
+        }
+    } else {
+        dateData.startDateToCalculate = dateObjectFromQuery.startDate
+        if (dateData.startDateToCalculate > Helper.getToday()) {
+            dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth()
+        }
+        dateData.finishDateToCalculate = Helper.getFirstDateOfShifterMonth(
+            dateObjectFromQuery.startDate,
+            'next',
+        )
     }
-  } else {
-    dateData.startDateToCalculate = dateObjectFromQuery.startDate;
-    if (dateData.startDateToCalculate > Helper.getToday()){
-      dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth();
-    }
-    dateData.finishDateToCalculate = Helper.getFirstDateOfShifterMonth(dateObjectFromQuery.startDate, 'next');
-  }
-  dateData.lastMonthDate = new Date(dateData.finishDateToCalculate.getTime());
-  dateData.lastMonthDate.setDate(dateData.lastMonthDate.getDate() - 1);
-  dateData.dayCount = dateData.lastMonthDate.getDate();
-  let currMonthName = Helper.getMonthName(dateData.startDateToCalculate);
+    dateData.lastMonthDate = new Date(dateData.finishDateToCalculate.getTime())
+    dateData.lastMonthDate.setDate(dateData.lastMonthDate.getDate() - 1)
+    dateData.dayCount = dateData.lastMonthDate.getDate()
+    let currMonthName = Helper.getMonthName(dateData.startDateToCalculate)
 
-  let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(dateData.startDateToCalculate, 'prev');
-  let nextMonthStartDate = Helper.getFirstDateOfShifterMonth(dateData.startDateToCalculate, 'next');
-  dateData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate);
-  dateData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate);
-  dateData.MonthName = currMonthName;
-  return dateData;
+    let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(
+        dateData.startDateToCalculate,
+        'prev',
+    )
+    let nextMonthStartDate = Helper.getFirstDateOfShifterMonth(
+        dateData.startDateToCalculate,
+        'next',
+    )
+    dateData.prevMonthStartDate = Helper.getUrlDateString(prevMonthStartDate)
+    dateData.nextMonthStartDate = Helper.getUrlDateString(nextMonthStartDate)
+    dateData.MonthName = currMonthName
+    return dateData
 }
 function isDateInThisWeek(date) {
-  let todayObj = Helper.getToday();
+    let todayObj = Helper.getToday()
 
-  todayObj.setHours(0, 0, 0, 0);
+    todayObj.setHours(0, 0, 0, 0)
 
-  const todayDate = todayObj.getDate();
-  let todayDay = todayObj.getDay();
-  if (todayDay === 0){
-    todayDay = 7;
-  }
-
-  // get first date of week
-  const firstDayOfWeek = new Date(todayObj.setDate(todayDate - todayDay + 1));
-
-  // get last date of week
-  const lastDayOfWeek = new Date(firstDayOfWeek);
-  lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
-  lastDayOfWeek.setHours(23);
-  lastDayOfWeek.setMinutes(59);
-  let res = date >= firstDayOfWeek && date <= lastDayOfWeek;
-  return res;
-}
-
-function populateColors(orderGroups){
-//  return;
-  let colorDict = {
-    Eat: '#1db2f5',
-    FastFood: '#6b5b95',
-    Rest: '#36a3a6',
-    Utilities: '#9ab57e',
-    Taxi: '#e97f02',
-    Mobile: '#bd1550',
-    Health: '#36a3a6',
-    Clothes: '#7e4452',
-    Beauty: '#9d419c',
-    Other: '#70c92f',
-    Sport: '#f5564a',
-  };
-  for (const [key, group] of Object.entries(orderGroups)){
-    if (colorDict.hasOwnProperty(key)){
-      group.Color = colorDict[key];
+    const todayDate = todayObj.getDate()
+    let todayDay = todayObj.getDay()
+    if (todayDay === 0) {
+        todayDay = 7
     }
-  }
+
+    // get first date of week
+    const firstDayOfWeek = new Date(todayObj.setDate(todayDate - todayDay + 1))
+
+    // get last date of week
+    const lastDayOfWeek = new Date(firstDayOfWeek)
+    lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6)
+    lastDayOfWeek.setHours(23)
+    lastDayOfWeek.setMinutes(59)
+    let res = date >= firstDayOfWeek && date <= lastDayOfWeek
+    return res
 }
-function sortGroups(orderGroups){
-  let sortable = [];
-  // eslint-disable-next-line no-unused-vars
-  for (const [key, value] of Object.entries(orderGroups)){
-    sortable.push(value);
-  }
-  sortable.sort(function(a, b) {
-    return a.Name.localeCompare(b.Name);
-  });
-  let objSorted = {};
-  sortable.forEach(function(item){
-    objSorted[item.Name] = item;
-  });
-  return objSorted;
+
+function populateColors(orderGroups) {
+    //  return;
+    let colorDict = {
+        Eat: '#1db2f5',
+        FastFood: '#6b5b95',
+        Rest: '#36a3a6',
+        Utilities: '#9ab57e',
+        Taxi: '#e97f02',
+        Mobile: '#bd1550',
+        Health: '#36a3a6',
+        Clothes: '#7e4452',
+        Beauty: '#9d419c',
+        Other: '#70c92f',
+        Sport: '#f5564a',
+    }
+    for (const [key, group] of Object.entries(orderGroups)) {
+        if (colorDict.hasOwnProperty(key)) {
+            group.Color = colorDict[key]
+        }
+    }
+}
+function sortGroups(orderGroups) {
+    let sortable = []
+    // eslint-disable-next-line no-unused-vars
+    for (const [key, value] of Object.entries(orderGroups)) {
+        sortable.push(value)
+    }
+    sortable.sort(function(a, b) {
+        return a.Name.localeCompare(b.Name)
+    })
+    let objSorted = {}
+    sortable.forEach(function(item) {
+        objSorted[item.Name] = item
+    })
+    return objSorted
 }
 async function aggregatedList(req, res, next) {
-  console.time('aggregatedList');
-  let dateObject = await getDateObject(req);
-  let dataObject = await prepareDataToBuildAccountList(dateObject.startDateToCalculate, dateObject.finishDateToCalculate);
-  let accountResultObject = {};
-  let statisticObject = {
-    sumAllOrders: 0,
-    sumEatOrders: 0,
-    sumFastFoodOrders: 0,
-    sumExcessOrders: 0,
-  };
-  let monthObject = {
-    thisMonthMondays: [],
-    thisMonthDates: {},
-    thisMonthSpendGroups: {},
-    lastWeekSpendGroups: {},
-    consumeOrder: function(order) {
-      monthObject.thisMonthDates[order.DateOrder].Value += order.Value;
-      monthObject.thisMonthDates[order.DateOrder].orderList.push({description: order.Description, value: order.Value});
-      if (monthObject.thisMonthSpendGroups[order.ParentTag.Name]){
-        monthObject.thisMonthSpendGroups[order.ParentTag.Name].Value += order.Value;
-      } else {
-        monthObject.thisMonthSpendGroups[order.ParentTag.Name] = {Name: order.ParentTag.Name, Value: order.Value};
-      }
-      if (isDateInThisWeek(order.DateOrder)){
-        if (monthObject.lastWeekSpendGroups[order.ParentTag.Name]){
-          monthObject.lastWeekSpendGroups[order.ParentTag.Name].Value += order.Value;
-        } else {
-          monthObject.lastWeekSpendGroups[order.ParentTag.Name] = {Name: order.ParentTag.Name, Value: order.Value};
-        }
-      }
-
-    },
-  };
-  prepareEmptyMonthObject(dateObject, monthObject);
-  iterateOverDataAndPopulateResultObjects(dataObject, accountResultObject, statisticObject, monthObject.consumeOrder, dateObject);
-  populateColors(monthObject.thisMonthSpendGroups);
-  populateColors(monthObject.lastWeekSpendGroups);
-  monthObject.thisMonthSpendGroups = sortGroups(monthObject.thisMonthSpendGroups);
-  monthObject.lastWeekSpendGroups = sortGroups(monthObject.lastWeekSpendGroups);
-  tuneAccountResultObject(accountResultObject, dateObject);
-  processStatisticObjectAndMonthDates(dateObject, monthObject, statisticObject);
-  console.timeEnd('aggregatedList');
-  res.render('account_list_aggregate', { dateObject: dateObject, accListObject: accountResultObject, statObject: statisticObject, monthObject: monthObject });
+    console.time('aggregatedList')
+    let dateObject = await getDateObject(req)
+    let dataObject = await prepareDataToBuildAccountList(
+        dateObject.startDateToCalculate,
+        dateObject.finishDateToCalculate,
+    )
+    let accountResultObject = {}
+    let statisticObject = {
+        sumAllOrders: 0,
+        sumEatOrders: 0,
+        sumFastFoodOrders: 0,
+        sumExcessOrders: 0,
+    }
+    let monthObject = {
+        thisMonthMondays: [],
+        thisMonthDates: {},
+        thisMonthSpendGroups: {},
+        lastWeekSpendGroups: {},
+        consumeOrder: function(order) {
+            monthObject.thisMonthDates[order.DateOrder].Value += order.Value
+            monthObject.thisMonthDates[order.DateOrder].orderList.push({
+                description: order.Description,
+                value: order.Value,
+            })
+            if (monthObject.thisMonthSpendGroups[order.ParentTag.Name]) {
+                monthObject.thisMonthSpendGroups[order.ParentTag.Name].Value +=
+                    order.Value
+            } else {
+                monthObject.thisMonthSpendGroups[order.ParentTag.Name] = {
+                    Name: order.ParentTag.Name,
+                    Value: order.Value,
+                }
+            }
+            if (isDateInThisWeek(order.DateOrder)) {
+                if (monthObject.lastWeekSpendGroups[order.ParentTag.Name]) {
+                    monthObject.lastWeekSpendGroups[
+                        order.ParentTag.Name
+                    ].Value += order.Value
+                } else {
+                    monthObject.lastWeekSpendGroups[order.ParentTag.Name] = {
+                        Name: order.ParentTag.Name,
+                        Value: order.Value,
+                    }
+                }
+            }
+        },
+    }
+    prepareEmptyMonthObject(dateObject, monthObject)
+    iterateOverDataAndPopulateResultObjects(
+        dataObject,
+        accountResultObject,
+        statisticObject,
+        monthObject.consumeOrder,
+        dateObject,
+    )
+    populateColors(monthObject.thisMonthSpendGroups)
+    populateColors(monthObject.lastWeekSpendGroups)
+    monthObject.thisMonthSpendGroups = sortGroups(
+        monthObject.thisMonthSpendGroups,
+    )
+    monthObject.lastWeekSpendGroups = sortGroups(
+        monthObject.lastWeekSpendGroups,
+    )
+    tuneAccountResultObject(accountResultObject, dateObject)
+    processStatisticObjectAndMonthDates(
+        dateObject,
+        monthObject,
+        statisticObject,
+    )
+    console.timeEnd('aggregatedList')
+    res.render('account_list_aggregate', {
+        dateObject: dateObject,
+        accListObject: accountResultObject,
+        statObject: statisticObject,
+        monthObject: monthObject,
+    })
 }
 
-async function processStatisticObjectAndMonthDates(dateObject, monthObject, statObj) {
-  const normEatPerDay = 10000;
-  const normFastFoodPerDay = 5000;
-  const normExcessPerDay = 2000;
-  const normAllPerDay = 20000;
-  const mortGagePayment = 0;
+async function processStatisticObjectAndMonthDates(
+    dateObject,
+    monthObject,
+    statObj,
+) {
+    const normEatPerDay = 10000
+    const normFastFoodPerDay = 5000
+    const normExcessPerDay = 2000
+    const normAllPerDay = 20000
+    const mortGagePayment = 0
 
+    processthisMonthDates(
+        monthObject.thisMonthDates,
+        normAllPerDay,
+        mortGagePayment,
+    )
+    let monthDayCount = Helper.getCurrentMonthDaysCount()
+    let leftDayCount = monthDayCount - dateObject.dayCount
+    if (leftDayCount < 1) leftDayCount = 1
+    let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment
+    let desiredEatSumForMonth = normEatPerDay * monthDayCount
+    let desiredFastFoodSumForMonth = normFastFoodPerDay * monthDayCount
+    let desiredExcessSumForMonth = normExcessPerDay * monthDayCount
 
-  processthisMonthDates(monthObject.thisMonthDates, normAllPerDay, mortGagePayment);
-  let monthDayCount = Helper.getCurrentMonthDaysCount();
-  let leftDayCount = monthDayCount - dateObject.dayCount;
-  if (leftDayCount < 1)
-    leftDayCount = 1;
-  let desiredAllSumForMonth = normAllPerDay * monthDayCount + mortGagePayment;
-  let desiredEatSumForMonth = normEatPerDay * monthDayCount;
-  let desiredFastFoodSumForMonth = normFastFoodPerDay * monthDayCount;
-  let desiredExcessSumForMonth = normExcessPerDay * monthDayCount;
+    statObj.spendEat = statObj.sumEatOrders
+    statObj.normEat = normEatPerDay * dateObject.dayCount
+    statObj.normEatMonth = desiredEatSumForMonth
+    statObj.spendFastFood = statObj.sumFastFoodOrders
+    statObj.spendExcess = statObj.sumExcessOrders
+    statObj.normFastFood = normFastFoodPerDay * dateObject.dayCount
+    statObj.normFastFoodMonth = desiredFastFoodSumForMonth
+    statObj.normExcess = normExcessPerDay * dateObject.dayCount
+    statObj.normExcessMonth = desiredExcessSumForMonth
+    statObj.spendAll = statObj.sumAllOrders
+    statObj.normAll = normAllPerDay * dateObject.dayCount + mortGagePayment
+    statObj.normAllMonth = desiredAllSumForMonth
 
-  statObj.spendEat = statObj.sumEatOrders;
-  statObj.normEat = normEatPerDay * dateObject.dayCount;
-  statObj.normEatMonth = desiredEatSumForMonth;
-  statObj.spendFastFood = statObj.sumFastFoodOrders;
-  statObj.spendExcess = statObj.sumExcessOrders;
-  statObj.normFastFood = normFastFoodPerDay * dateObject.dayCount;
-  statObj.normFastFoodMonth = desiredFastFoodSumForMonth;
-  statObj.normExcess = normExcessPerDay * dateObject.dayCount;
-  statObj.normExcessMonth = desiredExcessSumForMonth;
-  statObj.spendAll = statObj.sumAllOrders;
-  statObj.normAll = normAllPerDay * dateObject.dayCount + mortGagePayment;
-  statObj.normAllMonth = desiredAllSumForMonth;
+    statObj.diffEat = statObj.normEat - statObj.spendEat
+    statObj.diffEatMonth = statObj.normEatMonth - statObj.spendEat
+    statObj.moneyLeftEat = Math.round(statObj.diffEatMonth / leftDayCount)
 
-  statObj.diffEat = statObj.normEat - statObj.spendEat;
-  statObj.diffEatMonth = statObj.normEatMonth - statObj.spendEat;
-  statObj.moneyLeftEat = Math.round(statObj.diffEatMonth / leftDayCount);
+    statObj.diffFastFood = statObj.normFastFood - statObj.spendFastFood
+    statObj.diffFastFoodMonth =
+        statObj.normFastFoodMonth - statObj.spendFastFood
+    statObj.moneyLeftFastFood = Math.round(
+        statObj.diffFastFoodMonth / leftDayCount,
+    )
 
-  statObj.diffFastFood = statObj.normFastFood - statObj.spendFastFood;
-  statObj.diffFastFoodMonth = statObj.normFastFoodMonth - statObj.spendFastFood;
-  statObj.moneyLeftFastFood = Math.round(statObj.diffFastFoodMonth / leftDayCount);
+    statObj.diffExcess = statObj.normExcess - statObj.spendExcess
+    statObj.diffExcessMonth = statObj.normExcessMonth - statObj.spendExcess
+    statObj.moneyLeftExcess = Math.round(statObj.diffExcessMonth / leftDayCount)
 
-  statObj.diffExcess = statObj.normExcess - statObj.spendExcess;
-  statObj.diffExcessMonth = statObj.normExcessMonth - statObj.spendExcess;
-  statObj.moneyLeftExcess = Math.round(statObj.diffExcessMonth / leftDayCount);
+    statObj.diffAll = statObj.normAll - statObj.spendAll
+    statObj.diffAllMonth = statObj.normAllMonth - statObj.spendAll
+    statObj.moneyLeftAll = Math.round(statObj.diffAllMonth / leftDayCount)
 
-
-  statObj.diffAll = statObj.normAll - statObj.spendAll;
-  statObj.diffAllMonth = statObj.normAllMonth - statObj.spendAll;
-  statObj.moneyLeftAll = Math.round(statObj.diffAllMonth / leftDayCount);
-
-  statObj.allColorAttribute = statObj.diffAll < 0;
-  statObj.eatColorAttribute = statObj.diffEat < 0;
-  statObj.fastFoodColorAttribute = statObj.diffFastFood < 0;
-  statObj.excessColorAttribute = statObj.diffExcess < 0;
+    statObj.allColorAttribute = statObj.diffAll < 0
+    statObj.eatColorAttribute = statObj.diffEat < 0
+    statObj.fastFoodColorAttribute = statObj.diffFastFood < 0
+    statObj.excessColorAttribute = statObj.diffExcess < 0
 }
 function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
-  let allResult = 0;
-  for (let dateData in thisMonthDates) {
+    let allResult = 0
+    for (let dateData in thisMonthDates) {
+        thisMonthDates[dateData].Diff =
+            normAllPerDay - thisMonthDates[dateData].Value
 
-    thisMonthDates[dateData].Diff = normAllPerDay - thisMonthDates[dateData].Value;
+        if (new Date(dateData).getDate() === 1) {
+            thisMonthDates[dateData].Diff =
+                thisMonthDates[dateData].Diff + mortGagePayment
+        }
+        allResult = allResult + thisMonthDates[dateData].Diff
+        thisMonthDates[dateData].TempResult = allResult
 
-    if (new Date(dateData).getDate() === 1){
-      thisMonthDates[dateData].Diff = thisMonthDates[dateData].Diff + mortGagePayment;
+        thisMonthDates[dateData].orderList.sort((a, b) => {
+            return b.value - a.value
+        })
+        // thisMonthDates[dateData].orderList = thisMonthDates[dateData].orderList.slice(0, 3);
     }
-    allResult = allResult + thisMonthDates[dateData].Diff;
-    thisMonthDates[dateData].TempResult = allResult;
-
-
-    thisMonthDates[dateData].orderList.sort((a, b) => { return b.value - a.value; });
-    // thisMonthDates[dateData].orderList = thisMonthDates[dateData].orderList.slice(0, 3);
-  }
-
-
 }
 // function ConvertDatesList(dict) {
 //   let list = [];
@@ -592,132 +728,140 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
 // }
 
 function prepareEmptyMonthObject(dateObject, monthObject) {
-  let arr = {};
-  let dt = new Date(dateObject.startDateToCalculate);
+    let arr = {}
+    let dt = new Date(dateObject.startDateToCalculate)
 
-  while (dt <= dateObject.lastMonthDate) {
-    let dateSt = moment(dt).format('DD MMM YY');
-    let currDt = new Date(dt.getTime());
-    arr[dt] = {
-      Value: 0,
-      Date: currDt,
-      DateString: dateSt,
-      getDateUrl: '/mixorders/?startDate=' + Helper.getUrlDateString(dt),
-      orderList: [],
-    };
+    while (dt <= dateObject.lastMonthDate) {
+        let dateSt = moment(dt).format('DD MMM YY')
+        let currDt = new Date(dt.getTime())
+        arr[dt] = {
+            Value: 0,
+            Date: currDt,
+            DateString: dateSt,
+            getDateUrl: '/mixorders/?startDate=' + Helper.getUrlDateString(dt),
+            orderList: [],
+        }
 
-    if (dt.getDay() === 1){
-      let monDate = new Date();
-      monDate.setTime(currDt.getTime() - 12 * 60 * 60 * 1000);
-      monthObject.thisMonthMondays.push({
-        label: {
-          text: dateSt,
-        },
-        width: 1,
-        value: monDate,
-        color: 'red',
-        dashStyle: 'dash' });
+        if (dt.getDay() === 1) {
+            let monDate = new Date()
+            monDate.setTime(currDt.getTime() - 12 * 60 * 60 * 1000)
+            monthObject.thisMonthMondays.push({
+                label: {
+                    text: dateSt,
+                },
+                width: 1,
+                value: monDate,
+                color: 'red',
+                dashStyle: 'dash',
+            })
+        }
+
+        dt.setDate(dt.getDate() + 1)
     }
-
-    dt.setDate(dt.getDate() + 1);
-  }
-  monthObject.thisMonthDates = arr;
-};
+    monthObject.thisMonthDates = arr
+}
 
 function update_get(req, res, next) {
-  Account.findById(req.params.id).exec(function(err, result) {
-    if (err) {
-      next(err);
-    }
-    res.render('account_form', { title: 'Update Account', account_frm: result });
-  });
-};
+    Account.findById(req.params.id).exec(function(err, result) {
+        if (err) {
+            next(err)
+        }
+        res.render('account_form', {
+            title: 'Update Account',
+            account_frm: result,
+        })
+    })
+}
 
 async function createCheck(req, res, next) {
-  let id = req.params.id;
-  let sum = req.params.sum;
-  let acc = await Account.findById(id);
+    let id = req.params.id
+    let sum = req.params.sum
+    let acc = await Account.findById(id)
 
-  await FixRecordController.createFixRecord(
-    FixRecordController.FRecordTypes.Check,
-    Helper.getToday(),
-    acc,
-    sum);
-  res.redirect('/account/aggregatedList');
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.Check,
+        Helper.getToday(),
+        acc,
+        sum,
+    )
+    res.redirect('/account/aggregatedList')
 }
 
 function createAccountFromRequest(req, isUpdate) {
-  var account = new Account({
-    Name: req.body.Name_frm,
-    LocalId: req.body.LocalId_frm,
-    OrderNumber: req.body.OrderNumber_frm,
-    OrderInNumber: req.body.OrderInNumber_frm,
-    OrderOutNumber: req.body.OrderOutNumber_frm,
-    IsUntouchable: Boolean(req.body.IsUntouchable_frm),
-    IsArchived: Boolean(req.body.IsIsArchived_frm),
-    Currency: req.body.Currency_frm,
-    IsMoneyBox: Boolean(req.body.IsMoneyBox_frm),
-    HasMoneyBox: Boolean(req.body.HasMoneyBox_frm),
-
-  });
-  if (req.body.MoneyBoxId_frm){
-    account.MoneyBoxId = req.body.MoneyBoxId_frm;
-  }
-  if (isUpdate) {
-    account._id = req.params.id;
-  }
-  return account;
+    var account = new Account({
+        Name: req.body.Name_frm,
+        LocalId: req.body.LocalId_frm,
+        OrderNumber: req.body.OrderNumber_frm,
+        OrderInNumber: req.body.OrderInNumber_frm,
+        OrderOutNumber: req.body.OrderOutNumber_frm,
+        IsUntouchable: Boolean(req.body.IsUntouchable_frm),
+        IsArchived: Boolean(req.body.IsIsArchived_frm),
+        Currency: req.body.Currency_frm,
+        IsMoneyBox: Boolean(req.body.IsMoneyBox_frm),
+        HasMoneyBox: Boolean(req.body.HasMoneyBox_frm),
+    })
+    if (req.body.MoneyBoxId_frm) {
+        account.MoneyBoxId = req.body.MoneyBoxId_frm
+    }
+    if (isUpdate) {
+        account._id = req.params.id
+    }
+    return account
 }
 
 function update_post(req, res, next) {
-  let account = createAccountFromRequest(req, true);
+    let account = createAccountFromRequest(req, true)
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.render('account_form', { title: 'Update Account', account_frm: account });
-  } else {
-    Account.findByIdAndUpdate(req.params.id, account, [], function(err, theAcc) {
-      if (err) {
-        return next(err);
-      }
-      res.redirect('/account/aggregatedList');
-    });
-  }
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        res.render('account_form', {
+            title: 'Update Account',
+            account_frm: account,
+        })
+    } else {
+        Account.findByIdAndUpdate(req.params.id, account, [], function(
+            err,
+            theAcc,
+        ) {
+            if (err) {
+                return next(err)
+            }
+            res.redirect('/account/aggregatedList')
+        })
+    }
 }
 
 async function getAccountName(accId) {
-  let acc = await Account.findById(accId).select('Name');
-  return acc.Name;
+    let acc = await Account.findById(accId).select('Name')
+    return acc.Name
 }
 
 let update_post_array = [
-  body('LocalId_frm')
-    .trim()
-    .escape(),
-  body('Name_frm')
-    .trim()
-    .escape(),
-  (req, res, next) => update_post(req, res, next),
-];
+    body('LocalId_frm')
+        .trim()
+        .escape(),
+    body('Name_frm')
+        .trim()
+        .escape(),
+    (req, res, next) => update_post(req, res, next),
+]
 
 function deleteTypes(req, res, next) {
-  Account.remove({}, function(err) {
-    if (err) {
-      next(err);
-    } else {
-      res.end('success');
-    }
-
-  });
+    Account.remove({}, function(err) {
+        if (err) {
+            next(err)
+        } else {
+            res.end('success')
+        }
+    })
 }
 
-exports.create_get = create_get;
-exports.create_post = create_post_array;
-exports.list = list;
-exports.aggregatedList = aggregatedList;
-exports.update_get = update_get;
-exports.update_post = update_post_array;
-exports.getAccountName = getAccountName;
-exports.createCheck = createCheck;
-exports.deleteTypes = deleteTypes;
-
+exports.create_get = create_get
+exports.create_post = create_post_array
+exports.list = list
+exports.aggregatedList = aggregatedList
+exports.update_get = update_get
+exports.update_post = update_post_array
+exports.getAccountName = getAccountName
+exports.createCheck = createCheck
+exports.deleteTypes = deleteTypes
