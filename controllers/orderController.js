@@ -66,7 +66,11 @@ async function order_list(req, res, next) {
     .populate('PaymentAccount')
     .populate('Place')
     .populate('Object')
-    .sort({ DateOrder: -1, _id: -1 });
+    .sort({ DateOrder: -1 })
+    //.sort({ _id: -1 })
+    ;
+
+  //let order_list={test:'123'}
   res.render('order_list', { order_list: order_list });
 };
 

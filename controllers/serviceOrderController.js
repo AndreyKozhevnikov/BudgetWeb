@@ -166,7 +166,7 @@ function list(req, res, next) {
     .find({DateOrder: { $gte: startDate }})
     .populate('AccountOut')
     .populate('AccountIn')
-    .sort({ DateOrder: -1, _id: -1 })
+    .sort({ DateOrder: -1})
     .exec(function(err, list_serviceOrders) {
       if (err) {
         return next(err);
