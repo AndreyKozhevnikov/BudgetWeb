@@ -27,13 +27,13 @@
         "morgan": ">=1.9.1",
         "numeral": "^2.0.6",
         "prettier": "^1.14.0",
-        "pug": "3.0.1",
+        "pug": "^3.0.3",
         "serve-favicon": "~2.4.5"
     },
     "devDependencies": {
         "eslint": "^5.2.0",
         "eslint-config-strongloop": "^2.1.0",
         "mocha": "^10.0.0",
-        "nodemon": "^2.0.22"
+        "nodemon": "^3.1.9"
     }
 }
