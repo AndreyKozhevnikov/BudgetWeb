@@ -26,6 +26,7 @@ router.post('/createuser', root_controller.createUserPost)
 router.post('/updateLocalIds', root_controller.update_localids)
 
 router.get('/fullBackup', root_controller.full_backup)
+router.get('/createReportDate', root_controller.createReportDate)
 
 router.get('/updateLists', root_controller.updateLists)
 router.get('/createOrderObjects', root_controller.createOrderObjects)

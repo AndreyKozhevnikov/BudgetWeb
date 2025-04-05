@@ -28,7 +28,7 @@ let fs = require('fs')
 let order_controller = require('../controllers/orderController.js')
 let sOrder_controller = require('../controllers/serviceOrderController.js')
 let tag_controller = require('../controllers/tagController.js')
-let fixRecord_controller = require('../controllers/fixRecordController.js')
+let FixRecordController = require('../controllers/fixRecordController.js')
 let account_controller = require('../controllers/accountController.js')
 
 let stream = require('stream')
@@ -177,7 +177,7 @@ function deleteAll(req, res, next) {
     }
     order_controller.deleteOrders(req, res, next)
     tag_controller.deleteTags(res, res, next)
-    fixRecord_controller.deleteTypes(req, res, next)
+    FixRecordController.deleteTypes(req, res, next)
     sOrder_controller.deleteTypes(req, res, next)
     account_controller.deleteTypes(req, res, next)
 }
@@ -224,21 +224,21 @@ function updatelocalids(req, res, next) {
         let type = x.Type
         let rt
         switch (type) {
-            case 'Order':
-                rt = Order
-                break
-            case 'Tag':
-                rt = Tag
-                break
-            case 'PaymentType':
-                rt = PaymentType
-                break
-            case 'Place':
-                rt = OrderPlace
-                break
-            case 'Object':
-                rt = OrderObject
-                break
+        case 'Order':
+            rt = Order
+            break
+        case 'Tag':
+            rt = Tag
+            break
+        case 'PaymentType':
+            rt = PaymentType
+            break
+        case 'Place':
+            rt = OrderPlace
+            break
+        case 'Object':
+            rt = OrderObject
+            break
         }
         rt.findById(id, function(err, theEntity) {
             if (err) {
@@ -301,6 +301,39 @@ async function test(req, res, next) {
     // res.end('success22');
 }
 
+async function createReportDate(req, res, next) {
+    await FixRecordController.createFixRecord(
+        FixRecordController.FRecordTypes.ReportDate,
+        Helper.getToday(),
+        null,
+        0,
+        null,
+    )
+
+
+    res.end('test create report');
+    // let startDate = new Date(2021, 8, 1)
+
+    // let lst = await Order.find({ DateOrder: { $lte: startDate } });
+
+    // await FixRecord.remove({ DateTime: { $lte: startDate } })
+    // await Order.remove({ DateOrder: { $lte: startDate } }, function(err) {
+    //     if (err) {
+    //         next(err)
+    //     } else {
+    //         // res.end('success');
+    //     }
+    // })
+    // await ServiceOrder.remove({ DateOrder: { $lte: startDate } }, function(
+    //     err,
+    // ) {
+    //     if (err) {
+    //         next(err)
+    //     } else {
+    //     }
+    // })
+}
+
 // res.send('localid is null');
 // for (let i = 0; i < 100; i++){
 //   let o = new Order();
@@ -329,3 +362,4 @@ exports.full_Restore = fullRestore
 exports.updateLists = updateLists
 exports.createOrderObjects = createOrderObjects
 exports.test = test
+exports.createReportDate = createReportDate

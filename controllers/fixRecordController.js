@@ -9,6 +9,7 @@ let FRecordTypes = {
     TotalSum: 'TotalSum',
     TotalIncoming: 'TotalIncoming',
     TotalExpense: 'TotalExpense',
+    ReportDate: 'ReportDate',
 }
 let Helper = require('../controllers/helperController.js')
 
