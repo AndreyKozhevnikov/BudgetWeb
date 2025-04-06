@@ -11,5 +11,6 @@ router.get(
 router.get('/showTotalSumsChart', fixRecord_controller.showTotalSumsChart)
 router.get('/createTotalIncoming', fixRecord_controller.createTotalIncoming)
 router.get('/removeTotals', fixRecord_controller.removeTotals)
+router.get('/list', fixRecord_controller.list)
 
 module.exports = router

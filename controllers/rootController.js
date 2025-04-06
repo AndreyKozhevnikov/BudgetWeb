@@ -224,21 +224,21 @@ function updatelocalids(req, res, next) {
         let type = x.Type
         let rt
         switch (type) {
-            case 'Order':
-                rt = Order
-                break
-            case 'Tag':
-                rt = Tag
-                break
-            case 'PaymentType':
-                rt = PaymentType
-                break
-            case 'Place':
-                rt = OrderPlace
-                break
-            case 'Object':
-                rt = OrderObject
-                break
+        case 'Order':
+            rt = Order
+            break
+        case 'Tag':
+            rt = Tag
+            break
+        case 'PaymentType':
+            rt = PaymentType
+            break
+        case 'Place':
+            rt = OrderPlace
+            break
+        case 'Object':
+            rt = OrderObject
+            break
         }
         rt.findById(id, function(err, theEntity) {
             if (err) {

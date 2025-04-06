@@ -1,7 +1,7 @@
 extends layout
 block scripts
    script.
-     var order_list=!{JSON.stringify(order_list)}; 
+     let order_list=!{JSON.stringify(order_list)}; 
    script(src='/javascripts/base_list.js')
    script(src='/javascripts/order_list.js')
 block wideContent

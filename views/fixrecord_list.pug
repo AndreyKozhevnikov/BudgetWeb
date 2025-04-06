@@ -1,0 +1,9 @@
+extends layout
+block scripts
+   script.
+     let data_list=!{JSON.stringify(data_list)}; 
+   script(src='/javascripts/fixrecord_list.js')
+block wideContent
+  div#listContainer
+   
+            

@@ -23,12 +23,12 @@ function getFirstDateOfShifterMonth(currMonthDate, shift) {
     let dt = new Date(currMonthDate)
     let mnt = dt.getMonth()
     switch (shift) {
-        case 'prev':
-            mnt = mnt - 1
-            break
-        case 'next':
-            mnt = mnt + 1
-            break
+    case 'prev':
+        mnt = mnt - 1
+        break
+    case 'next':
+        mnt = mnt + 1
+        break
     }
     dt.setMonth(mnt)
     return dt

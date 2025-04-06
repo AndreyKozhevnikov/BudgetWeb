@@ -1,4 +1,4 @@
-/*global DevExpress order_list buildValueContainerForOrder*/
+/*global DevExpress order_list */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict'
 

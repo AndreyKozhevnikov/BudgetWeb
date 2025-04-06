@@ -226,6 +226,24 @@ async function removeTotals(req, res, next) {
     }).deleteMany()
     res.send('removeTotals succeed' + result.n)
 }
+async function list(req, res, next) {
+
+    let startDate = Helper.getFirstDateOfCurrentMonth()
+    // let startDate = dateObject.startDate
+
+    FixRecord.find({ DateTime: { $gte: startDate } })
+        .populate('Account')
+        .sort({ DateTime: -1 })
+        .exec(function(err, list_serviceOrders) {
+            if (err) {
+                return next(err)
+            }
+            res.render('fixrecord_list', {
+                title: 'Fix Record List',
+                data_list: list_serviceOrders,
+            })
+        })
+}
 
 exports.createFixRecord = createFixRecord
 exports.FRecordTypes = FRecordTypes
@@ -238,3 +256,4 @@ exports.createTotalSums = createTotalSums
 exports.createTotalIncoming = createTotalIncoming
 exports.showTotalSumsChart = showTotalSumsChart
 exports.removeTotals = removeTotals
+exports.list = list
