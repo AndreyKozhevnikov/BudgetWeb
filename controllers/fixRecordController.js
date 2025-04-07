@@ -33,6 +33,21 @@ async function getTheLastFixRecordsDate() {
     return lastFRecord.DateTime
 }
 
+async function getLastReportDate(req, res) {
+    let lastFRecord = await FixRecord.findOne({
+        Type: FRecordTypes.ReportDate,
+    }).sort('-DateTime')
+    if (lastFRecord == null) {
+        lastFRecord = await FixRecord.findOne({
+            Type: FRecordTypes.StartMonth,
+        }).sort('-DateTime')
+    }
+    if (lastFRecord == null) {
+        return new Date()
+    }
+    return lastFRecord.DateTime
+}
+
 async function getAccountRecords(accId, startDate, finishDate) {
     let fRecs = FixRecord.find({
         Account: accId,
@@ -257,3 +272,4 @@ exports.createTotalIncoming = createTotalIncoming
 exports.showTotalSumsChart = showTotalSumsChart
 exports.removeTotals = removeTotals
 exports.list = list
+exports.getLastReportDate = getLastReportDate

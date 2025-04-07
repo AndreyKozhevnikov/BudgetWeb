@@ -6,6 +6,7 @@ let OrderObject = require('../models/orderObject.js')
 let Account = require('../models/account.js')
 let ServiceOrder = require('../models/serviceOrder.js')
 let Helper = require('../controllers/helperController.js')
+let FixRecordController = require('../controllers/fixRecordController.js')
 
 let tagList
 let popularTagList
@@ -60,6 +61,22 @@ async function order_list(req, res, next) {
         return
     }
     let startDate = dateObject.startDate
+
+    let order_list = await Order.find({
+        IsDeleted: { $exists: false },
+        DateOrder: { $gte: startDate },
+    })
+        .populate('ParentTag')
+        .populate('PaymentAccount')
+        .populate('Place')
+        .populate('Object')
+        .sort({ DateOrder: -1 })
+    // .sort({ _id: -1 })
+    // let order_list={test:'123'}
+    res.render('order_list', { order_list: order_list })
+}
+async function order_last_list(req, res, next) {
+    let startDate = await FixRecordController.getLastReportDate(req)
 
     let order_list = await Order.find({
         IsDeleted: { $exists: false },
@@ -439,6 +456,7 @@ function populateOrderList(orderList) {
 populateAdditionalLists()
 
 exports.order_list = order_list
+exports.order_last_list = order_last_list
 exports.order_create_get = order_create_get
 exports.order_create_get_withNewLists = order_create_get_withNewLists
 exports.order_create_post = order_create_post_array
