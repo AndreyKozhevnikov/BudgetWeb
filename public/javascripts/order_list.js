@@ -1,4 +1,4 @@
-/*global DevExpress order_list */
+/*global DevExpress order_list ExcelJS saveAs */
 /*eslint no-new: 0, new-cap: 0*/
 'use strict'
 
@@ -13,6 +13,22 @@ window.onload = function() {
         export: {
             enabled: true,
             allowExportSelectedData: true,
+        },
+        onExporting: function(e) {
+            var workbook = new ExcelJS.Workbook();
+            var worksheet = workbook.addWorksheet('Main sheet');
+            DevExpress.excelExporter.exportDataGrid({
+                worksheet: worksheet,
+                component: e.component,
+                customizeCell: function(options) {
+                    options.excelCell.font = { name: 'Arial', size: 12 };
+                    options.excelCell.alignment = { horizontal: 'left' };
+                },
+            }).then(function() {
+                workbook.xlsx.writeBuffer().then(function(buffer) {
+                    saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'DataGrid.xlsx');
+                });
+            });
         },
         rowAlternationEnabled: true,
         showRowLines: true,
