@@ -63,7 +63,7 @@ let mongoose = require('mongoose')
 let mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/budgetWebTest'
 // let mongoDB = 'mongodb://127.0.0.1:27017/budgetwebdb'
 
-print(mongoDB)
+console.log(mongoDB)
 
 if (isDevelopment) mongoose.set('debug', true)
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })
