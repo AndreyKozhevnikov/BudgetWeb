@@ -4,6 +4,8 @@ http://localhost:3000/account/aggregatedList
 
 mongodump --uri="mongodb+srv://<username>:<password>@<your-cosmos-url>/<database>?ssl=true&retrywrites=false" --out=<backup-directory>
 
+
+cd c:\Program Files\mongodb-database-tools\bin\
 mongodump --uri="<you uri>" --out="c:\temp\real"
 
 bsondump --bsonFile "c:\temp\real\budgetwebdb\orders.bson" --outFile="c:\temp\real\budgetwebdb\orders.json"
