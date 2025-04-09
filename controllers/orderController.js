@@ -80,7 +80,7 @@ async function order_last_list(req, res, next) {
 
     let order_list = await Order.find({
         IsDeleted: { $exists: false },
-        DateOrder: { $gte: startDate },
+        CreatedTime: { $gte: startDate },
     })
         .populate('ParentTag')
         .populate('PaymentAccount')
