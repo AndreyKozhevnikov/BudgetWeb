@@ -33,37 +33,40 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
 }
 
 router.get('/login', async function(req, res, next) {
-    // res.render('userview')
-    const authCodeUrlParameters = {
-        scopes: ['user.read'],
-        redirectUri: 'http://localhost:3000/redirect',
-    };
+    res.render('userview')
+    // const authCodeUrlParameters = {
+    //     scopes: ['user.read'],
+    //     redirectUri: 'http://localhost:3000/redirect',
+    // };
 
-    try {
-        const authCodeUrl = await pca.getAuthCodeUrl(authCodeUrlParameters);
-        res.redirect(authCodeUrl);
-    } catch (error) {
-        console.error('Error generating Auth Code URL:', error);
-        res.status(500).send('Authentication error');
-    }
+    // try {
+    //     const authCodeUrl = await pca.getAuthCodeUrl(authCodeUrlParameters);
+    //     res.redirect(authCodeUrl);
+    // } catch (error) {
+    //     console.error('Error generating Auth Code URL:', error);
+    //     res.status(500).send('Authentication error');
+    // }
 
 })
-router.get('/redirect', async (req, res) => {
-    const tokenRequest = {
-        code: req.query.code,
-        scopes: ['user.read'],
-        redirectUri: 'http://localhost:3000/redirect',
-    };
+router.get('/redirect', async (req, res, next) => {
+    // console.log(res.account.username)
 
-    try {
-        const response = await pca.acquireTokenByCode(tokenRequest);
-        console.log('Access Token:', response.accessToken);
-        // Store access token in session or proceed as needed
-        res.send('Login successful! Access Token acquired.');
-    } catch (error) {
-        console.error('Error acquiring token by code:', error);
-        res.status(500).send('Error during authentication');
-    }
+    // const tokenRequest = {
+    //     code: req.query.code,
+    //     scopes: ['user.read'],
+    //     redirectUri: 'http://localhost:3000/redirect',
+    // };
+
+    // try {
+    //     const response = await pca.acquireTokenByCode(tokenRequest);
+    //     console.log('Access Token:', response.accessToken);
+    //     // Store access token in session or proceed as needed
+    //     res.send('Login successful! Access Token acquired.');
+    // } catch (error) {
+    //     console.error('Error acquiring token by code:', error);
+    //     res.status(500).send('Error during authentication');
+    // }
+    next()
 });
 // router.post('/login', function(req, res, next) {
 //     if (req.body.uname && req.body.upass) {

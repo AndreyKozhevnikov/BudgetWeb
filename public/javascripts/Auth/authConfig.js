@@ -16,29 +16,29 @@ const msalConfig = {
         cacheLocation: 'sessionStorage', // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO.
         storeAuthStateInCookie: false, // set this to true if you have to support IE
     },
-    system: {
-        loggerOptions: {
-            loggerCallback: (level, message, containsPii) => {
-                if (containsPii) {
-                    return;
-                }
-                switch (level) {
-                case msal.LogLevel.Error:
-                    console.error(message);
-                    return;
-                case msal.LogLevel.Info:
-                    console.info(message);
-                    return;
-                case msal.LogLevel.Verbose:
-                    console.debug(message);
-                    return;
-                case msal.LogLevel.Warning:
-                    console.warn(message);
-                    return;
-                }
-            },
-        },
-    },
+    // system: {
+    //     loggerOptions: {
+    //         loggerCallback: (level, message, containsPii) => {
+    //             if (containsPii) {
+    //                 return;
+    //             }
+    //             switch (level) {
+    //             case msal.LogLevel.Error:
+    //                 console.error(message);
+    //                 return;
+    //             case msal.LogLevel.Info:
+    //                 console.info(message);
+    //                 return;
+    //             case msal.LogLevel.Verbose:
+    //                 console.debug(message);
+    //                 return;
+    //             case msal.LogLevel.Warning:
+    //                 console.warn(message);
+    //                 return;
+    //             }
+    //         },
+    //     },
+    // },
 };
 
 /**
