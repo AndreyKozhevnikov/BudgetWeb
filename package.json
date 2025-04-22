@@ -28,7 +28,9 @@
         "numeral": "^2.0.6",
         "prettier": "^1.14.0",
         "pug": "^3.0.3",
-        "serve-favicon": "~2.4.5"
+        "serve-favicon": "~2.4.5",
+        "@azure/msal-browser": "^3.16.0",
+        "ciam-sign-in-javascript": "file:"
     },
     "devDependencies": {
         "eslint": "^5.2.0",

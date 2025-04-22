@@ -33,6 +33,7 @@ app.set('view engine', 'pug')
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(compression()) // Compress all routes
 app.use(logger('dev'))
+app.use(express.static(path.join(__dirname, 'node_modules/@azure/msal-browser/lib')));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
@@ -46,7 +47,7 @@ app.use(
     }),
 )
 let isDevelopment = process.env.NODE_ENV === 'development'
-// let isDevelopment = false;
+isDevelopment = false;
 if (!isDevelopment) app.use('/', requestLogin)
 app.use('/', rootRouter)
 app.use('/tag', tagRouter)
