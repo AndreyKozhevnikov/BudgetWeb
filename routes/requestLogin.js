@@ -2,13 +2,26 @@
 let express = require('express')
 let router = express.Router()
 let User = require('../models/user.js')
-const msal = require('@azure/msal-node');
-const { msalConfig } = require('../public/javascripts/Auth/authConfig.js')
+// const msal = require('@azure/msal-node');
+// const { msalConfig } = require('../public/javascripts/Auth/authConfig.js')
 
 // console.log('!!!!2222', msalConfig);
-const pca = new msal.PublicClientApplication(msalConfig);
+// const pca = new msal.PublicClientApplication(msalConfig);
 let targetURI
 
+const msal = require('@azure/msal-node');
+
+require('dotenv').config();
+
+
+const config = {
+    auth: {
+        clientId: process.env.CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${process.env.TENANT_ID}`,
+        clientSecret: process.env.CLIENT_SECRET,
+    },
+};
+const pca = new msal.ConfidentialClientApplication(config);
 function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
     User.authenticate(
         name,
@@ -33,7 +46,17 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
 }
 
 router.get('/login', async function(req, res, next) {
-    res.render('userview')
+    //  res.render('userview')
+    const authCodeUrlParameters = {
+        scopes: ['user.read'],
+        redirectUri: process.env.REDIRECT_URI,
+    };
+
+    // Redirect to auth code URL
+    pca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
+        res.redirect(response);
+    }).catch((error) => console.log(JSON.stringify(error)));
+
     // const authCodeUrlParameters = {
     //     scopes: ['user.read'],
     //     redirectUri: 'http://localhost:3000/redirect',
@@ -48,6 +71,21 @@ router.get('/login', async function(req, res, next) {
     // }
 
 })
+router.get('/auth/redirect', (req, res) => {
+    const tokenRequest = {
+        code: req.query.code,
+        scopes: ['user.read'],
+        redirectUri: process.env.REDIRECT_URI,
+    };
+
+    pca.acquireTokenByCode(tokenRequest).then((response) => {
+        // Store tokens or handle authenticated user session
+        res.cookie('idToken', response.idToken, { httpOnly: true });
+        res.send('Login successful');
+    }).catch((error) => console.log(error));
+});
+
+
 router.get('/redirect', async (req, res, next) => {
     // console.log(res.account.username)
 

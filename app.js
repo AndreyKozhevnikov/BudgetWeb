@@ -18,6 +18,20 @@ let rootRouter = require('./routes/rootRouter.js')
 let mixOrdersRouter = require('./routes/mixOrdersRouter.js')
 let fixRecordRouter = require('./routes/fixRecordRouter.js')
 
+const msal = require('@azure/msal-node');
+
+require('dotenv').config();
+
+
+const config = {
+    auth: {
+        clientId: process.env.CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${process.env.TENANT_ID}`,
+        clientSecret: process.env.CLIENT_SECRET,
+    },
+};
+console.log('!!!!secert', config)
+const pca = new msal.ConfidentialClientApplication(config);
 let app = express()
 app.locals.moment = require('moment')
 function formatNumber(num) {
