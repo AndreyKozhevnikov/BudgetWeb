@@ -12,8 +12,11 @@
         "pretest": "eslint --ignore-path .gitignore ."
     },
     "dependencies": {
+        "@azure/msal-browser": "^3.16.0",
+        "@azure/msal-node": "^3.5.1",
         "bcrypt": "^5.0.1",
         "body-parser": "^1.20.2",
+        "ciam-sign-in-javascript": "file:",
         "compression": "^1.7.3",
         "cookie-parser": "~1.4.3",
         "debug": "~2.6.9",
@@ -28,10 +31,7 @@
         "numeral": "^2.0.6",
         "prettier": "^1.14.0",
         "pug": "^3.0.3",
-        "serve-favicon": "~2.4.5",
-        "@azure/msal-browser": "^3.16.0",
-        "@azure/msal-node":"3.5.1",
-        "ciam-sign-in-javascript": "file:"
+        "serve-favicon": "~2.4.5"
     },
     "devDependencies": {
         "eslint": "^5.2.0",

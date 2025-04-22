@@ -2,6 +2,11 @@
 let express = require('express')
 let router = express.Router()
 let User = require('../models/user.js')
+const msal = require('@azure/msal-node');
+const { msalConfig } = require('../public/javascripts/Auth/authConfig.js')
+
+// console.log('!!!!2222', msalConfig);
+const pca = new msal.PublicClientApplication(msalConfig);
 let targetURI
 
 function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
@@ -27,27 +32,57 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
     )
 }
 
-router.get('/login', function(req, res, next) {
-    res.render('userview')
-})
-router.post('/login', function(req, res, next) {
-    if (req.body.uname && req.body.upass) {
-        authenticate(
-            req.body.uname,
-            req.body.upass,
-            req,
-            res,
-            next,
-            function() {
-                res.redirect('/')
-            },
-        )
-    } else {
-        let err = new Error('all fields are required')
-        err.status = 400
-        return next(err)
+router.get('/login', async function(req, res, next) {
+    // res.render('userview')
+    const authCodeUrlParameters = {
+        scopes: ['user.read'],
+        redirectUri: 'http://localhost:3000/redirect',
+    };
+
+    try {
+        const authCodeUrl = await pca.getAuthCodeUrl(authCodeUrlParameters);
+        res.redirect(authCodeUrl);
+    } catch (error) {
+        console.error('Error generating Auth Code URL:', error);
+        res.status(500).send('Authentication error');
     }
+
 })
+router.get('/redirect', async (req, res) => {
+    const tokenRequest = {
+        code: req.query.code,
+        scopes: ['user.read'],
+        redirectUri: 'http://localhost:3000/redirect',
+    };
+
+    try {
+        const response = await pca.acquireTokenByCode(tokenRequest);
+        console.log('Access Token:', response.accessToken);
+        // Store access token in session or proceed as needed
+        res.send('Login successful! Access Token acquired.');
+    } catch (error) {
+        console.error('Error acquiring token by code:', error);
+        res.status(500).send('Error during authentication');
+    }
+});
+// router.post('/login', function(req, res, next) {
+//     if (req.body.uname && req.body.upass) {
+//         authenticate(
+//             req.body.uname,
+//             req.body.upass,
+//             req,
+//             res,
+//             next,
+//             function() {
+//                 res.redirect('/')
+//             },
+//         )
+//     } else {
+//         let err = new Error('all fields are required')
+//         err.status = 400
+//         return next(err)
+//     }
+// })
 
 router.get('*', function(req, res, next) {
     requiresLogin(req, res, next)
