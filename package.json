@@ -30,6 +30,7 @@
         "pug": "^3.0.3",
         "serve-favicon": "~2.4.5",
         "@azure/msal-browser": "^3.16.0",
+        "@azure/msal-node":"3.5.1",
         "ciam-sign-in-javascript": "file:"
     },
     "devDependencies": {

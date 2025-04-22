@@ -4,6 +4,7 @@
 // Create the main myMSALObj instance
 // configuration parameters are located at authConfig.js
 let myMSALObj
+let currentAccounts
 msal.PublicClientApplication.createPublicClientApplication(msalConfig)
     .then((obj) => {
         myMSALObj = obj;
@@ -32,8 +33,8 @@ function selectAccount() {
      * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
      */
 
-    const currentAccounts = myMSALObj.getAllAccounts();
-
+    currentAccounts = myMSALObj.getAllAccounts();
+    console.log('select accs', currentAccounts);
     if (!currentAccounts) {
         return;
     } else if (currentAccounts.length > 1) {
@@ -41,8 +42,9 @@ function selectAccount() {
         console.warn('Multiple accounts detected.');
     } else if (currentAccounts.length === 1) {
         username = currentAccounts[0].username
-        welcomeUser(currentAccounts[0].username);
-        updateTable(currentAccounts[0]);
+        console.log('username', username);
+        // welcomeUser(currentAccounts[0].username);
+        // updateTable(currentAccounts[0]);
     }
 }
 
@@ -54,10 +56,15 @@ function handleResponse(response) {
      */
 
     if (response !== null) {
+
+        console.log('response not null:', response.account);
+
         username = response.account.username
-        welcomeUser(username);
-        updateTable(response.account);
+        console.log('username', username);
+        // welcomeUser(username);
+        // updateTable(response.account);
     } else {
+        console.log('response null')
         selectAccount();
 
         /**
@@ -85,7 +92,7 @@ function signIn() {
      * You can pass a custom request object below. This will override the initial configuration. For more information, visit:
      * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/request-response-object.md#request
      */
-    loginRequest.redirectUri = '/';
+    loginRequest.redirectUri = '/redirect';
     myMSALObj.loginRedirect(loginRequest);
 }
 

@@ -3,14 +3,31 @@ extends layout
 block content
   h1 #{title}
 
-  form(method='POST')
+  form(method='POST', id='accountForm')
+       
     div.form-group
       label(for='name') username:
       input.form-control(type='text',  name='uname')
       br
       label(for='name') userpass:
-      input.form-control(type='password',  name='upass')      
+      input.form-control(type='password',  name='upass')
+      input(type='hidden', name='currentAccounts', id='currentAccounts')      
     button.btn.btn-primary(type='submit') Submit
+
+    button.btn.btn-primary(type='button' , id='loginButton') Login
+    button.btn.btn-primary(type='button' , id='logoutButton') Logout
+    script.
+      document.getElementById('loginButton').addEventListener('click', function() {
+        console.log('loginButton');
+        signIn();
+        //- document.getElementById('currentAccounts').value = currentAccounts;
+        //- console.log('!@!!currentAccounts', currentAccounts);
+        //- document.getElementById('accountForm').submit();
+      });     
+      document.getElementById('logoutButton').addEventListener('click', function() {
+        console.log('logoutButton');
+        signOut(); 
+      });     
 
   if errors 
     ul
