@@ -2,15 +2,9 @@
 let express = require('express')
 let router = express.Router()
 let User = require('../models/user.js')
-// const msal = require('@azure/msal-node');
-// const { msalConfig } = require('../public/javascripts/Auth/authConfig.js')
 
-// console.log('!!!!2222', msalConfig);
-// const pca = new msal.PublicClientApplication(msalConfig);
 let targetURI
-
 let account
-
 
 const msal = require('@azure/msal-node');
 
@@ -44,20 +38,33 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
         id,
     )
 }
-
+router.get('/loginview', async function(req, res, next) {
+    res.render('loginview')
+})
 router.get('/login', async function(req, res, next) {
-    //  res.render('userview')
     const authCodeUrlParameters = {
         scopes: ['user.read'],
         redirectUri: process.env.REDIRECT_URI,
     };
 
-    // Redirect to auth code URL
     pca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
         res.redirect(response);
     }).catch((error) => console.log(JSON.stringify(error)));
 
 })
+
+router.get('/logout', async function(req, res, next) {
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(JSON.stringify(err));
+            return res.sendStatus(500); // Error occurred
+        }
+        res.clearCookie('idToken')
+        account = null
+        res.render('loginview')
+    });
+})
+
 router.get('/auth/redirect', (req, res) => {
     const tokenRequest = {
         code: req.query.code,
@@ -66,15 +73,28 @@ router.get('/auth/redirect', (req, res) => {
     };
 
     pca.acquireTokenByCode(tokenRequest).then((response) => {
-        // Store tokens or handle authenticated user session
-        // console.log('response!!!!')
-        // console.dir(response)
-        account = response.account.username
-        // console.dir(response)
-        console.log(account)
-        res.cookie('idToken', response.idToken, { httpOnly: true });
-        // res.send('Login successful');
-        res.redirect('/wiki')
+        let userName = response.account.username
+
+        User.findOne({ $or: [{ username: userName }] })
+        // User.findOne({_id:id})
+            .exec(function(err, user) {
+                if (err) {
+                    console.log('login err', err)
+                    res.redirect('/loginview')
+                } else if (!user) {
+                    console.log('user not found', userName)
+                    res.redirect('/loginview')
+                } else {
+                    account = response.account.username
+                    console.log(account)
+                    res.cookie('idToken', response.idToken, { httpOnly: true });
+                    // res.send('Login successful');
+                    res.redirect('/wiki')
+                }
+            }
+            )
+
+
     }).catch((error) => console.log(error));
 });
 
@@ -121,7 +141,7 @@ function requiresLogin(req, res, next) {
         )
     } else {
         targetURI = req.url
-        res.redirect('/login')
+        res.redirect('/loginview')
     }
 }
 module.exports = router

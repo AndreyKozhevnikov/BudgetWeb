@@ -14,19 +14,6 @@ block content
       input(type='hidden', name='currentAccounts', id='currentAccounts')      
     button.btn.btn-primary(type='submit') Submit
 
-    button.btn.btn-primary(type='button' , id='loginButton') Login
-    button.btn.btn-primary(type='button' , id='logoutButton') Logout
-    script.
-      document.getElementById('loginButton').addEventListener('click', function() {
-        console.log('loginButton');
-        //- document.getElementById('currentAccounts').value = currentAccounts;
-        //- console.log('!@!!currentAccounts', currentAccounts);
-        //- document.getElementById('accountForm').submit();
-      });     
-      document.getElementById('logoutButton').addEventListener('click', function() {
-        console.log('logoutButton');
-      });     
-
   if errors 
     ul
       for error in errors
