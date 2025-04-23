@@ -12,11 +12,9 @@
         "pretest": "eslint --ignore-path .gitignore ."
     },
     "dependencies": {
-        "@azure/msal-browser": "^3.16.0",
         "@azure/msal-node": "^3.5.1",
         "bcrypt": "^5.0.1",
         "body-parser": "^1.20.2",
-        "ciam-sign-in-javascript": "file:",
         "compression": "^1.7.3",
         "cookie-parser": "~1.4.3",
         "debug": "~2.6.9",
