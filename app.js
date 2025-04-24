@@ -1,4 +1,5 @@
 'use strict'
+require('dotenv').config();
 let express = require('express')
 let path = require('path')
 let favicon = require('serve-favicon')
@@ -46,8 +47,9 @@ app.use(
     }),
 )
 let isDevelopment = process.env.NODE_ENV === 'development'
-// let isDevelopment = false;
-if (!isDevelopment) app.use('/', requestLogin)
+// isDevelopment = false;
+// if (!isDevelopment)
+app.use('/', requestLogin)
 app.use('/', rootRouter)
 app.use('/tag', tagRouter)
 app.use('/orderPlace', orderPlaceRouter)
@@ -60,7 +62,7 @@ app.use('/fixRecord', fixRecordRouter)
 // Set up mongoose connection
 let mongoose = require('mongoose')
 
-let mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/budgetWebTest'
+let mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/budgetwebdb'
 // let mongoDB = 'mongodb://127.0.0.1:27017/budgetwebdb'
 
 console.log(mongoDB)
