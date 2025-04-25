@@ -2,8 +2,20 @@
 let express = require('express')
 let router = express.Router()
 let User = require('../models/user.js')
-let targetURI
 
+let targetURI
+let account
+
+const msal = require('@azure/msal-node');
+
+const config = {
+    auth: {
+        clientId: process.env.CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${process.env.TENANT_ID}`,
+        clientSecret: process.env.CLIENT_SECRET,
+    },
+};
+const pca = new msal.ConfidentialClientApplication(config);
 function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
     User.authenticate(
         name,
@@ -26,35 +38,77 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
         id,
     )
 }
+router.get('/loginview', async function(req, res, next) {
+    res.render('loginview')
+})
+router.get('/login', async function(req, res, next) {
+    const authCodeUrlParameters = {
+        scopes: ['user.read'],
+        redirectUri: process.env.REDIRECT_URI,
+    };
 
-router.get('/login', function(req, res, next) {
-    res.render('userview')
+    pca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
+        res.redirect(response);
+    }).catch((error) => console.log(JSON.stringify(error)));
+
 })
-router.post('/login', function(req, res, next) {
-    if (req.body.uname && req.body.upass) {
-        authenticate(
-            req.body.uname,
-            req.body.upass,
-            req,
-            res,
-            next,
-            function() {
-                res.redirect('/')
-            },
-        )
-    } else {
-        let err = new Error('all fields are required')
-        err.status = 400
-        return next(err)
-    }
+
+router.get('/logout', async function(req, res, next) {
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(JSON.stringify(err));
+            return res.sendStatus(500); // Error occurred
+        }
+        res.clearCookie('idToken')
+        account = null
+        res.render('loginview')
+    });
 })
+
+router.get('/auth/redirect', (req, res) => {
+    const tokenRequest = {
+        code: req.query.code,
+        scopes: ['user.read'],
+        redirectUri: process.env.REDIRECT_URI,
+    };
+
+    pca.acquireTokenByCode(tokenRequest).then((response) => {
+        let userName = response.account.username
+
+        User.findOne({ $or: [{ username: userName }] })
+        // User.findOne({_id:id})
+            .exec(function(err, user) {
+                if (err) {
+                    console.log('login err', err)
+                    res.redirect('/loginview')
+                } else if (!user) {
+                    console.log('user not found', userName)
+                    res.redirect('/loginview')
+                } else {
+                    account = response.account.username
+                    console.log(account)
+                    res.cookie('idToken', response.idToken, { httpOnly: true });
+                    // res.send('Login successful');
+                    res.redirect('/wiki')
+                }
+            }
+            )
+
+
+    }).catch((error) => console.log(error));
+});
+
 
 router.get('*', function(req, res, next) {
     requiresLogin(req, res, next)
 })
 
 function requiresLogin(req, res, next) {
-    if (req.session && req.session.userId) {
+
+    console.log('used acc', account)
+
+
+    if (account === 'ka1207424@gmail.com') {
         if (targetURI) {
             res.redirect(targetURI)
             targetURI = null
@@ -87,7 +141,7 @@ function requiresLogin(req, res, next) {
         )
     } else {
         targetURI = req.url
-        res.redirect('/login')
+        res.redirect('/loginview')
     }
 }
 module.exports = router
