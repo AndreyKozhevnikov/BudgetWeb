@@ -4,7 +4,7 @@ let router = express.Router()
 let User = require('../models/user.js')
 
 let targetURI
-let account
+
 
 const msal = require('@azure/msal-node');
 
@@ -59,9 +59,9 @@ router.get('/logout', async function(req, res, next) {
             console.log(JSON.stringify(err));
             return res.sendStatus(500); // Error occurred
         }
-        res.clearCookie('idToken')
-        account = null
-        res.render('loginview')
+        res.clearCookie('idToken');
+        res.clearCookie('bwebuserid');
+        res.render('loginview');
     });
 })
 
@@ -85,8 +85,8 @@ router.get('/auth/redirect', (req, res) => {
                     console.log('user not found', userName)
                     res.redirect('/loginview')
                 } else {
-                    account = response.account.username
-                    console.log(account)
+                    req.session.account = response.account.username;
+                    console.log(req.session.account)
                     res.cookie('idToken', response.idToken, { httpOnly: true });
                     // res.send('Login successful');
                     res.redirect('/wiki')
@@ -105,10 +105,10 @@ router.get('*', function(req, res, next) {
 
 function requiresLogin(req, res, next) {
 
-    console.log('used acc', account)
+    console.log('used acc', req.session.account)
 
 
-    if (account === 'ka1207424@gmail.com') {
+    if (req.session.account) {
         if (targetURI) {
             res.redirect(targetURI)
             targetURI = null
