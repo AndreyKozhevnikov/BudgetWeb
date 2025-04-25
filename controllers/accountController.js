@@ -30,51 +30,44 @@ function create_post(req, res, next) {
         })
         return
     } else {
-        Account.findOne({ Name: req.body.Name_frm }).exec(function(
-            err,
-            found_acc,
-        ) {
-            if (err) {
-                return next(err)
-            }
-            if (found_acc) {
-                res.redirect(found_acc.url)
-            } else {
-                account.save(function(err, acc) {
-                    if (err) {
-                        return next(err)
-                    }
-                    FixRecordController.createFixRecord(
-                        FixRecordController.FRecordTypes.StartMonth,
-                        Helper.getToday(),
-                        acc,
-                        0,
-                    )
-                    res.redirect('/account/list')
-                })
-            }
-        })
+        Account.findOne({ Name: req.body.Name_frm }).exec(
+            function (err, found_acc) {
+                if (err) {
+                    return next(err)
+                }
+                if (found_acc) {
+                    res.redirect(found_acc.url)
+                } else {
+                    account.save(function (err, acc) {
+                        if (err) {
+                            return next(err)
+                        }
+                        FixRecordController.createFixRecord(
+                            FixRecordController.FRecordTypes.StartMonth,
+                            Helper.getToday(),
+                            acc,
+                            0,
+                        )
+                        res.redirect('/account/list')
+                    })
+                }
+            },
+        )
     }
 }
 let create_post_array = [
-    body('Name_frm', 'Tag name required')
-        .isLength({ min: 1 })
-        .trim(),
-    body('Name_frm')
-        .trim()
-        .escape(),
-    body('LocalId_frm')
-        .trim()
-        .escape(),
+    body('Name_frm', 'Tag name required').isLength({ min: 1 }).trim(),
+    body('Name_frm').trim().escape(),
+    body('LocalId_frm').trim().escape(),
     (req, res, next) => create_post(req, res, next),
 ]
 
 function list(req, res, next) {
-    Account.find().exec(function(err, list_account) {
+    Account.find().exec(function (err, list_account) {
         if (err) {
             return next(err)
         }
-        list_account.sort(function(a, b) {
+        list_account.sort(function (a, b) {
             return a.OrderNumber - b.OrderNumber
         })
         res.render('account_list', {
@@ -87,8 +80,8 @@ function list(req, res, next) {
 async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
     let startDate = dateObject.startDateToCalculate
     accRes.accList = Object.values(accRes.accList)
-    accRes.accList = accRes.accList.filter(x => !x.isarchived)
-    accRes.accList.sort(function(a, b) {
+    accRes.accList = accRes.accList.filter((x) => !x.isarchived)
+    accRes.accList.sort(function (a, b) {
         let aNumber = a.ordernumber
         let bNumber = b.ordernumber
         if (aNumber === null) aNumber = 999
@@ -103,7 +96,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         inputSum: {},
         outputSum: {},
     }
-    accRes.accList.forEach(item => {
+    accRes.accList.forEach((item) => {
         if (item.lastCheckDate.getFullYear() < 2000) {
             item.lastCheckDateString = '--'
         } else {
@@ -166,12 +159,12 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
     accRes.sumObject = sumObject
 
     if (!isCreateFirstMonth) {
-        let ali = accRes.accList.find(el => el.name === 'TinkoffAli')
+        let ali = accRes.accList.find((el) => el.name === 'TinkoffAli')
         if (ali != null) {
             let alires = ali.result
             ali.result = alires + ' (' + (Number(alires) + 285000) + ')'
         }
-        let sberCredit = accRes.accList.find(el => el.name === 'SberCredit')
+        let sberCredit = accRes.accList.find((el) => el.name === 'SberCredit')
         if (sberCredit != null) {
             let sberCreditres = sberCredit.result
             sberCredit.result =
@@ -220,7 +213,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth) {
     totalExpense[Helper.Currencies.Rub] = 0
 
     let start = async () => {
-        await asyncForEach(accListObject.accList, async accRecord => {
+        await asyncForEach(accListObject.accList, async (accRecord) => {
             let currentCurrency = accRecord.currency
             if (!currentCurrency) {
                 currentCurrency = Helper.Currencies.Rub
@@ -324,27 +317,27 @@ async function prepareDataToBuildAccountList(startDate, finishDate) {
         .sort('DateTime')
     dataObject.accountList = await Account.find()
     console.time('iterate')
-    dataObject.orderList.forEach(order => {
-        let realAcc = dataObject.accountList.find(acc =>
+    dataObject.orderList.forEach((order) => {
+        let realAcc = dataObject.accountList.find((acc) =>
             acc._id.equals(order.PaymentAccount),
         )
         order.PaymentAccount = realAcc
     })
 
-    dataObject.serviceOrderList.forEach(sOrder => {
-        let realAccIn = dataObject.accountList.find(acc =>
+    dataObject.serviceOrderList.forEach((sOrder) => {
+        let realAccIn = dataObject.accountList.find((acc) =>
             acc._id.equals(sOrder.AccountIn),
         )
         sOrder.AccountIn = realAccIn
 
-        let realAccOut = dataObject.accountList.find(acc =>
+        let realAccOut = dataObject.accountList.find((acc) =>
             acc._id.equals(sOrder.AccountOut),
         )
         sOrder.AccountOut = realAccOut
     })
 
-    dataObject.fixRecordsList.forEach(fRecord => {
-        let realAcc = dataObject.accountList.find(acc =>
+    dataObject.fixRecordsList.forEach((fRecord) => {
+        let realAcc = dataObject.accountList.find((acc) =>
             acc._id.equals(fRecord.Account),
         )
         fRecord.Account = realAcc
@@ -361,7 +354,7 @@ async function iterateOverDataAndPopulateResultObjects(
     dateObject,
 ) {
     accRes.accList = {}
-    dataObject.accountList.forEach(acc => {
+    dataObject.accountList.forEach((acc) => {
         accRes.accList[acc.Name] = {
             name: acc.Name,
             startSum: 0,
@@ -383,7 +376,7 @@ async function iterateOverDataAndPopulateResultObjects(
         }
     })
 
-    dataObject.serviceOrderList.forEach(sOrder => {
+    dataObject.serviceOrderList.forEach((sOrder) => {
         if (sOrder.AccountIn) {
             if (sOrder.AccountIn.IsMoneyBox) {
                 accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersToMB +=
@@ -410,7 +403,7 @@ async function iterateOverDataAndPopulateResultObjects(
             }
         }
     })
-    dataObject.orderList.forEach(order => {
+    dataObject.orderList.forEach((order) => {
         let orderAccount = order.PaymentAccount
         accRes.accList[orderAccount.Name].sumPayments += order.Value
 
@@ -443,7 +436,7 @@ async function iterateOverDataAndPopulateResultObjects(
 
         statObj.sumAllOrders += order.Value
     })
-    dataObject.fixRecordsList.forEach(fixRecord => {
+    dataObject.fixRecordsList.forEach((fixRecord) => {
         if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth) {
             if (fixRecord.DateTime >= dateObject.startDateToCalculate) {
                 accRes.accList[fixRecord.Account.Name].startSum =
@@ -470,7 +463,8 @@ async function getDateObject(req) {
     if (!dateObjectFromQuery.hasDateParameter) {
         dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth()
         dateData.finishDateToCalculate = Helper.getTomorrow()
-        let lastStartMonthRecordDate = await FixRecordController.getTheLastFixRecordsDate()
+        let lastStartMonthRecordDate =
+            await FixRecordController.getTheLastFixRecordsDate()
         if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
             await createStartMonthRecords(dateData.startDateToCalculate)
         }
@@ -552,11 +546,11 @@ function sortGroups(orderGroups) {
     for (const [key, value] of Object.entries(orderGroups)) {
         sortable.push(value)
     }
-    sortable.sort(function(a, b) {
+    sortable.sort(function (a, b) {
         return a.Name.localeCompare(b.Name)
     })
     let objSorted = {}
-    sortable.forEach(function(item) {
+    sortable.forEach(function (item) {
         objSorted[item.Name] = item
     })
     return objSorted
@@ -580,7 +574,7 @@ async function aggregatedList(req, res, next) {
         thisMonthDates: {},
         thisMonthSpendGroups: {},
         lastWeekSpendGroups: {},
-        consumeOrder: function(order) {
+        consumeOrder: function (order) {
             monthObject.thisMonthDates[order.DateOrder].Value += order.Value
             monthObject.thisMonthDates[order.DateOrder].orderList.push({
                 description: order.Description,
@@ -762,7 +756,7 @@ function prepareEmptyMonthObject(dateObject, monthObject) {
 }
 
 function update_get(req, res, next) {
-    Account.findById(req.params.id).exec(function(err, result) {
+    Account.findById(req.params.id).exec(function (err, result) {
         if (err) {
             next(err)
         }
@@ -819,15 +813,17 @@ function update_post(req, res, next) {
             account_frm: account,
         })
     } else {
-        Account.findByIdAndUpdate(req.params.id, account, [], function(
-            err,
-            theAcc,
-        ) {
-            if (err) {
-                return next(err)
-            }
-            res.redirect('/account/aggregatedList')
-        })
+        Account.findByIdAndUpdate(
+            req.params.id,
+            account,
+            [],
+            function (err, theAcc) {
+                if (err) {
+                    return next(err)
+                }
+                res.redirect('/account/aggregatedList')
+            },
+        )
     }
 }
 
@@ -837,17 +833,13 @@ async function getAccountName(accId) {
 }
 
 let update_post_array = [
-    body('LocalId_frm')
-        .trim()
-        .escape(),
-    body('Name_frm')
-        .trim()
-        .escape(),
+    body('LocalId_frm').trim().escape(),
+    body('Name_frm').trim().escape(),
     (req, res, next) => update_post(req, res, next),
 ]
 
 function deleteTypes(req, res, next) {
-    Account.remove({}, function(err) {
+    Account.remove({}, function (err) {
         if (err) {
             next(err)
         } else {

@@ -208,7 +208,7 @@ function createUserPost(req, res, next) {
         password: req.body.upass,
     })
 
-    user.save(function(err, resultuser) {
+    user.save(function (err, resultuser) {
         if (err) {
             return next(err)
         }
@@ -218,34 +218,34 @@ function createUserPost(req, res, next) {
 function updatelocalids(req, res, next) {
     var updateObjects = req.body.updateObjects
     var updateObjectList = JSON.parse(updateObjects)
-    updateObjectList.forEach(x => {
+    updateObjectList.forEach((x) => {
         let id = x.WebId
         let localId = x.LocalId
         let type = x.Type
         let rt
         switch (type) {
-        case 'Order':
-            rt = Order
-            break
-        case 'Tag':
-            rt = Tag
-            break
-        case 'PaymentType':
-            rt = PaymentType
-            break
-        case 'Place':
-            rt = OrderPlace
-            break
-        case 'Object':
-            rt = OrderObject
-            break
+            case 'Order':
+                rt = Order
+                break
+            case 'Tag':
+                rt = Tag
+                break
+            case 'PaymentType':
+                rt = PaymentType
+                break
+            case 'Place':
+                rt = OrderPlace
+                break
+            case 'Object':
+                rt = OrderObject
+                break
         }
-        rt.findById(id, function(err, theEntity) {
+        rt.findById(id, function (err, theEntity) {
             if (err) {
                 next(err)
             }
             theEntity.LocalId = localId
-            theEntity.save(function(err, savedEntity) {
+            theEntity.save(function (err, savedEntity) {
                 if (err) {
                     next(err)
                 }
@@ -282,22 +282,23 @@ async function test(req, res, next) {
     // let lst = await Order.find({ DateOrder: { $lte: startDate } });
 
     await FixRecord.remove({ DateTime: { $lte: startDate } })
-    await Order.remove({ DateOrder: { $lte: startDate } }, function(err) {
+    await Order.remove({ DateOrder: { $lte: startDate } }, function (err) {
         if (err) {
             next(err)
         } else {
             // res.end('success');
         }
     })
-    await ServiceOrder.remove({ DateOrder: { $lte: startDate } }, function(
-        err,
-    ) {
-        if (err) {
-            next(err)
-        } else {
-            // res.end('success');
-        }
-    })
+    await ServiceOrder.remove(
+        { DateOrder: { $lte: startDate } },
+        function (err) {
+            if (err) {
+                next(err)
+            } else {
+                // res.end('success');
+            }
+        },
+    )
     // res.end('success22');
 }
 

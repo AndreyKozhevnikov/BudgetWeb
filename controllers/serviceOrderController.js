@@ -82,7 +82,7 @@ function create_post(req, res, next) {
         res.render('serviceOrder_form', objToShow)
         return
     } else {
-        serviceOrder.save(function(err) {
+        serviceOrder.save(function (err) {
             if (err) {
                 return next(err)
             }
@@ -92,15 +92,9 @@ function create_post(req, res, next) {
 }
 
 let create_post_array = [
-    body('LocalId_frm')
-        .trim()
-        .escape(),
-    body('Value_frm')
-        .trim()
-        .escape(),
-    body('Description_frm')
-        .trim()
-        .escape(),
+    body('LocalId_frm').trim().escape(),
+    body('Value_frm').trim().escape(),
+    body('Description_frm').trim().escape(),
     (req, res, next) => create_post(req, res, next),
 ]
 
@@ -110,7 +104,7 @@ async function populateLists() {
         accountList = await accountFind({
             $or: [{ IsArchived: false }, { IsArchived: { $exists: false } }],
         })
-        accountList.sort(function(a, b) {
+        accountList.sort(function (a, b) {
             if (a.Name < b.Name) {
                 return -1
             }
@@ -174,7 +168,7 @@ function list(req, res, next) {
         .populate('AccountOut')
         .populate('AccountIn')
         .sort({ DateOrder: -1 })
-        .exec(function(err, list_serviceOrders) {
+        .exec(function (err, list_serviceOrders) {
             if (err) {
                 return next(err)
             }
@@ -186,7 +180,7 @@ function list(req, res, next) {
 }
 
 function update_get(req, res, next) {
-    ServiceOrder.findById(req.params.id).exec(function(err, sOrder) {
+    ServiceOrder.findById(req.params.id).exec(function (err, sOrder) {
         if (err) {
             return next(err)
         }
@@ -214,7 +208,7 @@ function update_post(req, res, next) {
             req.params.id,
             serviceOrder,
             [],
-            function(err, theSOrder) {
+            function (err, theSOrder) {
                 if (err) {
                     return next(err)
                 }
@@ -231,15 +225,9 @@ let update_post_array = [
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),
-    body('Value_frm')
-        .trim()
-        .escape(),
-    body('Description_frm')
-        .trim()
-        .escape(),
-    body('LocalId_frm')
-        .trim()
-        .escape(),
+    body('Value_frm').trim().escape(),
+    body('Description_frm').trim().escape(),
+    body('LocalId_frm').trim().escape(),
     (req, res, next) => update_post(req, res, next),
 ]
 
@@ -249,7 +237,7 @@ async function getList(startDate, finishDate) {
     return list
 }
 function deleteTypes(req, res, next) {
-    ServiceOrder.remove({}, function(err) {
+    ServiceOrder.remove({}, function (err) {
         if (err) {
             next(err)
         } else {

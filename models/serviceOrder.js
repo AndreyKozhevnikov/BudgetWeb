@@ -16,10 +16,10 @@ let ServiceOrderSchema = new Schema({
     CreatedTime: { type: Date },
 })
 
-ServiceOrderSchema.virtual('url').get(function() {
+ServiceOrderSchema.virtual('url').get(function () {
     return '/serviceOrder/' + this._id + '/update'
 })
-ServiceOrderSchema.virtual('DateOrder_pugFormat').get(function() {
+ServiceOrderSchema.virtual('DateOrder_pugFormat').get(function () {
     return Helper.getUrlDateString(this.DateOrder)
 })
 module.exports = mongoose.model('ServiceOrder', ServiceOrderSchema)

@@ -10,7 +10,7 @@ let OrderPlaceSchema = new Schema({
 })
 
 // Virtual for URL
-OrderPlaceSchema.virtual('url').get(function() {
+OrderPlaceSchema.virtual('url').get(function () {
     return '/orderPlace/' + this._id + '/update'
 })
 

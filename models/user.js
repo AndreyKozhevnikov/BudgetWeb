@@ -15,10 +15,10 @@ let UserSchema = new mongoose.Schema({
         required: true,
     },
 })
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
     if (Helper.isRestoreMode) next()
     let user = this
-    bcrypt.hash(user.password, 10, function(err, hash) {
+    bcrypt.hash(user.password, 10, function (err, hash) {
         if (err) {
             return next(err)
         }
@@ -26,10 +26,10 @@ UserSchema.pre('save', function(next) {
         next()
     })
 })
-UserSchema.statics.authenticate = function(username, password, callback, id) {
+UserSchema.statics.authenticate = function (username, password, callback, id) {
     User.findOne({ $or: [{ username: username }, { _id: id }] })
         // User.findOne({_id:id})
-        .exec(function(err, user) {
+        .exec(function (err, user) {
             if (err) {
                 return callback(err)
             } else if (!user) {
@@ -40,7 +40,7 @@ UserSchema.statics.authenticate = function(username, password, callback, id) {
             if (id) {
                 return callback(null, user)
             }
-            bcrypt.compare(password, user.password, function(err, result) {
+            bcrypt.compare(password, user.password, function (err, result) {
                 if (err) {
                     console.dir(err)
                 }

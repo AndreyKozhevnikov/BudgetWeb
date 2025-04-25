@@ -2,12 +2,12 @@
 /*eslint no-new: 0, new-cap: 0*/
 'use strict'
 
-window.onload = function() {
+window.onload = function () {
     // let chartElement = document.getElementById('thisMonthDatesContainer');
     // new DevExpress.ui.dxChart(chartElement, {
     $('#thisMonthDatesContainer').dxChart({
         dataSource: Object.values(thisMonthDates),
-        customizePoint: function() {
+        customizePoint: function () {
             if (this.seriesName === 'DiffSeries') {
                 if (this.value > 0) {
                     return {
@@ -43,9 +43,9 @@ window.onload = function() {
         },
         tooltip: {
             enabled: true,
-            customizeTooltip: function(arg) {
+            customizeTooltip: function (arg) {
                 let addText = ''
-                arg.point.data.orderList.forEach(element => {
+                arg.point.data.orderList.forEach((element) => {
                     addText =
                         addText +
                         element.description +

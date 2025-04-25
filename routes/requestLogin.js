@@ -5,8 +5,7 @@ let User = require('../models/user.js')
 
 let targetURI
 
-
-const msal = require('@azure/msal-node');
+const msal = require('@azure/msal-node')
 
 const config = {
     auth: {
@@ -14,13 +13,13 @@ const config = {
         authority: `https://login.microsoftonline.com/${process.env.TENANT_ID}`,
         clientSecret: process.env.CLIENT_SECRET,
     },
-};
-const pca = new msal.ConfidentialClientApplication(config);
+}
+const pca = new msal.ConfidentialClientApplication(config)
 function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
     User.authenticate(
         name,
         pass,
-        function(error, user) {
+        function (error, user) {
             if (error || !user) {
                 let err = new Error(
                     'wrong name or pass2' + '---' + user + '----' + error,
@@ -38,31 +37,32 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
         id,
     )
 }
-router.get('/loginview', async function(req, res, next) {
+router.get('/loginview', async function (req, res, next) {
     res.render('loginview')
 })
-router.get('/login', async function(req, res, next) {
+router.get('/login', async function (req, res, next) {
     const authCodeUrlParameters = {
         scopes: ['user.read'],
         redirectUri: process.env.REDIRECT_URI,
-    };
+    }
 
-    pca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
-        res.redirect(response);
-    }).catch((error) => console.log(JSON.stringify(error)));
-
+    pca.getAuthCodeUrl(authCodeUrlParameters)
+        .then((response) => {
+            res.redirect(response)
+        })
+        .catch((error) => console.log(JSON.stringify(error)))
 })
 
-router.get('/logout', async function(req, res, next) {
+router.get('/logout', async function (req, res, next) {
     req.session.destroy((err) => {
         if (err) {
-            console.log(JSON.stringify(err));
-            return res.sendStatus(500); // Error occurred
+            console.log(JSON.stringify(err))
+            return res.sendStatus(500) // Error occurred
         }
-        res.clearCookie('idToken');
-        res.clearCookie('bwebuserid');
-        res.render('loginview');
-    });
+        res.clearCookie('idToken')
+        res.clearCookie('bwebuserid')
+        res.render('loginview')
+    })
 })
 
 router.get('/auth/redirect', (req, res) => {
@@ -70,43 +70,41 @@ router.get('/auth/redirect', (req, res) => {
         code: req.query.code,
         scopes: ['user.read'],
         redirectUri: process.env.REDIRECT_URI,
-    };
+    }
 
-    pca.acquireTokenByCode(tokenRequest).then((response) => {
-        let userName = response.account.username
+    pca.acquireTokenByCode(tokenRequest)
+        .then((response) => {
+            let userName = response.account.username
 
-        User.findOne({ $or: [{ username: userName }] })
-        // User.findOne({_id:id})
-            .exec(function(err, user) {
-                if (err) {
-                    console.log('login err', err)
-                    res.redirect('/loginview')
-                } else if (!user) {
-                    console.log('user not found', userName)
-                    res.redirect('/loginview')
-                } else {
-                    req.session.account = response.account.username;
-                    console.log(req.session.account)
-                    res.cookie('idToken', response.idToken, { httpOnly: true });
-                    // res.send('Login successful');
-                    res.redirect('/wiki')
-                }
-            }
-            )
+            User.findOne({ $or: [{ username: userName }] })
+                // User.findOne({_id:id})
+                .exec(function (err, user) {
+                    if (err) {
+                        console.log('login err', err)
+                        res.redirect('/loginview')
+                    } else if (!user) {
+                        console.log('user not found', userName)
+                        res.redirect('/loginview')
+                    } else {
+                        req.session.account = response.account.username
+                        console.log(req.session.account)
+                        res.cookie('idToken', response.idToken, {
+                            httpOnly: true,
+                        })
+                        // res.send('Login successful');
+                        res.redirect('/wiki')
+                    }
+                })
+        })
+        .catch((error) => console.log(error))
+})
 
-
-    }).catch((error) => console.log(error));
-});
-
-
-router.get('*', function(req, res, next) {
+router.get('*', function (req, res, next) {
     requiresLogin(req, res, next)
 })
 
 function requiresLogin(req, res, next) {
-
     console.log('used acc', req.session.account)
-
 
     if (req.session.account) {
         if (targetURI) {
@@ -123,7 +121,7 @@ function requiresLogin(req, res, next) {
         let values = req.cookies.cookiename.split('-')
         let username = values[0]
         let pass = values[1]
-        authenticate(username, pass, req, res, next, function() {
+        authenticate(username, pass, req, res, next, function () {
             return next()
         })
     } else if (req.cookies.bwebuserid) {
@@ -134,7 +132,7 @@ function requiresLogin(req, res, next) {
             req,
             res,
             next,
-            function() {
+            function () {
                 return next()
             },
             st,

@@ -2,7 +2,7 @@
 /*eslint no-new: 0, new-cap: 0*/
 'use strict'
 
-window.onload = function() {
+window.onload = function () {
     let gridElement = document.getElementById('listContainer')
     new DevExpress.ui.dxDataGrid(gridElement, {
         dataSource: data_list,

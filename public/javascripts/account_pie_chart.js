@@ -23,7 +23,7 @@ function createPieChart(divName, collection) {
         ],
         tooltip: {
             enabled: true,
-            customizeTooltip: function(point) {
+            customizeTooltip: function (point) {
                 return { text: point.argument }
             },
         },
@@ -35,7 +35,7 @@ function createPieChart(divName, collection) {
     })
 }
 
-window.onload = function() {
+window.onload = function () {
     oldonload()
     //  let chartElement = document.getElementById('thisMonthPieChartContainer');
     //  console.log(chartElement);

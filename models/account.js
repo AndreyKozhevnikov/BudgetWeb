@@ -17,7 +17,7 @@ let AccountSchema = new Schema({
     Currency: { type: String },
 })
 
-AccountSchema.virtual('url').get(function() {
+AccountSchema.virtual('url').get(function () {
     return '/account/' + this._id + '/update'
 })
 

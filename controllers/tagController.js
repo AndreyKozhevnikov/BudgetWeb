@@ -3,7 +3,7 @@ let Tag = require('../models/tag.js')
 const { body, validationResult } = require('express-validator')
 
 function tag_list(req, res, next) {
-    Tag.find().exec(function(err, list_tags) {
+    Tag.find().exec(function (err, list_tags) {
         if (err) {
             return next(err)
         }
@@ -31,49 +31,42 @@ function tag_create_post(req, res, next) {
         })
         return
     } else {
-        Tag.findOne({ Name: req.body.NameFromForm }).exec(function(
-            err,
-            found_tag,
-        ) {
-            if (err) {
-                return next(err)
-            }
-            if (found_tag) {
-                res.redirect(found_tag.url)
-            } else {
-                tag.save(function(err) {
-                    if (err) {
-                        return next(err)
-                    }
-                    res.redirect('/order/createWithNewLists')
-                })
-            }
-        })
+        Tag.findOne({ Name: req.body.NameFromForm }).exec(
+            function (err, found_tag) {
+                if (err) {
+                    return next(err)
+                }
+                if (found_tag) {
+                    res.redirect(found_tag.url)
+                } else {
+                    tag.save(function (err) {
+                        if (err) {
+                            return next(err)
+                        }
+                        res.redirect('/order/createWithNewLists')
+                    })
+                }
+            },
+        )
     }
 }
 let tag_create_post_array = [
-    body('NameFromForm', 'Tag name required')
-        .isLength({ min: 1 })
-        .trim(),
-    body('NameFromForm')
-        .trim()
-        .escape(),
-    body('LocalIdFromForm')
-        .trim()
-        .escape(),
+    body('NameFromForm', 'Tag name required').isLength({ min: 1 }).trim(),
+    body('NameFromForm').trim().escape(),
+    body('LocalIdFromForm').trim().escape(),
     (req, res, next) => tag_create_post(req, res, next),
 ]
 
-exports.tag_delete_get = function(req, res) {
+exports.tag_delete_get = function (req, res) {
     res.send('NOT IMPLEMENTED: tag delete GET')
 }
 
-exports.tag_delete_post = function(req, res) {
+exports.tag_delete_post = function (req, res) {
     res.send('NOT IMPLEMENTED: tag delete POST')
 }
 
 function tag_update_get(req, res, next) {
-    Tag.findById(req.params.id).exec(function(err, result) {
+    Tag.findById(req.params.id).exec(function (err, result) {
         if (err) {
             next(err)
         }
@@ -92,7 +85,7 @@ function tag_update_post(req, res, next) {
     if (!errors.isEmpty()) {
         res.render('tag_form', { title: 'Update Order', tagFromForm: tag })
     } else {
-        Tag.findByIdAndUpdate(req.params.id, tag, [], function(err, theTag) {
+        Tag.findByIdAndUpdate(req.params.id, tag, [], function (err, theTag) {
             if (err) {
                 return next(err)
             }
@@ -101,17 +94,13 @@ function tag_update_post(req, res, next) {
     }
 }
 let tag_update_post_array = [
-    body('LocalIdFromForm')
-        .trim()
-        .escape(),
-    body('NameFromForm')
-        .trim()
-        .escape(),
+    body('LocalIdFromForm').trim().escape(),
+    body('NameFromForm').trim().escape(),
     (req, res, next) => tag_update_post(req, res, next),
 ]
 
 function deleteTags(req, res, next) {
-    Tag.remove({}, function(err) {
+    Tag.remove({}, function (err) {
         if (err) {
             next(err)
         } else {

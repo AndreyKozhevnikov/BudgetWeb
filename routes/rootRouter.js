@@ -9,7 +9,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/deleteall', root_controller.deleteAll)
 
-router.get('/restore', function(req, res, next) {
+router.get('/restore', function (req, res, next) {
     res.redirect('/wiki')
 })
 

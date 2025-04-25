@@ -25,14 +25,14 @@ let OrderSchema = new Schema({
 // OrderSchema.set('toJSON', { virtuals: true });
 
 // Virtual for author's URL
-OrderSchema.virtual('url').get(function() {
+OrderSchema.virtual('url').get(function () {
     return '/order/' + this._id + '/update'
 })
 
-OrderSchema.virtual('DateOrder_formatted').get(function() {
+OrderSchema.virtual('DateOrder_formatted').get(function () {
     return moment(this.DateOrder).format('DD MMMM YYYY ddd')
 })
-OrderSchema.virtual('DateOrder_pugFormat').get(function() {
+OrderSchema.virtual('DateOrder_pugFormat').get(function () {
     return Helper.getUrlDateString(this.DateOrder)
 })
 

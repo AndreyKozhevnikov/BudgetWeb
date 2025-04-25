@@ -83,7 +83,7 @@ async function listByDate(req, res, next) {
             finishDate,
         )
         sOrders = sOrders.filter(
-            x => x.Type === 'between' && x.AccountIn.IsMoneyBox === true,
+            (x) => x.Type === 'between' && x.AccountIn.IsMoneyBox === true,
         )
         createAndShowMixOrdersList(
             orders,

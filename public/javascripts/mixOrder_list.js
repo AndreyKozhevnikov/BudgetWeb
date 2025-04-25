@@ -2,7 +2,7 @@
 /*eslint no-new: 0, new-cap: 0*/
 'use strict'
 
-window.onload = function() {
+window.onload = function () {
     let gridElement = document.getElementById('listContainer')
     new DevExpress.ui.dxDataGrid(gridElement, {
         dataSource: mixOrders_list,
@@ -100,7 +100,7 @@ window.onload = function() {
             },
         ],
         wordWrapEnabled: true,
-        onRowPrepared: function(e) {
+        onRowPrepared: function (e) {
             if (e.rowType === 'data') {
                 if (e.data.IsMoneyBox === true) {
                     e.rowElement.addClass('MoneyBoxRow')

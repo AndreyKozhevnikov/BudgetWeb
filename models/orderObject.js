@@ -9,7 +9,7 @@ let OrderObjectSchema = new Schema({
 })
 
 // Virtual for URL
-OrderObjectSchema.virtual('url').get(function() {
+OrderObjectSchema.virtual('url').get(function () {
     return '/tag/' + this._id
 })
 

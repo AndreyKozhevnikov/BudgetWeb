@@ -36,7 +36,7 @@ function handleTypeRButtons() {
         if (rButtons[i].checked) {
             value = rButtons[i].value
         }
-        rButtons[i].addEventListener('change', function() {
+        rButtons[i].addEventListener('change', function () {
             updateCombos(this.value)
             updateButtons(this.value)
             valueInput.focus()

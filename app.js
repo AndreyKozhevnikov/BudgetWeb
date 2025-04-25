@@ -1,5 +1,5 @@
 'use strict'
-require('dotenv').config();
+require('dotenv').config()
 let express = require('express')
 let path = require('path')
 let favicon = require('serve-favicon')
@@ -82,14 +82,14 @@ process.on('unhandledRejection', (reason, promise) => {
     // Application specific logging, throwing an error, or other logic here
 })
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     let err = new Error('Not Found ' + req.originalUrl)
     err.status = 404
     next(err)
 })
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message
     res.locals.error = isDevelopment ? err : {}

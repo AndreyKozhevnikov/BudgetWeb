@@ -23,12 +23,12 @@ function getFirstDateOfShifterMonth(currMonthDate, shift) {
     let dt = new Date(currMonthDate)
     let mnt = dt.getMonth()
     switch (shift) {
-    case 'prev':
-        mnt = mnt - 1
-        break
-    case 'next':
-        mnt = mnt + 1
-        break
+        case 'prev':
+            mnt = mnt - 1
+            break
+        case 'next':
+            mnt = mnt + 1
+            break
     }
     dt.setMonth(mnt)
     return dt
@@ -98,7 +98,7 @@ function getMonthName(date) {
 }
 
 function promisify(f, context) {
-    return function(...args) {
+    return function (...args) {
         // return a wrapper-function
         return new Promise((resolve, reject) => {
             function callback(err, result) {
@@ -116,9 +116,9 @@ function promisify(f, context) {
 }
 
 function sortListByGroupedList(listToSort, groupedList) {
-    listToSort.sort(function(a, b) {
-        let aNumber = groupedList.find(item => item._id.equals(a._id))
-        let bNumber = groupedList.find(item => item._id.equals(b._id))
+    listToSort.sort(function (a, b) {
+        let aNumber = groupedList.find((item) => item._id.equals(a._id))
+        let bNumber = groupedList.find((item) => item._id.equals(b._id))
         aNumber = aNumber ? aNumber.count : 0
         bNumber = bNumber ? bNumber.count : 0
         if (!a.MyNumber) {

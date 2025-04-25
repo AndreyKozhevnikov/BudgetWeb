@@ -32,7 +32,7 @@ function setDtOrderMaxDate() {
 }
 
 function disableMouseWheel(input) {
-    input.addEventListener('mousewheel', e => {
+    input.addEventListener('mousewheel', (e) => {
         e.preventDefault()
     })
 }
@@ -45,7 +45,7 @@ function processKeyDown() {
 }
 
 function focusDescriptionAfterEnterNonNumberInValue() {
-    valueInput.onkeydown = function(keyBoardEvent) {
+    valueInput.onkeydown = function (keyBoardEvent) {
         let notHandledKeys = [
             'Tab',
             'ArrowRight',

@@ -3,7 +3,7 @@ let OrderPlace = require('../models/orderPlace.js')
 const { body, validationResult } = require('express-validator')
 
 function orderPlace_list(req, res, next) {
-    OrderPlace.find().exec(function(err, result_list) {
+    OrderPlace.find().exec(function (err, result_list) {
         if (err) {
             return next(err)
         }
@@ -40,49 +40,42 @@ function create_post(req, res, next) {
         })
         return
     } else {
-        OrderPlace.findOne({ Name: req.body.NameFromForm }).exec(function(
-            err,
-            found_entity,
-        ) {
-            if (err) {
-                return next(err)
-            }
-            if (found_entity) {
-                res.redirect(found_entity.url)
-            } else {
-                orderPlace.save(function(err) {
-                    if (err) {
-                        return next(err)
-                    }
-                    res.redirect('/order/createWithNewLists')
-                })
-            }
-        })
+        OrderPlace.findOne({ Name: req.body.NameFromForm }).exec(
+            function (err, found_entity) {
+                if (err) {
+                    return next(err)
+                }
+                if (found_entity) {
+                    res.redirect(found_entity.url)
+                } else {
+                    orderPlace.save(function (err) {
+                        if (err) {
+                            return next(err)
+                        }
+                        res.redirect('/order/createWithNewLists')
+                    })
+                }
+            },
+        )
     }
 }
 let create_post_array = [
-    body('NameFromForm', 'name required')
-        .isLength({ min: 1 })
-        .trim(),
-    body('NameFromForm')
-        .trim()
-        .escape(),
-    body('LocalIdFromForm')
-        .trim()
-        .escape(),
+    body('NameFromForm', 'name required').isLength({ min: 1 }).trim(),
+    body('NameFromForm').trim().escape(),
+    body('LocalIdFromForm').trim().escape(),
     (req, res, next) => create_post(req, res, next),
 ]
 
-exports.delete_get = function(req, res) {
+exports.delete_get = function (req, res) {
     res.send('NOT IMPLEMENTED: tag delete GET')
 }
 
-exports.delete_post = function(req, res) {
+exports.delete_post = function (req, res) {
     res.send('NOT IMPLEMENTED: tag delete POST')
 }
 
 function update_get(req, res, next) {
-    OrderPlace.findById(req.params.id).exec(function(err, result) {
+    OrderPlace.findById(req.params.id).exec(function (err, result) {
         if (err) {
             next(err)
         }
@@ -114,29 +107,27 @@ function update_post(req, res, next) {
             orderPlaceFromForm: orderPlace,
         })
     } else {
-        OrderPlace.findByIdAndUpdate(req.params.id, orderPlace, [], function(
-            err,
-            theEntity,
-        ) {
-            if (err) {
-                return next(err)
-            }
-            res.redirect('/orderplace/list')
-        })
+        OrderPlace.findByIdAndUpdate(
+            req.params.id,
+            orderPlace,
+            [],
+            function (err, theEntity) {
+                if (err) {
+                    return next(err)
+                }
+                res.redirect('/orderplace/list')
+            },
+        )
     }
 }
 let update_post_array = [
-    body('LocalIdFromForm')
-        .trim()
-        .escape(),
-    body('NameFromForm')
-        .trim()
-        .escape(),
+    body('LocalIdFromForm').trim().escape(),
+    body('NameFromForm').trim().escape(),
     (req, res, next) => update_post(req, res, next),
 ]
 
 function deleteEntities(req, res, next) {
-    OrderPlace.remove({}, function(err) {
+    OrderPlace.remove({}, function (err) {
         if (err) {
             next(err)
         } else {

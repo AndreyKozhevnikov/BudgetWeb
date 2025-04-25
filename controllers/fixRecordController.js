@@ -67,7 +67,7 @@ async function getList(startDate, finishDate) {
 }
 
 function deleteTypes(req, res, next) {
-    FixRecord.remove({}, function(err) {
+    FixRecord.remove({}, function (err) {
         if (err) {
             next(err)
         } else {
@@ -84,13 +84,16 @@ function deleteStartMonthRecords(req, res, next) {
 }
 function deleteCurrMonthStartRecords(req, res, next) {
     let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth()
-    FixRecord.remove({ DateTime: { $gte: currMonthFirstDate } }, function(err) {
-        if (err) {
-            next(err)
-        } else {
-            res.end('success')
-        }
-    })
+    FixRecord.remove(
+        { DateTime: { $gte: currMonthFirstDate } },
+        function (err) {
+            if (err) {
+                next(err)
+            } else {
+                res.end('success')
+            }
+        },
+    )
 }
 
 async function createTotalIncoming(req, res, next) {
@@ -150,7 +153,7 @@ async function createTotalIncoming(req, res, next) {
     for (let order of orders) {
         let dt = new Date(order._id.year, order._id.month - 1, 15)
         let sOutOrder = sOutOrders.find(
-            x =>
+            (x) =>
                 x._id.year === order._id.year &&
                 x._id.month === order._id.month,
         )
@@ -187,7 +190,7 @@ async function createTotalSums(req, res, next) {
             },
         },
     ])
-    let listFirtsOnly = lst.filter(x => x._id.getDate() === 1)
+    let listFirtsOnly = lst.filter((x) => x._id.getDate() === 1)
     for (let row of listFirtsOnly) {
         createFixRecord(FRecordTypes.TotalSum, row._id, null, row.totalSum)
     }
@@ -205,18 +208,18 @@ async function showTotalSumsChart(req, res, next) {
 
     let chartListRub = totalSum_list
         .filter(
-            record =>
+            (record) =>
                 record.Currency === Helper.Currencies.Rub ||
                 typeof record.Currency === 'undefined',
         )
-        .map(x => {
+        .map((x) => {
             let chartObject = { DateTime: x.DateTime }
             chartObject[x.Type] = x.Value
             return chartObject
         })
     let chartListDram = totalSum_list
-        .filter(record => record.Currency === Helper.Currencies.Dram)
-        .map(x => {
+        .filter((record) => record.Currency === Helper.Currencies.Dram)
+        .map((x) => {
             let chartObject = { DateTime: x.DateTime }
             chartObject[x.Type] = x.Value
             return chartObject
@@ -242,14 +245,13 @@ async function removeTotals(req, res, next) {
     res.send('removeTotals succeed' + result.n)
 }
 async function list(req, res, next) {
-
     let startDate = Helper.getFirstDateOfCurrentMonth()
     // let startDate = dateObject.startDate
 
     FixRecord.find({ DateTime: { $gte: startDate } })
         .populate('Account')
         .sort({ DateTime: -1 })
-        .exec(function(err, list_serviceOrders) {
+        .exec(function (err, list_serviceOrders) {
             if (err) {
                 return next(err)
             }

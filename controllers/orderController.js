@@ -110,7 +110,7 @@ async function order_create_post(req, res, next) {
     let order = createOrderFromRequest(req, false)
     if (!order.Description) {
         let tagDescr = tagList.find(
-            item =>
+            (item) =>
                 JSON.stringify(item._id) === JSON.stringify(order.ParentTag),
         )
         order.Description = tagDescr.Name
@@ -142,14 +142,14 @@ async function order_create_post(req, res, next) {
                     AccountIn: Helper.createObjectId(acc.MoneyBoxId),
                     CreatedTime: order.CreatedTime,
                 })
-                serviceOrder.save(err => {
+                serviceOrder.save((err) => {
                     if (err) {
                         next(err)
                     }
                 })
             }
         }
-        order.save(function(err) {
+        order.save(function (err) {
             if (err) {
                 next(err)
             }
@@ -177,15 +177,9 @@ let order_create_post_array = [
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),
-    body('fValue')
-        .trim()
-        .escape(),
-    body('fDescription')
-        .trim()
-        .escape(),
-    body('fTags')
-        .trim()
-        .escape(),
+    body('fValue').trim().escape(),
+    body('fDescription').trim().escape(),
+    body('fTags').trim().escape(),
     (req, res, next) => order_create_post(req, res, next),
 ]
 
@@ -197,7 +191,7 @@ function order_delete_get(req, res) {
 // Handle order delete on POST.
 function order_delete_post(req, res, next) {
     let mId = req.params.id
-    Order.update({ _id: mId }, { $set: { IsDeleted: true } }, function(err) {
+    Order.update({ _id: mId }, { $set: { IsDeleted: true } }, function (err) {
         if (err) {
             next(err)
         }
@@ -207,7 +201,7 @@ function order_delete_post(req, res, next) {
 
 // Display order update form on GET.
 function order_update_get(req, res, next) {
-    Order.findById(req.params.id).exec(function(err, order) {
+    Order.findById(req.params.id).exec(function (err, order) {
         if (err) {
             return next(err)
         }
@@ -258,15 +252,17 @@ function order_update_post(req, res, next) {
     } else {
         // Data from form is valid.
 
-        Order.findByIdAndUpdate(req.params.id, order, [], function(
-            err,
-            theOrder,
-        ) {
-            if (err) {
-                return next(err)
-            }
-            res.redirect('/order/list')
-        })
+        Order.findByIdAndUpdate(
+            req.params.id,
+            order,
+            [],
+            function (err, theOrder) {
+                if (err) {
+                    return next(err)
+                }
+                res.redirect('/order/list')
+            },
+        )
     }
 }
 
@@ -278,18 +274,10 @@ let order_update_post_array = [
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),
-    body('fValue')
-        .trim()
-        .escape(),
-    body('fDescription')
-        .trim()
-        .escape(),
-    body('fTags')
-        .trim()
-        .escape(),
-    body('fLocalId')
-        .trim()
-        .escape(),
+    body('fValue').trim().escape(),
+    body('fDescription').trim().escape(),
+    body('fTags').trim().escape(),
+    body('fLocalId').trim().escape(),
     (req, res, next) => order_update_post(req, res, next),
 ]
 
@@ -302,7 +290,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
         .populate('Place')
         .populate('Object')
         .limit(200)
-        .exec(function(err, list_orders) {
+        .exec(function (err, list_orders) {
             if (err) {
                 return next(err)
             }
@@ -314,7 +302,7 @@ function orders_exportWithEmptyLocalId(req, res, next) {
 }
 
 function deleteOrders(req, res, next) {
-    Order.remove({}, function(err) {
+    Order.remove({}, function (err) {
         if (err) {
             next(err)
         } else {
@@ -399,7 +387,7 @@ async function populateAdditionalLists(myCallBack, params) {
     placeList = results[4]
     objectList = results[5]
     let groupedOrdersByPlace = results[6]
-    groupedOrdersByPlace = groupedOrdersByPlace.filter(x => x._id !== null)
+    groupedOrdersByPlace = groupedOrdersByPlace.filter((x) => x._id !== null)
 
     Helper.sortListByGroupedList(tagList, groupedOrdersByTag)
     Helper.sortListByGroupedList(accountList, groupedOrdersByAccount)

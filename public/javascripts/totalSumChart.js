@@ -7,7 +7,7 @@ function createChart(listName) {
         dataSource: Object.values(listName),
         tooltip: {
             enabled: true,
-            customizeTooltip: function(arg) {
+            customizeTooltip: function (arg) {
                 const d = arg.originalArgument
                 const ye = new Intl.DateTimeFormat('en', {
                     year: '2-digit',
@@ -80,7 +80,7 @@ function createChart(listName) {
     }
     return chart
 }
-window.onload = function() {
+window.onload = function () {
     // let chartElement = document.getElementById('totalSumChartContainer');
     $('#totalSumChartContainerRub').dxChart(createChart(chartListRub))
     $('#totalSumChartContainerDram').dxChart(createChart(chartListDram))

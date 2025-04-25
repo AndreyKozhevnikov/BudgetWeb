@@ -9,7 +9,7 @@ let PaymentTypeSchema = new Schema({
     Account: { type: Schema.ObjectId, ref: 'Account' },
 })
 // Virtual for author's URL
-PaymentTypeSchema.virtual('url').get(function() {
+PaymentTypeSchema.virtual('url').get(function () {
     return '/paymentType/' + this._id + '/update'
 })
 
