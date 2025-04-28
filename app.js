@@ -67,7 +67,7 @@ let mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/budgetwebdb'
 
 console.log(mongoDB)
 
-if (isDevelopment) mongoose.set('debug', true)
+//if (isDevelopment) mongoose.set('debug', true)
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.Promise = global.Promise
 let db = mongoose.connection
