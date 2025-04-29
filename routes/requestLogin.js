@@ -83,7 +83,7 @@ router.get('/auth/redirect', (req, res) => {
             let userName = response.account.username
             req.session.tokenResponse = response // Store the token response in session
             req.session.tokenExpiry = Date.now() + response.expiresIn * 1000 // Calculate and store token expiry time
-
+            console.log('auth user', userName)
             User.findOne({ $or: [{ username: userName }] })
                 .exec(function (err, user) {
                     if (err) {

@@ -259,7 +259,8 @@ function updatelocalids(req, res, next) {
 function updateLists(req, res, next) {
     order_controller.populateAdditionalLists()
     sOrder_controller.populateLists()
-    res.send('update is Successful')
+    //res.send('update is Successful')
+    res.redirect('/serviceOrder/create')
 }
 
 async function createOrderObjects(req, res, next) {
