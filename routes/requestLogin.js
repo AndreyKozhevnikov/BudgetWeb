@@ -149,7 +149,7 @@ function requiresLogin(req, res, next) {
             res.redirect(targetURI)
             targetURI = null
         } else {
-            console.log('next')
+            console.log('next',req.url)
             return next()
         }
     } else if (
