@@ -113,7 +113,7 @@ router.use(async function (req, res, next) {
         const now = Date.now()
         const expirationBuffer = 5 * 60 * 1000 // 5 minutes before actual expiration
         console.log('middleware token',req.session.tokenExpiry)
-        console.log(new Date().toISOString())
+        console.log('current date',new Date().toISOString())
         if (req.session.tokenExpiry - now < expirationBuffer) {
 
             console.log('middleware token update')
@@ -178,6 +178,7 @@ function requiresLogin(req, res, next) {
         )
     } else {
         targetURI = req.url
+        console.log('requiresLogin last branch', targetURI)
         res.redirect('/loginview')
     }
 }
