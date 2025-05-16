@@ -85,7 +85,7 @@ router.get('/auth/redirect', (req, res) => {
             let userName = response.account.username
             req.session.tokenResponse = response // Store the token response in session
             req.session.tokenExpiry = Date.now() + response.expiresIn * 1000 // Calculate and store token expiry time
-            console.log('auth user', userName)
+            console.log('\x1b[31m%s\x1b[0m', 'auth user',userName)
             User.findOne({ $or: [{ username: userName }] })
                 .exec(function (err, user) {
                     if (err) {
@@ -96,7 +96,7 @@ router.get('/auth/redirect', (req, res) => {
                         res.redirect('/loginview')
                     } else {
                         req.session.account = response.account.username
-                        console.log(req.session.account)
+                        console.log('set session.account',req.session.account)
                         res.cookie('idToken', response.idToken, {
                             httpOnly: true,
                         })
@@ -138,6 +138,7 @@ router.use(async function (req, res, next) {
 })
 
 router.get('*', function (req, res, next) {
+    console.log('Session:', req.session)
     requiresLogin(req, res, next)
 })
 
