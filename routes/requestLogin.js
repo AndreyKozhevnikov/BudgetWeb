@@ -41,10 +41,12 @@ function authenticate(name, pass, req, res, next, succesAuthentificate, id) {
 }
 
 router.get('/loginview', async function (req, res, next) {
+    console.log('loginview')
     res.render('loginview')
 })
 
 router.get('/login', async function (req, res, next) {
+    console.log('login')
     const authCodeUrlParameters = {
         scopes: ['user.read'],
         redirectUri: process.env.REDIRECT_URI,
@@ -143,9 +145,11 @@ function requiresLogin(req, res, next) {
     if (req.session.account) {
         console.log('session account', req.session.account)
         if (targetURI) {
+            console.log('targetURI', targetURI)
             res.redirect(targetURI)
             targetURI = null
         } else {
+            console.log('next')
             return next()
         }
     } else if (

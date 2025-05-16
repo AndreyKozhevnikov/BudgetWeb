@@ -4,6 +4,7 @@ let router = express.Router()
 let root_controller = require('../controllers/rootController.js')
 
 router.get('/', (req, res, next) => {
+    console.log('rootRouter get /')
     res.redirect('/account/aggregatedList')
 })
 
