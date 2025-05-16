@@ -141,6 +141,7 @@ router.use(async function (req, res, next) {
 
 router.get('*', function (req, res, next) {
     console.log('Session:', req.session.account)
+   // console.dir(req)
     requiresLogin(req, res, next)
 })
 
@@ -150,8 +151,9 @@ function requiresLogin(req, res, next) {
         console.log('session account', req.session.account)
         if (req.session.targetURI) {
             console.log('targetURI', req.session.targetURI)
-            res.redirect(req.session.targetURI)
+            let tUrl= req.session.targetURI
             req.session.targetURI = null
+            res.redirect(tUrl)
         } else {
             console.log('next',req.url)
             return next()
