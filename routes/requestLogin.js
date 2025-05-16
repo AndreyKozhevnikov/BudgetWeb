@@ -3,7 +3,7 @@ let express = require('express')
 let router = express.Router()
 let User = require('../models/user.js')
 
-let targetURI
+
 
 const msal = require('@azure/msal-node')
 const { dateForOrders } = require('../controllers/helperController.js')
@@ -148,10 +148,10 @@ function requiresLogin(req, res, next) {
     console.log('requiresLogin')
     if (req.session.account) {
         console.log('session account', req.session.account)
-        if (targetURI) {
-            console.log('targetURI', targetURI)
-            res.redirect(targetURI)
-            targetURI = null
+        if (req.session.targetURI) {
+            console.log('targetURI', req.session.targetURI)
+            res.redirect(req.session.targetURI)
+            req.session.targetURI = null
         } else {
             console.log('next',req.url)
             return next()
@@ -181,8 +181,8 @@ function requiresLogin(req, res, next) {
             st
         )
     } else {
-        targetURI = req.url
-        console.log('requiresLogin no acc', targetURI)
+        req.session.targetURI = req.url
+        console.log('requiresLogin no acc', req.session.targetURI)
         res.redirect('/loginview')
     }
 }
