@@ -75,7 +75,7 @@ router.get('/auth/redirect', (req, res) => {
         scopes: ['user.read'],
         redirectUri: process.env.REDIRECT_URI,
     }
-
+    console.log('\x1b[36m%s\x1b[0m', 'auth redirect')
     pca.acquireTokenByCode(tokenRequest)
         .then((response) => {
            // console.dir(response)
@@ -141,6 +141,7 @@ router.get('*', function (req, res, next) {
 
 function requiresLogin(req, res, next) {
     if (req.session.account) {
+        console.log('session account', req.session.account)
         if (targetURI) {
             res.redirect(targetURI)
             targetURI = null
