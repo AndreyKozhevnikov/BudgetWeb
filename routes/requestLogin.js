@@ -109,6 +109,8 @@ router.get('/auth/redirect', (req, res) => {
 
 // Middleware to check token expiration and refresh if necessary
 router.use(async function (req, res, next) {
+
+    console.log('router use22. account',req.session.account,req.url)
     if (req.session.tokenResponse) {
         const now = Date.now()
         const expirationBuffer = 5 * 60 * 1000 // 5 minutes before actual expiration
@@ -127,7 +129,7 @@ router.use(async function (req, res, next) {
                 req.session.tokenResponse = await pca.acquireTokenSilent(silentRequest)
                 req.session.tokenExpiry = req.session.tokenResponse.expiresOn
                 console.log('Token refreshed successfully',req.session.tokenExpiry)
-                console.dir(req.session.tokenResponse)
+               // console.dir(req.session.tokenResponse)
             } catch (error) {
                 console.log('Silent token acquisition failed, redirecting to login')
                 return res.redirect('/login')
@@ -138,11 +140,12 @@ router.use(async function (req, res, next) {
 })
 
 router.get('*', function (req, res, next) {
-    console.log('Session:', req.session)
+    console.log('Session:', req.session.account)
     requiresLogin(req, res, next)
 })
 
 function requiresLogin(req, res, next) {
+    console.log('requiresLogin')
     if (req.session.account) {
         console.log('session account', req.session.account)
         if (targetURI) {
@@ -179,7 +182,7 @@ function requiresLogin(req, res, next) {
         )
     } else {
         targetURI = req.url
-        console.log('requiresLogin last branch', targetURI)
+        console.log('requiresLogin no acc', targetURI)
         res.redirect('/loginview')
     }
 }
