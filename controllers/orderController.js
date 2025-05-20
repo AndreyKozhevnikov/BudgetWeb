@@ -393,7 +393,7 @@ async function populateAdditionalLists(myCallBack, params) {
     Helper.sortListByGroupedList(accountList, groupedOrdersByAccount)
     Helper.sortListByGroupedList(placeList, groupedOrdersByPlace)
 
-    popularPlaceList = placeList.slice(0, 20)
+    popularPlaceList = placeList.slice(0, 7)
 
     placeList.sort((a, b) => {
         if (a.Name < b.Name) {
@@ -405,7 +405,7 @@ async function populateAdditionalLists(myCallBack, params) {
         return 0
     })
 
-    popularTagList = tagList.slice(0, 28)
+    popularTagList = tagList.slice(0, 8)
     tagList.sort((a, b) => {
         if (a.Name < b.Name) {
             return -1
@@ -415,7 +415,7 @@ async function populateAdditionalLists(myCallBack, params) {
         }
         return 0
     })
-    popularAccountList = accountList.slice(1, 8)
+    popularAccountList = accountList.slice(1, 4)
     if (params) {
         myCallBack(params.req, params.res, params.next)
     }
