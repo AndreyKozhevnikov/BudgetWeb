@@ -424,7 +424,6 @@ async function iterateOverDataAndPopulateResultObjects(
             return
         }
         if (order.IsShouldNotCalculate) {
-            // learning
             return
         }
         if (order.ParentTag.LocalId === 1) {
