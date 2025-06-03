@@ -47,9 +47,9 @@ app.use(
     }),
 )
 let isDevelopment = process.env.NODE_ENV === 'development'
-// isDevelopment = false;
-// if (!isDevelopment)
-app.use('/', requestLogin)
+//isDevelopment = true;
+if (!isDevelopment)
+    app.use('/', requestLogin)
 app.use('/', rootRouter)
 app.use('/tag', tagRouter)
 app.use('/orderPlace', orderPlaceRouter)
@@ -84,6 +84,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     let err = new Error('Not Found ' + req.originalUrl)
+    req.session.targetURI = null
     err.status = 404
     next(err)
 })

@@ -10,7 +10,7 @@ let OrderSchema = new Schema({
     Value: { type: Number, required: true },
     Description: { type: String, max: 100 },
     ParentTag: { type: Schema.ObjectId, ref: 'Tag', required: true },
-    IsJourney: { type: Boolean },
+    IsShouldNotCalculate: { type: Boolean },
     Tags: { type: String, max: 100 },
     LocalId: { type: Number },
     IsDeleted: { type: Boolean },

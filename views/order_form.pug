@@ -79,8 +79,8 @@ block contentOrder
       table
         tr
           td
-            label(for='chIsJourney') IsJourney:
-            input#chIsJourney.form-control(type='checkbox',  name='fIsJourney' checked= (undefined===fOrder ? false :fOrder.IsJourney))
+            label(for='chIsShouldNotCalculate') IsShouldNotCalculate:
+            input#chIsShouldNotCalculate.form-control(type='checkbox',  name='fIsShouldNotCalculate' checked= (undefined===fOrder ? false :fOrder.IsShouldNotCalculate))
 
       label(for='txLocId') LocalId:
       input#txLocId.form-control(type='number',  name='fLocalId' value=(undefined===fOrder ? '' : fOrder.LocalId))

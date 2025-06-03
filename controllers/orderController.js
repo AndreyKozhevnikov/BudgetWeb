@@ -215,7 +215,7 @@ function createOrderFromRequest(req, isUpdate) {
         Value: req.body.fValue,
         Description: req.body.fDescription,
         ParentTag: req.body.fParentTag,
-        IsJourney: Boolean(req.body.fIsJourney),
+        IsShouldNotCalculate: Boolean(req.body.fIsShouldNotCalculate),
         IsExcess: Boolean(req.body.fIsExcess),
         Tags: req.body.fTags,
         LocalId: req.body.fLocalId,

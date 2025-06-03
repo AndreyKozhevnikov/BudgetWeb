@@ -423,6 +423,10 @@ async function iterateOverDataAndPopulateResultObjects(
             // learning
             return
         }
+        if (order.IsShouldNotCalculate) {
+            // learning
+            return
+        }
         if (order.ParentTag.LocalId === 1) {
             statObj.sumEatOrders += order.Value
         }
