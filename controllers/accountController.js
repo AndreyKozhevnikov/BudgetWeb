@@ -645,7 +645,7 @@ async function processStatisticObjectAndMonthDates(
     const normEatPerDay = 10000
     const normFastFoodPerDay = 5000
     const normExcessPerDay = 2000
-    const normAllPerDay = 20000
+    const normAllPerDay = 5000
     const mortGagePayment = 0
 
     processthisMonthDates(
