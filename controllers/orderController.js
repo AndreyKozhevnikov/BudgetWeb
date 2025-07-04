@@ -313,16 +313,16 @@ function deleteOrders(req, res, next) {
 
 async function populateAdditionalLists(myCallBack, params) {
     let cutDate = Helper.getCutDate()
-    let tagFind = Helper.promisify(Tag.find, Tag)
-    let orderPlaceFind = Helper.promisify(OrderPlace.find, OrderPlace)
-    let orderObjectFind = Helper.promisify(OrderObject.find, OrderObject)
-    let accountAggregate = Helper.promisify(Account.aggregate, Account)
-    let orderAggregate = Helper.promisify(Order.aggregate, Order)
+    let tagFind = Tag.find
+    let orderPlaceFind = OrderPlace.find
+    let orderObjectFind = OrderObject.find
+    let accountAggregate = Account.aggregate
+    let orderAggregate = Order.aggregate
     let results
     try {
         results = await Promise.all([
-            tagFind(),
-            accountAggregate([
+            Tag.find(),
+            Account.aggregate([
                 {
                     $match: {
                         $or: [
@@ -332,7 +332,7 @@ async function populateAdditionalLists(myCallBack, params) {
                     },
                 },
             ]),
-            orderAggregate([
+            Order.aggregate([
                 {
                     $match: {
                         IsDeleted: { $exists: false },
@@ -346,7 +346,7 @@ async function populateAdditionalLists(myCallBack, params) {
                     },
                 },
             ]),
-            orderAggregate([
+            Order.aggregate([
                 {
                     $match: {
                         IsDeleted: { $exists: false },
@@ -360,9 +360,9 @@ async function populateAdditionalLists(myCallBack, params) {
                     },
                 },
             ]),
-            orderPlaceFind(),
-            orderObjectFind(),
-            orderAggregate([
+            OrderPlace.find(),
+            OrderObject.find(),
+            Order.aggregate([
                 {
                     $match: {
                         IsDeleted: { $exists: false },

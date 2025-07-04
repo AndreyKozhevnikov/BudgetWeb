@@ -98,10 +98,10 @@ let create_post_array = [
     (req, res, next) => create_post(req, res, next),
 ]
 
-async function populateLists() {
+async function populateLists() { 
     try {
-        let accountFind = Helper.promisify(Account.find, Account)
-        accountList = await accountFind({
+        //let accountFind = Helper.promisify(Account.find, Account)
+        accountList = await Account.find({
             $or: [{ IsArchived: false }, { IsArchived: { $exists: false } }],
         })
         accountList.sort(function (a, b) {
@@ -114,9 +114,9 @@ async function populateLists() {
             return 0
         })
 
-        let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder)
+        // let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder)
         let cutDate = Helper.getCutDate()
-        let sOrdersGroupedByInAcc = await soAggregate([
+        let sOrdersGroupedByInAcc = await ServiceOrder.aggregate([
             {
                 $match: {
                     DateOrder: { $gt: cutDate },
@@ -133,7 +133,7 @@ async function populateLists() {
         accountInList = getCloneArray(accountList)
         Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc)
 
-        let sOrdersGroupedByOutAcc = await soAggregate([
+        let sOrdersGroupedByOutAcc = await ServiceOrder.aggregate([
             {
                 $match: {
                     DateOrder: { $gt: cutDate },
