@@ -47,7 +47,7 @@ app.use(
     }),
 )
 let isDevelopment = process.env.NODE_ENV === 'development'
-//isDevelopment = true;
+isDevelopment = false;
 if (!isDevelopment)
     app.use('/', requestLogin)
 app.use('/', rootRouter)
@@ -65,7 +65,7 @@ let mongoose = require('mongoose')
 let mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/budgetwebdb'
 // let mongoDB = 'mongodb://127.0.0.1:27017/budgetwebdb'
 
-console.log(mongoDB)
+// console.log(mongoDB)
 
 //if (isDevelopment) mongoose.set('debug', true)
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })

@@ -51,12 +51,12 @@ router.get('/login', async function (req, res, next) {
         scopes: ['user.read'],
         redirectUri: process.env.REDIRECT_URI,
     }
-
+    
     pca.getAuthCodeUrl(authCodeUrlParameters)
-        .then((response) => {
-            res.redirect(response)
-        })
-        .catch((error) => console.log(JSON.stringify(error)))
+    .then((response) => {
+        res.redirect(response)
+    })
+    .catch((error) => console.log(JSON.stringify(error)))
 })
 
 router.get('/logout', async function (req, res, next) {
@@ -79,37 +79,39 @@ router.get('/auth/redirect', (req, res) => {
     }
     console.log('\x1b[36m%s\x1b[0m', 'auth redirect')
     pca.acquireTokenByCode(tokenRequest)
-        .then((response) => {
-           // console.dir(response)
-
-            let userName = response.account.username
-            req.session.tokenResponse = response // Store the token response in session
-            req.session.tokenExpiry = Date.now() + response.expiresIn * 1000 // Calculate and store token expiry time
-            console.log('\x1b[31m%s\x1b[0m', 'auth user',userName)
-            User.findOne({ $or: [{ username: userName }] })
-                .exec(function (err, user) {
-                    if (err) {
-                        console.log('login err', err)
-                        res.redirect('/loginview')
-                    } else if (!user) {
-                        console.log('user not found', userName)
-                        res.redirect('/loginview')
-                    } else {
-                        req.session.account = response.account.username
-                        console.log('set session.account',req.session.account)
-                        res.cookie('idToken', response.idToken, {
-                            httpOnly: true,
-                        })
-                        res.redirect('/wiki')
-                    }
+    .then((response) => {
+        // console.dir(response)
+        
+        let userName = response.account.username
+        req.session.tokenResponse = response // Store the token response in session
+        req.session.tokenExpiry = Date.now() + response.expiresIn * 1000 // Calculate and store token expiry time
+        console.log('\x1b[31m%s\x1b[0m', 'auth user',userName)
+        try{
+            let user = User.findOne({ $or: [{ username: userName }] });
+            
+            if (!user) {
+                console.log('user not found', userName)
+                res.redirect('/loginview')
+            } else {
+                req.session.account = response.account.username
+                console.log('set session.account',req.session.account)
+                res.cookie('idToken', response.idToken, {
+                    httpOnly: true,
                 })
-        })
-        .catch((error) => console.log(error))
+                res.redirect('/wiki')
+            }
+            
+        } catch (err) {
+            console.log('Error finding user:', err)
+            res.redirect('/loginview')
+        }
+    })
+    .catch((error) => console.log(error))
 })
 
 // Middleware to check token expiration and refresh if necessary
 router.use(async function (req, res, next) {
-
+    
     console.log('router use22. account',req.session.account,req.url)
     if (req.session.tokenResponse) {
         const now = Date.now()
@@ -117,19 +119,19 @@ router.use(async function (req, res, next) {
         console.log('middleware token',req.session.tokenExpiry)
         console.log('current date',new Date().toISOString())
         if (req.session.tokenExpiry - now < expirationBuffer) {
-
+            
             console.log('middleware token update')
             const account = req.session.tokenResponse.account
             const silentRequest = {
                 account: account,
                 scopes: ['user.read'],
             }
-
+            
             try {
                 req.session.tokenResponse = await pca.acquireTokenSilent(silentRequest)
                 req.session.tokenExpiry = req.session.tokenResponse.expiresOn
                 console.log('Token refreshed successfully',req.session.tokenExpiry)
-               // console.dir(req.session.tokenResponse)
+                // console.dir(req.session.tokenResponse)
             } catch (error) {
                 console.log('Silent token acquisition failed, redirecting to login')
                 return res.redirect('/login')
@@ -141,7 +143,7 @@ router.use(async function (req, res, next) {
 
 router.get('*', function (req, res, next) {
     console.log('Session:', req.session.account)
-   // console.dir(req)
+    // console.dir(req)
     requiresLogin(req, res, next)
 })
 
@@ -162,30 +164,31 @@ function requiresLogin(req, res, next) {
         req.cookies.cookiename &&
         (req.url === '/order/exportWithEmptyLocalId' ||
             req.url === '/order/update')
-    ) {
-        let values = req.cookies.cookiename.split('-')
-        let username = values[0]
-        let pass = values[1]
-        authenticate(username, pass, req, res, next, function () {
-            return next()
-        })
-    } else if (req.cookies.bwebuserid) {
-        let st = req.cookies.bwebuserid
-        authenticate(
-            null,
-            null,
-            req,
-            res,
-            next,
-            function () {
+        ) {
+            let values = req.cookies.cookiename.split('-')
+            let username = values[0]
+            let pass = values[1]
+            authenticate(username, pass, req, res, next, function () {
                 return next()
-            },
-            st
-        )
-    } else {
-        req.session.targetURI = req.url
-        console.log('requiresLogin no acc', req.session.targetURI)
-        res.redirect('/loginview')
+            })
+        } else if (req.cookies.bwebuserid) {
+            let st = req.cookies.bwebuserid
+            authenticate(
+                null,
+                null,
+                req,
+                res,
+                next,
+                function () {
+                    return next()
+                },
+                st
+            )
+        } else {
+            req.session.targetURI = req.url
+            console.log('requiresLogin no acc', req.session.targetURI)
+            res.redirect('/loginview')
+        }
     }
-}
-module.exports = router
+    module.exports = router
+    
