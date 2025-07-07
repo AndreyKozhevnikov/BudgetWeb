@@ -61,32 +61,32 @@ async function order_list(req, res, next) {
         return
     }
     let startDate = dateObject.startDate
-
+    
     let order_list = await Order.find({
         IsDeleted: { $exists: false },
         DateOrder: { $gte: startDate },
     })
-        .populate('ParentTag')
-        .populate('PaymentAccount')
-        .populate('Place')
-        .populate('Object')
-        .sort({ DateOrder: -1 })
+    .populate('ParentTag')
+    .populate('PaymentAccount')
+    .populate('Place')
+    .populate('Object')
+    .sort({ DateOrder: -1 })
     // .sort({ _id: -1 })
     // let order_list={test:'123'}
     res.render('order_list', { order_list: order_list })
 }
 async function order_last_list(req, res, next) {
     let startDate = await FixRecordController.getLastReportDate(req)
-
+    
     let order_list = await Order.find({
         IsDeleted: { $exists: false },
         CreatedTime: { $gte: startDate },
     })
-        .populate('ParentTag')
-        .populate('PaymentAccount')
-        .populate('Place')
-        .populate('Object')
-        .sort({ DateOrder: -1 })
+    .populate('ParentTag')
+    .populate('PaymentAccount')
+    .populate('Place')
+    .populate('Object')
+    .sort({ DateOrder: -1 })
     // .sort({ _id: -1 })
     // let order_list={test:'123'}
     res.render('order_list', { order_list: order_list })
@@ -149,12 +149,12 @@ async function order_create_post(req, res, next) {
                 })
             }
         }
-        order.save(function (err) {
-            if (err) {
-                next(err)
-            }
+        try{
+            order.save()
             res.redirect('/account/aggregatedList')
-        })
+        } catch (err) {
+            next(err)
+        }
     }
 }
 
@@ -172,8 +172,8 @@ function getLeft(sum) {
 let order_create_post_array = [
     // validate fields
     body('fDate', 'Invalid date of order')
-        .optional({ checkFalsy: true })
-        .isISO8601(),
+    .optional({ checkFalsy: true })
+    .isISO8601(),
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),
@@ -238,7 +238,7 @@ function createOrderFromRequest(req, isUpdate) {
 // Handle order update on POST.
 function order_update_post(req, res, next) {
     let order = createOrderFromRequest(req, true)
-
+    
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         // There are errors. Render form again with sanitized values/errors messages.
@@ -251,7 +251,7 @@ function order_update_post(req, res, next) {
         return
     } else {
         // Data from form is valid.
-
+        
         Order.findByIdAndUpdate(
             req.params.id,
             order,
@@ -269,8 +269,8 @@ function order_update_post(req, res, next) {
 let order_update_post_array = [
     // validate fields
     body('fDate', 'Invalid date of order')
-        .optional({ checkFalsy: true })
-        .isISO8601(),
+    .optional({ checkFalsy: true })
+    .isISO8601(),
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),
@@ -285,20 +285,20 @@ function orders_exportWithEmptyLocalId(req, res, next) {
     Order.find({
         LocalId: null,
     })
-        .populate('ParentTag')
-        .populate('PaymentAccount')
-        .populate('Place')
-        .populate('Object')
-        .limit(200)
-        .exec(function (err, list_orders) {
-            if (err) {
-                return next(err)
-            }
-            // Successful, so render
-            // res.render('order_list', { title: 'Order List', order_list: list_tags });
-            res.setHeader('Content-Type', 'application/json; charset=utf-8')
-            res.json(list_orders)
-        })
+    .populate('ParentTag')
+    .populate('PaymentAccount')
+    .populate('Place')
+    .populate('Object')
+    .limit(200)
+    .exec(function (err, list_orders) {
+        if (err) {
+            return next(err)
+        }
+        // Successful, so render
+        // res.render('order_list', { title: 'Order List', order_list: list_tags });
+        res.setHeader('Content-Type', 'application/json; charset=utf-8')
+        res.json(list_orders)
+    })
 }
 
 function deleteOrders(req, res, next) {
@@ -388,13 +388,13 @@ async function populateAdditionalLists(myCallBack, params) {
     objectList = results[5]
     let groupedOrdersByPlace = results[6]
     groupedOrdersByPlace = groupedOrdersByPlace.filter((x) => x._id !== null)
-
+    
     Helper.sortListByGroupedList(tagList, groupedOrdersByTag)
     Helper.sortListByGroupedList(accountList, groupedOrdersByAccount)
     Helper.sortListByGroupedList(placeList, groupedOrdersByPlace)
-
+    
     popularPlaceList = placeList.slice(0, 7)
-
+    
     placeList.sort((a, b) => {
         if (a.Name < b.Name) {
             return -1
@@ -404,7 +404,7 @@ async function populateAdditionalLists(myCallBack, params) {
         }
         return 0
     })
-
+    
     popularTagList = tagList.slice(0, 8)
     tagList.sort((a, b) => {
         if (a.Name < b.Name) {
@@ -436,10 +436,10 @@ async function getOrdersByAccount(id, startDate, finishDate) {
 }
 function populateOrderList(orderList) {
     orderList
-        .populate('ParentTag')
-        .populate('PaymentAccount')
-        .populate('Object')
-        .populate('Place')
+    .populate('ParentTag')
+    .populate('PaymentAccount')
+    .populate('Object')
+    .populate('Place')
 }
 populateAdditionalLists()
 
