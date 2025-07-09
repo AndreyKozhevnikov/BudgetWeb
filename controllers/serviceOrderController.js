@@ -70,9 +70,9 @@ function objectToShowForm(mTitle, serviceOrder, errors) {
 
 function create_post(req, res, next) {
     const errors = validationResult(req)
-
+    
     let serviceOrder = createServiceOrderFromRequest(req, false)
-
+    
     if (!errors.isEmpty()) {
         let objToShow = objectToShowForm(
             'Create ServiceOrder(error)',
@@ -82,12 +82,12 @@ function create_post(req, res, next) {
         res.render('serviceOrder_form', objToShow)
         return
     } else {
-        serviceOrder.save(function (err) {
-            if (err) {
-                return next(err)
-            }
+        try{
+            serviceOrder.save();
             res.redirect('/account/aggregatedList')
-        })
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 
@@ -113,7 +113,7 @@ async function populateLists() {
             }
             return 0
         })
-
+        
         // let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder)
         let cutDate = Helper.getCutDate()
         let sOrdersGroupedByInAcc = await ServiceOrder.aggregate([
@@ -132,7 +132,7 @@ async function populateLists() {
         ])
         accountInList = getCloneArray(accountList)
         Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc)
-
+        
         let sOrdersGroupedByOutAcc = await ServiceOrder.aggregate([
             {
                 $match: {
@@ -163,20 +163,20 @@ function list(req, res, next) {
         return
     }
     let startDate = dateObject.startDate
-
+    
     ServiceOrder.find({ DateOrder: { $gte: startDate } })
-        .populate('AccountOut')
-        .populate('AccountIn')
-        .sort({ DateOrder: -1 })
-        .exec(function (err, list_serviceOrders) {
-            if (err) {
-                return next(err)
-            }
-            res.render('serviceOrder_list', {
-                title: 'Service Order List',
-                serviceOrders_list: list_serviceOrders,
-            })
+    .populate('AccountOut')
+    .populate('AccountIn')
+    .sort({ DateOrder: -1 })
+    .exec(function (err, list_serviceOrders) {
+        if (err) {
+            return next(err)
+        }
+        res.render('serviceOrder_list', {
+            title: 'Service Order List',
+            serviceOrders_list: list_serviceOrders,
         })
+    })
 }
 
 function update_get(req, res, next) {
@@ -191,7 +191,7 @@ function update_get(req, res, next) {
 
 function update_post(req, res, next) {
     let serviceOrder = createServiceOrderFromRequest(req, true)
-
+    
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         let objToShow = objectToShowForm(
@@ -203,7 +203,7 @@ function update_post(req, res, next) {
         return
     } else {
         // Data from form is valid.
-
+        
         ServiceOrder.findByIdAndUpdate(
             req.params.id,
             serviceOrder,
@@ -220,8 +220,8 @@ function update_post(req, res, next) {
 let update_post_array = [
     // validate fields
     body('fDate', 'Invalid date of order')
-        .optional({ checkFalsy: true })
-        .isISO8601(),
+    .optional({ checkFalsy: true })
+    .isISO8601(),
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),
