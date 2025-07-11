@@ -189,25 +189,26 @@ function order_delete_get(req, res) {
 }
 
 // Handle order delete on POST.
-function order_delete_post(req, res, next) {
+async function order_delete_post(req, res, next) {
     let mId = req.params.id
-    Order.update({ _id: mId }, { $set: { IsDeleted: true } }, function (err) {
-        if (err) {
-            next(err)
-        }
+    try{
+        await Order.update({ _id: mId }, { $set: { IsDeleted: true } })
         res.redirect('/orders')
-    })
+    } catch (err) {
+        next(err)
+    }
+    
 }
 
 // Display order update form on GET.
-function order_update_get(req, res, next) {
-    Order.findById(req.params.id).exec(function (err, order) {
-        if (err) {
-            return next(err)
-        }
+async function order_update_get(req, res, next) {
+    try{
+        let order = await Order.findById(req.params.id) 
         let obj = getObjectToShowForm('Update Order', order)
         res.render('order_form', obj)
-    })
+    }catch (err) {
+        next(err)
+    }
 }
 function createOrderFromRequest(req, isUpdate) {
     let order = new Order({
@@ -236,7 +237,7 @@ function createOrderFromRequest(req, isUpdate) {
     return order
 }
 // Handle order update on POST.
-function order_update_post(req, res, next) {
+async function order_update_post(req, res, next) {
     let order = createOrderFromRequest(req, true)
     
     const errors = validationResult(req)
@@ -251,211 +252,209 @@ function order_update_post(req, res, next) {
         return
     } else {
         // Data from form is valid.
-        
-        Order.findByIdAndUpdate(
-            req.params.id,
-            order,
-            [],
-            function (err, theOrder) {
-                if (err) {
-                    return next(err)
-                }
+        try{
+          await  Order.findByIdAndUpdate(
+                req.params.id,
+                order,
+                [])
                 res.redirect('/order/list')
-            },
-        )
+            } catch (err) {
+                return next(err)
+            }
+        }
     }
-}
-
-let order_update_post_array = [
-    // validate fields
-    body('fDate', 'Invalid date of order')
-    .optional({ checkFalsy: true })
-    .isISO8601(),
-    // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
-    // Sanitize fields.
-    body('fDate').toDate(),
-    body('fValue').trim().escape(),
-    body('fDescription').trim().escape(),
-    body('fTags').trim().escape(),
-    body('fLocalId').trim().escape(),
-    (req, res, next) => order_update_post(req, res, next),
-]
-
-function orders_exportWithEmptyLocalId(req, res, next) {
-    Order.find({
-        LocalId: null,
-    })
-    .populate('ParentTag')
-    .populate('PaymentAccount')
-    .populate('Place')
-    .populate('Object')
-    .limit(200)
-    .exec(function (err, list_orders) {
-        if (err) {
-            return next(err)
-        }
-        // Successful, so render
-        // res.render('order_list', { title: 'Order List', order_list: list_tags });
-        res.setHeader('Content-Type', 'application/json; charset=utf-8')
-        res.json(list_orders)
-    })
-}
-
-function deleteOrders(req, res, next) {
-    Order.remove({}, function (err) {
-        if (err) {
-            next(err)
-        } else {
-            res.end('success')
-        }
-    })
-}
-
-async function populateAdditionalLists(myCallBack, params) {
-    let cutDate = Helper.getCutDate()
-    let tagFind = Tag.find
-    let orderPlaceFind = OrderPlace.find
-    let orderObjectFind = OrderObject.find
-    let accountAggregate = Account.aggregate
-    let orderAggregate = Order.aggregate
-    let results
-    try {
-        results = await Promise.all([
-            Tag.find(),
-            Account.aggregate([
-                {
-                    $match: {
-                        $or: [
-                            { IsArchived: false },
-                            { IsArchived: { $exists: false } },
-                        ],
-                    },
-                },
-            ]),
-            Order.aggregate([
-                {
-                    $match: {
-                        IsDeleted: { $exists: false },
-                        DateOrder: { $gt: cutDate },
-                    },
-                },
-                {
-                    $group: {
-                        _id: '$ParentTag',
-                        count: { $sum: 1 },
-                    },
-                },
-            ]),
-            Order.aggregate([
-                {
-                    $match: {
-                        IsDeleted: { $exists: false },
-                        DateOrder: { $gt: cutDate },
-                    },
-                },
-                {
-                    $group: {
-                        _id: '$PaymentAccount',
-                        count: { $sum: 1 },
-                    },
-                },
-            ]),
-            OrderPlace.find(),
-            OrderObject.find(),
-            Order.aggregate([
-                {
-                    $match: {
-                        IsDeleted: { $exists: false },
-                        DateOrder: { $gt: cutDate },
-                    },
-                },
-                {
-                    $group: {
-                        _id: '$Place',
-                        count: { $sum: 1 },
-                    },
-                },
-            ]),
-        ])
-    } catch (err) {
-        console.log('error' + err)
+    
+    let order_update_post_array = [
+        // validate fields
+        body('fDate', 'Invalid date of order')
+        .optional({ checkFalsy: true })
+        .isISO8601(),
+        // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
+        // Sanitize fields.
+        body('fDate').toDate(),
+        body('fValue').trim().escape(),
+        body('fDescription').trim().escape(),
+        body('fTags').trim().escape(),
+        body('fLocalId').trim().escape(),
+        (req, res, next) => order_update_post(req, res, next),
+    ]
+    
+    function orders_exportWithEmptyLocalId(req, res, next) {
+        Order.find({
+            LocalId: null,
+        })
+        .populate('ParentTag')
+        .populate('PaymentAccount')
+        .populate('Place')
+        .populate('Object')
+        .limit(200)
+        .exec(function (err, list_orders) {
+            if (err) {
+                return next(err)
+            }
+            // Successful, so render
+            // res.render('order_list', { title: 'Order List', order_list: list_tags });
+            res.setHeader('Content-Type', 'application/json; charset=utf-8')
+            res.json(list_orders)
+        })
     }
-    tagList = results[0]
-    accountList = results[1]
-    let groupedOrdersByTag = results[2]
-    let groupedOrdersByAccount = results[3]
-    placeList = results[4]
-    objectList = results[5]
-    let groupedOrdersByPlace = results[6]
-    groupedOrdersByPlace = groupedOrdersByPlace.filter((x) => x._id !== null)
     
-    Helper.sortListByGroupedList(tagList, groupedOrdersByTag)
-    Helper.sortListByGroupedList(accountList, groupedOrdersByAccount)
-    Helper.sortListByGroupedList(placeList, groupedOrdersByPlace)
-    
-    popularPlaceList = placeList.slice(0, 7)
-    
-    placeList.sort((a, b) => {
-        if (a.Name < b.Name) {
-            return -1
-        }
-        if (a.Name > b.Name) {
-            return 1
-        }
-        return 0
-    })
-    
-    popularTagList = tagList.slice(0, 8)
-    tagList.sort((a, b) => {
-        if (a.Name < b.Name) {
-            return -1
-        }
-        if (a.Name > b.Name) {
-            return 1
-        }
-        return 0
-    })
-    popularAccountList = accountList.slice(1, 4)
-    if (params) {
-        myCallBack(params.req, params.res, params.next)
+    function deleteOrders(req, res, next) {
+        Order.remove({}, function (err) {
+            if (err) {
+                next(err)
+            } else {
+                res.end('success')
+            }
+        })
     }
-}
-
-async function getOrdersByDates(startDate, finishDate) {
-    let list = Helper.getListByDates(Order, startDate, finishDate)
-    populateOrderList(list)
-    return list
-}
-async function getOrdersByAccount(id, startDate, finishDate) {
-    let list = Order.find({
-        PaymentAccount: Helper.createObjectId(id),
-        DateOrder: { $gte: startDate, $lt: finishDate },
-    })
-    populateOrderList(list)
-    return list
-}
-function populateOrderList(orderList) {
-    orderList
-    .populate('ParentTag')
-    .populate('PaymentAccount')
-    .populate('Object')
-    .populate('Place')
-}
-populateAdditionalLists()
-
-exports.order_list = order_list
-exports.order_last_list = order_last_list
-exports.order_create_get = order_create_get
-exports.order_create_get_withNewLists = order_create_get_withNewLists
-exports.order_create_post = order_create_post_array
-exports.order_delete_get = order_delete_get
-exports.order_delete_post = order_delete_post
-exports.order_update_get = order_update_get
-exports.order_update_post = order_update_post_array
-exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId
-exports.deleteOrders = deleteOrders
-exports.populateAdditionalLists = populateAdditionalLists
-exports.getList = getOrdersByDates
-exports.getAccountOrders = getOrdersByAccount
-exports.getLeft = getLeft
-exports.populatePaymentAccount = populatePaymentAccount
+    
+    async function populateAdditionalLists(myCallBack, params) {
+        let cutDate = Helper.getCutDate()
+        let tagFind = Tag.find
+        let orderPlaceFind = OrderPlace.find
+        let orderObjectFind = OrderObject.find
+        let accountAggregate = Account.aggregate
+        let orderAggregate = Order.aggregate
+        let results
+        try {
+            results = await Promise.all([
+                Tag.find(),
+                Account.aggregate([
+                    {
+                        $match: {
+                            $or: [
+                                { IsArchived: false },
+                                { IsArchived: { $exists: false } },
+                            ],
+                        },
+                    },
+                ]),
+                Order.aggregate([
+                    {
+                        $match: {
+                            IsDeleted: { $exists: false },
+                            DateOrder: { $gt: cutDate },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$ParentTag',
+                            count: { $sum: 1 },
+                        },
+                    },
+                ]),
+                Order.aggregate([
+                    {
+                        $match: {
+                            IsDeleted: { $exists: false },
+                            DateOrder: { $gt: cutDate },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$PaymentAccount',
+                            count: { $sum: 1 },
+                        },
+                    },
+                ]),
+                OrderPlace.find(),
+                OrderObject.find(),
+                Order.aggregate([
+                    {
+                        $match: {
+                            IsDeleted: { $exists: false },
+                            DateOrder: { $gt: cutDate },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$Place',
+                            count: { $sum: 1 },
+                        },
+                    },
+                ]),
+            ])
+        } catch (err) {
+            console.log('error' + err)
+        }
+        tagList = results[0]
+        accountList = results[1]
+        let groupedOrdersByTag = results[2]
+        let groupedOrdersByAccount = results[3]
+        placeList = results[4]
+        objectList = results[5]
+        let groupedOrdersByPlace = results[6]
+        groupedOrdersByPlace = groupedOrdersByPlace.filter((x) => x._id !== null)
+        
+        Helper.sortListByGroupedList(tagList, groupedOrdersByTag)
+        Helper.sortListByGroupedList(accountList, groupedOrdersByAccount)
+        Helper.sortListByGroupedList(placeList, groupedOrdersByPlace)
+        
+        popularPlaceList = placeList.slice(0, 7)
+        
+        placeList.sort((a, b) => {
+            if (a.Name < b.Name) {
+                return -1
+            }
+            if (a.Name > b.Name) {
+                return 1
+            }
+            return 0
+        })
+        
+        popularTagList = tagList.slice(0, 8)
+        tagList.sort((a, b) => {
+            if (a.Name < b.Name) {
+                return -1
+            }
+            if (a.Name > b.Name) {
+                return 1
+            }
+            return 0
+        })
+        popularAccountList = accountList.slice(1, 4)
+        if (params) {
+            myCallBack(params.req, params.res, params.next)
+        }
+    }
+    
+    async function getOrdersByDates(startDate, finishDate) {
+        let list = Helper.getListByDates(Order, startDate, finishDate)
+        populateOrderList(list)
+        return list
+    }
+    async function getOrdersByAccount(id, startDate, finishDate) {
+        let list = Order.find({
+            PaymentAccount: Helper.createObjectId(id),
+            DateOrder: { $gte: startDate, $lt: finishDate },
+        })
+        populateOrderList(list)
+        return list
+    }
+    function populateOrderList(orderList) {
+        orderList
+        .populate('ParentTag')
+        .populate('PaymentAccount')
+        .populate('Object')
+        .populate('Place')
+    }
+    populateAdditionalLists()
+    
+    exports.order_list = order_list
+    exports.order_last_list = order_last_list
+    exports.order_create_get = order_create_get
+    exports.order_create_get_withNewLists = order_create_get_withNewLists
+    exports.order_create_post = order_create_post_array
+    exports.order_delete_get = order_delete_get
+    exports.order_delete_post = order_delete_post
+    exports.order_update_get = order_update_get
+    exports.order_update_post = order_update_post_array
+    exports.orders_exportWithEmptyLocalId = orders_exportWithEmptyLocalId
+    exports.deleteOrders = deleteOrders
+    exports.populateAdditionalLists = populateAdditionalLists
+    exports.getList = getOrdersByDates
+    exports.getAccountOrders = getOrdersByAccount
+    exports.getLeft = getLeft
+    exports.populatePaymentAccount = populatePaymentAccount
+    
