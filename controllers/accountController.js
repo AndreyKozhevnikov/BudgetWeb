@@ -61,11 +61,9 @@ let create_post_array = [
     (req, res, next) => create_post(req, res, next),
 ]
 
-function list(req, res, next) {
-    Account.find().exec(function (err, list_account) {
-        if (err) {
-            return next(err)
-        }
+async function list(req, res, next) {
+    try{
+        let list_account= await Account.find();
         list_account.sort(function (a, b) {
             return a.OrderNumber - b.OrderNumber
         })
@@ -73,7 +71,10 @@ function list(req, res, next) {
             title: 'Account List',
             list_account: list_account,
         })
-    })
+        
+    } catch (err) {
+        return next(err)
+    }
 }
 
 async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
@@ -757,16 +758,16 @@ function prepareEmptyMonthObject(dateObject, monthObject) {
     monthObject.thisMonthDates = arr
 }
 
-function update_get(req, res, next) {
-    Account.findById(req.params.id).exec(function (err, result) {
-        if (err) {
-            next(err)
-        }
+async function update_get(req, res, next) {
+    try{
+        let result = await Account.findById(req.params.id)
         res.render('account_form', {
             title: 'Update Account',
             account_frm: result,
         })
-    })
+    }catch (err) {
+        next(err)
+    }
 }
 
 async function createCheck(req, res, next) {
@@ -805,7 +806,7 @@ function createAccountFromRequest(req, isUpdate) {
     return account
 }
 
-function update_post(req, res, next) {
+async function update_post(req, res, next) {
     let account = createAccountFromRequest(req, true)
     
     const errors = validationResult(req)
@@ -815,17 +816,16 @@ function update_post(req, res, next) {
             account_frm: account,
         })
     } else {
-        Account.findByIdAndUpdate(
-            req.params.id,
-            account,
-            [],
-            function (err, theAcc) {
-                if (err) {
-                    return next(err)
-                }
-                res.redirect('/account/aggregatedList')
-            },
-        )
+        try{
+            await Account.findByIdAndUpdate(
+                req.params.id,
+                account,
+                []
+            )
+            res.redirect('/account/aggregatedList')
+        }catch (err) {
+            return next(err)
+        }
     }
 }
 
