@@ -179,17 +179,17 @@ function list(req, res, next) {
     })
 }
 
-function update_get(req, res, next) {
-    ServiceOrder.findById(req.params.id).exec(function (err, sOrder) {
-        if (err) {
-            return next(err)
-        }
+async function update_get(req, res, next) {
+    try {
+        let sOrder = await ServiceOrder.findById(req.params.id)
         let objToShow = objectToShowForm('Update SOrder', sOrder)
         res.render('serviceOrder_form', objToShow)
-    })
+    } catch (err) {
+        return next(err)
+    }
 }
 
-function update_post(req, res, next) {
+async function update_post(req, res, next) {
     let serviceOrder = createServiceOrderFromRequest(req, true)
     
     const errors = validationResult(req)
@@ -203,18 +203,16 @@ function update_post(req, res, next) {
         return
     } else {
         // Data from form is valid.
-        
-        ServiceOrder.findByIdAndUpdate(
-            req.params.id,
-            serviceOrder,
-            [],
-            function (err, theSOrder) {
-                if (err) {
-                    return next(err)
-                }
-                res.redirect('/account/aggregatedList')
-            },
-        )
+        try {
+            await ServiceOrder.findByIdAndUpdate(
+                req.params.id,
+                serviceOrder,
+                []
+            )
+            res.redirect('/account/aggregatedList')
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 let update_post_array = [

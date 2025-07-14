@@ -15,7 +15,7 @@ function tag_create_get(req, res) {
     res.render('tag_form', { title: 'Create Tag' })
 }
 
-function tag_create_post(req, res, next) {
+async function tag_create_post(req, res, next) {
     const errors = validationResult(req)
 
     var tag = new Tag({
@@ -31,23 +31,17 @@ function tag_create_post(req, res, next) {
         })
         return
     } else {
-        Tag.findOne({ Name: req.body.NameFromForm }).exec(
-            function (err, found_tag) {
-                if (err) {
-                    return next(err)
-                }
-                if (found_tag) {
-                    res.redirect(found_tag.url)
-                } else {
-                    tag.save(function (err) {
-                        if (err) {
-                            return next(err)
-                        }
-                        res.redirect('/order/createWithNewLists')
-                    })
-                }
-            },
-        )
+        try {
+            let found_tag = await Tag.findOne({ Name: req.body.NameFromForm })
+            if (found_tag) {
+                res.redirect(found_tag.url)
+            } else {
+                await tag.save()
+                res.redirect('/order/createWithNewLists')
+            }
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 let tag_create_post_array = [
@@ -74,7 +68,7 @@ function tag_update_get(req, res, next) {
     })
 }
 
-function tag_update_post(req, res, next) {
+async function tag_update_post(req, res, next) {
     let tag = new Tag({
         Name: req.body.NameFromForm,
         LocalId: req.body.LocalIdFromForm,
@@ -85,12 +79,12 @@ function tag_update_post(req, res, next) {
     if (!errors.isEmpty()) {
         res.render('tag_form', { title: 'Update Order', tagFromForm: tag })
     } else {
-        Tag.findByIdAndUpdate(req.params.id, tag, [], function (err, theTag) {
-            if (err) {
-                return next(err)
-            }
+        try {
+            let theTag = await Tag.findByIdAndUpdate(req.params.id, tag, [])
             res.redirect(theTag.url)
-        })
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 let tag_update_post_array = [

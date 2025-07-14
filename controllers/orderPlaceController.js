@@ -27,7 +27,7 @@ function create_get(req, res) {
     res.render('orderPlace_form', { title: 'Create Place' })
 }
 
-function create_post(req, res, next) {
+async function create_post(req, res, next) {
     const errors = validationResult(req)
 
     var orderPlace = createPlaceOrderFromRequest(req, false)
@@ -40,23 +40,17 @@ function create_post(req, res, next) {
         })
         return
     } else {
-        OrderPlace.findOne({ Name: req.body.NameFromForm }).exec(
-            function (err, found_entity) {
-                if (err) {
-                    return next(err)
-                }
-                if (found_entity) {
-                    res.redirect(found_entity.url)
-                } else {
-                    orderPlace.save(function (err) {
-                        if (err) {
-                            return next(err)
-                        }
-                        res.redirect('/order/createWithNewLists')
-                    })
-                }
-            },
-        )
+        try {
+            let found_entity = await OrderPlace.findOne({ Name: req.body.NameFromForm })
+            if (found_entity) {
+                res.redirect(found_entity.url)
+            } else {
+                await orderPlace.save()
+                res.redirect('/order/createWithNewLists')
+            }
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 let create_post_array = [
@@ -97,7 +91,7 @@ function createPlaceOrderFromRequest(req, isUpdate) {
     return orderPlace
 }
 
-function update_post(req, res, next) {
+async function update_post(req, res, next) {
     let orderPlace = createPlaceOrderFromRequest(req, true)
 
     const errors = validationResult(req)
@@ -107,17 +101,16 @@ function update_post(req, res, next) {
             orderPlaceFromForm: orderPlace,
         })
     } else {
-        OrderPlace.findByIdAndUpdate(
-            req.params.id,
-            orderPlace,
-            [],
-            function (err, theEntity) {
-                if (err) {
-                    return next(err)
-                }
-                res.redirect('/orderplace/list')
-            },
-        )
+        try {
+            await OrderPlace.findByIdAndUpdate(
+                req.params.id,
+                orderPlace,
+                []
+            )
+            res.redirect('/orderplace/list')
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 let update_post_array = [
@@ -126,14 +119,13 @@ let update_post_array = [
     (req, res, next) => update_post(req, res, next),
 ]
 
-function deleteEntities(req, res, next) {
-    OrderPlace.remove({}, function (err) {
-        if (err) {
-            next(err)
-        } else {
-            res.end('success')
-        }
-    })
+async function deleteEntities(req, res, next) {
+    try {
+        await OrderPlace.deleteMany({})
+        res.end('success')
+    } catch (err) {
+        next(err)
+    }
 }
 
 exports.orderPlace_list = orderPlace_list

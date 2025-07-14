@@ -47,7 +47,7 @@ app.use(
     }),
 )
 let isDevelopment = process.env.NODE_ENV === 'development'
-isDevelopment = false;
+// isDevelopment = false;
 if (!isDevelopment)
     app.use('/', requestLogin)
 app.use('/', rootRouter)

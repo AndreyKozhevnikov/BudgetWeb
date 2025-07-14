@@ -35,18 +35,14 @@ async function create_post(req, res, next) {
             if (found_acc) {
                 res.redirect(found_acc.url)
             } else {
-                account.save(function (err, acc) {
-                    if (err) {
-                        return next(err)
-                    }
-                    FixRecordController.createFixRecord(
-                        FixRecordController.FRecordTypes.StartMonth,
-                        Helper.getToday(),
-                        acc,
-                        0,
-                    )
-                    res.redirect('/account/list')
-                })
+                let acc = await account.save()
+                FixRecordController.createFixRecord(
+                    FixRecordController.FRecordTypes.StartMonth,
+                    Helper.getToday(),
+                    acc,
+                    0,
+                )
+                res.redirect('/account/list')
             }
         }catch (err) {
             return next(err)
@@ -840,14 +836,13 @@ let update_post_array = [
     (req, res, next) => update_post(req, res, next),
 ]
 
-function deleteTypes(req, res, next) {
-    Account.remove({}, function (err) {
-        if (err) {
-            next(err)
-        } else {
-            res.end('success')
-        }
-    })
+async function deleteTypes(req, res, next) {
+    try {
+        await Account.deleteMany({})
+        res.end('success')
+    } catch (err) {
+        next(err)
+    }
 }
 
 exports.create_get = create_get

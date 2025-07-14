@@ -198,7 +198,7 @@ function createUserGet(req, res, next) {
     }
     res.render('userview')
 }
-function createUserPost(req, res, next) {
+async function createUserPost(req, res, next) {
     if (!canCreateUser()) {
         res.redirect('/login')
     }
@@ -208,52 +208,50 @@ function createUserPost(req, res, next) {
         password: req.body.upass,
     })
 
-    user.save(function (err, resultuser) {
-        if (err) {
-            return next(err)
-        }
+    try {
+        await user.save()
         res.send('user created')
-    })
+    } catch (err) {
+        return next(err)
+    }
 }
-function updatelocalids(req, res, next) {
+async function updatelocalids(req, res, next) {
     var updateObjects = req.body.updateObjects
     var updateObjectList = JSON.parse(updateObjects)
-    updateObjectList.forEach((x) => {
-        let id = x.WebId
-        let localId = x.LocalId
-        let type = x.Type
-        let rt
-        switch (type) {
-            case 'Order':
-                rt = Order
-                break
-            case 'Tag':
-                rt = Tag
-                break
-            case 'PaymentType':
-                rt = PaymentType
-                break
-            case 'Place':
-                rt = OrderPlace
-                break
-            case 'Object':
-                rt = OrderObject
-                break
-        }
-        rt.findById(id, function (err, theEntity) {
-            if (err) {
-                next(err)
+    
+    try {
+        for (const x of updateObjectList) {
+            let id = x.WebId
+            let localId = x.LocalId
+            let type = x.Type
+            let rt
+            switch (type) {
+                case 'Order':
+                    rt = Order
+                    break
+                case 'Tag':
+                    rt = Tag
+                    break
+                case 'PaymentType':
+                    rt = PaymentType
+                    break
+                case 'Place':
+                    rt = OrderPlace
+                    break
+                case 'Object':
+                    rt = OrderObject
+                    break
             }
-            theEntity.LocalId = localId
-            theEntity.save(function (err, savedEntity) {
-                if (err) {
-                    next(err)
-                }
-            })
-        })
-    })
-
-    res.send('update is Successful')
+            let theEntity = await rt.findById(id)
+            if (theEntity) {
+                theEntity.LocalId = localId
+                await theEntity.save()
+            }
+        }
+        res.send('update is Successful')
+    } catch (err) {
+        next(err)
+    }
 }
 
 function updateLists(req, res, next) {
