@@ -156,27 +156,35 @@ async function populateLists() {
     }
 }
 
-function list(req, res, next) {
+async function list(req, res, next) {
     let dateObject = Helper.getDateObjectFromUrl(req)
     if (!dateObject.hasDateParameter) {
         Helper.redirectToLastMonth(req, res)
         return
     }
     let startDate = dateObject.startDate
-    
-    ServiceOrder.find({ DateOrder: { $gte: startDate } })
-    .populate('AccountOut')
-    .populate('AccountIn')
-    .sort({ DateOrder: -1 })
-    .exec(function (err, list_serviceOrders) {
-        if (err) {
-            return next(err)
-        }
+    try{
+        let list_serviceOrders= await ServiceOrder.find({ DateOrder: { $gte: startDate } })
+        .populate('AccountOut')
+        .populate('AccountIn')
+        .sort({ DateOrder: -1 })
         res.render('serviceOrder_list', {
             title: 'Service Order List',
             serviceOrders_list: list_serviceOrders,
         })
-    })
+    }
+    catch (err) {
+        return next(err)
+    }
+    // .exec(function (err, list_serviceOrders) {
+    //     if (err) {
+    //         return next(err)
+    //     }
+    //     res.render('serviceOrder_list', {
+    //         title: 'Service Order List',
+    //         serviceOrders_list: list_serviceOrders,
+    //     })
+    // })
 }
 
 async function update_get(req, res, next) {
