@@ -100,7 +100,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         return next(err)
     }
     let groupObject = {
-        groups: list_groups.map(group => ({name: group.Name,id: group._id,accounts:[]}))
+        groups: list_groups.map(group => ({name: group.Name,id: group._id,accounts:[],sum:0}))
     }
     accRes.accList.forEach((item) => {
         if (item.lastCheckDate.getFullYear() < 2000) {
@@ -168,10 +168,12 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
                     name: item.name,
                     sum:item.result,
                 })
+                foundGroup.sum += item.result;
             }
         }
     })
     accRes.sumObject = sumObject
+    accRes.groupObject = groupObject
     
     if (!isCreateFirstMonth) {
         let ali = accRes.accList.find((el) => el.name === 'TinkoffAli')
