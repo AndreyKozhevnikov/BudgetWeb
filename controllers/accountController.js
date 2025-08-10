@@ -5,6 +5,7 @@ let Account = require('../models/account.js')
 let Order = require('../models/order.js')
 let ServiceOrder = require('../models/serviceOrder.js')
 let FixRecord = require('../models/fixRecord.js')
+let AccountGroup = require('../models/AccountGroup.js')
 
 let Helper = require('../controllers/helperController.js')
 let FixRecordController = require('../controllers/fixRecordController.js')
@@ -92,6 +93,15 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         inputSum: {},
         outputSum: {},
     }
+    let list_groups
+    try{
+        list_groups = await AccountGroup.find()
+    } catch (err) {
+        return next(err)
+    }
+    let groupObject = {
+        groups: list_groups.map(group => ({name: group.Name,id: group._id,accounts:[]}))
+    }
     accRes.accList.forEach((item) => {
         if (item.lastCheckDate.getFullYear() < 2000) {
             item.lastCheckDateString = '--'
@@ -150,6 +160,15 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
             sumObject.inputSum[currency] + item.sumInSOrdersCleanWithMB
             sumObject.outputSum[currency] =
             sumObject.outputSum[currency] + item.sumOutSOrdersClean
+        }
+        if(item.group!=null){
+            let foundGroup = groupObject.groups.find(group => group.id.equals(item.group));
+            if(foundGroup){
+                foundGroup.accounts.push({
+                    name: item.name,
+                    sum:item.result,
+                })
+            }
         }
     })
     accRes.sumObject = sumObject
@@ -368,6 +387,7 @@ async function iterateOverDataAndPopulateResultObjects(
             isarchived: acc.IsArchived,
             isuntouchable: acc.IsUntouchable,
             currency: acc.Currency,
+            group: acc.Group,
             _id: acc._id,
         }
     })
@@ -618,7 +638,7 @@ async function aggregatedList(req, res, next) {
     monthObject.lastWeekSpendGroups = sortGroups(
         monthObject.lastWeekSpendGroups,
     )
-    tuneAccountResultObject(accountResultObject, dateObject)
+    await tuneAccountResultObject(accountResultObject, dateObject)
     processStatisticObjectAndMonthDates(
         dateObject,
         monthObject,
