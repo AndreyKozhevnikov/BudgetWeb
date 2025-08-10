@@ -52,15 +52,18 @@ window.onload = function () {
                 dataType: 'date',
                 format: 'dd-MMM-yy EEE',
                 caption: 'Date',
-                width: '10%',
+                width: '125px',
+                hidingPriority: 10, // Always visible
             },
             {
                 dataField: 'Value',
-                width: '10%',
+                width: '125px',
+                hidingPriority: 10, // Always visible
             },
             {
                 dataField: 'PaymentAccount.Name',
                 caption: 'Account',
+                hidingPriority: 5, // Hide on small screens
             },
             {
                 dataField: 'Description',
@@ -72,11 +75,12 @@ window.onload = function () {
                     a.style.wordWrap = 'break-word'
                     container[0].appendChild(a)
                 },
+                hidingPriority: 0, // Always visible
             },
             {
                 dataField: 'ParentTag.Name',
                 caption: 'Tag',
-                width: '21%',
+                hidingPriority: 4, // Hide on small screens
             },
             {
                 dataField: 'Place.Name',
@@ -95,19 +99,24 @@ window.onload = function () {
                         container[0].appendChild(lb)
                     }
                 },
+                hidingPriority: 3, // Hide on small screens
             },
-            {
-                dataField: 'Object.Name',
-                caption: 'Object',
-            },
+            // {
+            //     dataField: 'Object.Name',
+            //     caption: 'Object',
+            //     hidingPriority: 10, // Hide on small screens
+            // },
             {
                 dataField: 'Tags',
+                hidingPriority: 1, // Hide on small screens
             },
             {
                 dataField: 'PaymentAccount.Currency',
                 caption: 'Currency',
+                hidingPriority: 1, // Hide on small screens
             },
         ],
+        columnHidingEnabled: true,
         wordWrapEnabled: true,
     })
 }
