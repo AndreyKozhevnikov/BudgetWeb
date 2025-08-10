@@ -5,7 +5,7 @@ let Account = require('../models/account.js')
 let Order = require('../models/order.js')
 let ServiceOrder = require('../models/serviceOrder.js')
 let FixRecord = require('../models/fixRecord.js')
-let AccountGroup = require('../models/AccountGroup.js')
+let AccountGroup = require('../models/accountGroup.js')
 
 let Helper = require('../controllers/helperController.js')
 let FixRecordController = require('../controllers/fixRecordController.js')

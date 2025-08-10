@@ -1,5 +1,5 @@
 'use strict'
-let AccountGroup = require('../models/AccountGroup.js')
+let AccountGroup = require('../models/accountGroup.js')
 const { body, validationResult } = require('express-validator')
 
 async function accountGroup_list(req, res, next) {
