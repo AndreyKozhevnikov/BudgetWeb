@@ -85,6 +85,11 @@ process.on('unhandledRejection', (reason, promise) => {
 })
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+    // Ignore .well-known requests (Chrome DevTools noise)
+    if (req.originalUrl.startsWith('/.well-known/')) {
+        return res.status(404).end()
+    }
+    
     let err = new Error('Not Found ' + req.originalUrl)
     req.session.targetURI = null
     err.status = 404

@@ -2,14 +2,20 @@ document.addEventListener('DOMContentLoaded', function() {
        const copyBtn = document.getElementById('copyGroupsBtn');
        if (copyBtn) {
          copyBtn.addEventListener('click', function() {
-           let clipboardData = 'Group Name\tAccount Name\tSum\n';
+           let clipboardData = '';
            
            accountGroups.forEach(group => {
+             // Add group name as header
+             clipboardData += `${group.name}\t\n`;
+             
+             // Add accounts under the group
              if (group.accounts && group.accounts.length > 0) {
                group.accounts.forEach(account => {
-                 clipboardData += `${group.name}\t${account.name}\t${account.sum}\n`;
+                 clipboardData += `${account.name}\t${account.sum}\n`;
                });
              }
+             clipboardData += `Sum\t${group.sum}\t\n`;
+             clipboardData += `\n`;
            });
            
            navigator.clipboard.writeText(clipboardData).then(() => {
