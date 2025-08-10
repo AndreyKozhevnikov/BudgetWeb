@@ -11,6 +11,7 @@ let compression = require('compression')
 
 let requestLogin = require('./routes/requestLogin')
 let tagRouter = require('./routes/tagRouter.js')
+let accountGroupRouter = require('./routes/accountGroupRouter.js')
 let orderPlaceRouter = require('./routes/orderPlaceRouter.js')
 let orderRouter = require('./routes/orderRouter.js')
 let accountRouter = require('./routes/accountRouter.js')
@@ -52,6 +53,7 @@ if (!isDevelopment)
     app.use('/', requestLogin)
 app.use('/', rootRouter)
 app.use('/tag', tagRouter)
+app.use('/accountGroup', accountGroupRouter)
 app.use('/orderPlace', orderPlaceRouter)
 app.use('/order', orderRouter)
 app.use('/account', accountRouter)
@@ -68,7 +70,7 @@ let mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/budgetwebdb'
 // console.log(mongoDB)
 
 //if (isDevelopment) mongoose.set('debug', true)
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoDB)
 mongoose.Promise = global.Promise
 let db = mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))

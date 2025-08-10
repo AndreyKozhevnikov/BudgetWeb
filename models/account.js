@@ -15,6 +15,7 @@ let AccountSchema = new Schema({
     MoneyBoxId: { type: Schema.ObjectId, ref: 'Account' },
     IsMoneyBox: { type: Boolean },
     Currency: { type: String },
+    GroupId: { type: Schema.ObjectId, ref: 'AccountGroup' },
 })
 
 AccountSchema.virtual('url').get(function () {
