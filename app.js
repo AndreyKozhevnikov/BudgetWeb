@@ -49,8 +49,7 @@ app.use(
 )
 let isDevelopment = process.env.NODE_ENV === 'development'
 // isDevelopment = false;
-if (!isDevelopment)
-    app.use('/', requestLogin)
+if (!isDevelopment) app.use('/', requestLogin)
 app.use('/', rootRouter)
 app.use('/tag', tagRouter)
 app.use('/accountGroup', accountGroupRouter)
@@ -89,7 +88,7 @@ app.use(function (req, res, next) {
     if (req.originalUrl.startsWith('/.well-known/')) {
         return res.status(404).end()
     }
-    
+
     let err = new Error('Not Found ' + req.originalUrl)
     req.session.targetURI = null
     err.status = 404

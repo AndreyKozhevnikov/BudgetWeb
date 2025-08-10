@@ -218,7 +218,7 @@ async function createUserPost(req, res, next) {
 async function updatelocalids(req, res, next) {
     var updateObjects = req.body.updateObjects
     var updateObjectList = JSON.parse(updateObjects)
-    
+
     try {
         for (const x of updateObjectList) {
             let id = x.WebId

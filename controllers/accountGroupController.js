@@ -3,12 +3,14 @@ let AccountGroup = require('../models/AccountGroup.js')
 const { body, validationResult } = require('express-validator')
 
 async function accountGroup_list(req, res, next) {
-    try{
-        let list_accountGroups= await AccountGroup.find();
-        res.render('accountGroup_list', { title: 'AccountGroup List', accountGroup_list: list_accountGroups })
-    }catch(err) {
+    try {
+        let list_accountGroups = await AccountGroup.find()
+        res.render('accountGroup_list', {
+            title: 'AccountGroup List',
+            accountGroup_list: list_accountGroups,
+        })
+    } catch (err) {
         return next(err)
-        
     }
 }
 
@@ -18,11 +20,11 @@ function accountGroup_create_get(req, res) {
 
 async function accountGroup_create_post(req, res, next) {
     const errors = validationResult(req)
-    
+
     var accountGroup = new AccountGroup({
         Name: req.body.NameFromForm,
     })
-    
+
     if (!errors.isEmpty()) {
         res.render('accountGroup_form', {
             title: 'Create accountGroup',
@@ -32,7 +34,9 @@ async function accountGroup_create_post(req, res, next) {
         return
     } else {
         try {
-            let found_accountGroup = await AccountGroup.findOne({ Name: req.body.NameFromForm })
+            let found_accountGroup = await AccountGroup.findOne({
+                Name: req.body.NameFromForm,
+            })
             if (found_accountGroup) {
                 res.redirect(found_accountGroup.url)
             } else {
@@ -45,7 +49,9 @@ async function accountGroup_create_post(req, res, next) {
     }
 }
 let accountGroup_create_post_array = [
-    body('NameFromForm', 'AccountGroup name required').isLength({ min: 1 }).trim(),
+    body('NameFromForm', 'AccountGroup name required')
+        .isLength({ min: 1 })
+        .trim(),
     body('NameFromForm').trim().escape(),
     (req, res, next) => accountGroup_create_post(req, res, next),
 ]
@@ -63,7 +69,10 @@ function accountGroup_update_get(req, res, next) {
         if (err) {
             next(err)
         }
-        res.render('accountGroup_form', { title: 'Update AccountGroup', accountGroupFromForm: result })
+        res.render('accountGroup_form', {
+            title: 'Update AccountGroup',
+            accountGroupFromForm: result,
+        })
     })
 }
 
@@ -72,13 +81,20 @@ async function accountGroup_update_post(req, res, next) {
         Name: req.body.NameFromForm,
         _id: req.params.id,
     })
-    
+
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        res.render('accountGroup_form', { title: 'Update AccountGroup', accountGroupFromForm: accountGroup })
+        res.render('accountGroup_form', {
+            title: 'Update AccountGroup',
+            accountGroupFromForm: accountGroup,
+        })
     } else {
         try {
-            let theAccountGroup = await AccountGroup.findByIdAndUpdate(req.params.id, accountGroup, [])
+            let theAccountGroup = await AccountGroup.findByIdAndUpdate(
+                req.params.id,
+                accountGroup,
+                [],
+            )
             res.redirect(theAccountGroup.url)
         } catch (err) {
             return next(err)

@@ -70,9 +70,9 @@ function objectToShowForm(mTitle, serviceOrder, errors) {
 
 function create_post(req, res, next) {
     const errors = validationResult(req)
-    
+
     let serviceOrder = createServiceOrderFromRequest(req, false)
-    
+
     if (!errors.isEmpty()) {
         let objToShow = objectToShowForm(
             'Create ServiceOrder(error)',
@@ -82,8 +82,8 @@ function create_post(req, res, next) {
         res.render('serviceOrder_form', objToShow)
         return
     } else {
-        try{
-            serviceOrder.save();
+        try {
+            serviceOrder.save()
             res.redirect('/account/aggregatedList')
         } catch (err) {
             return next(err)
@@ -98,7 +98,7 @@ let create_post_array = [
     (req, res, next) => create_post(req, res, next),
 ]
 
-async function populateLists() { 
+async function populateLists() {
     try {
         //let accountFind = Helper.promisify(Account.find, Account)
         accountList = await Account.find({
@@ -113,7 +113,7 @@ async function populateLists() {
             }
             return 0
         })
-        
+
         // let soAggregate = Helper.promisify(ServiceOrder.aggregate, ServiceOrder)
         let cutDate = Helper.getCutDate()
         let sOrdersGroupedByInAcc = await ServiceOrder.aggregate([
@@ -132,7 +132,7 @@ async function populateLists() {
         ])
         accountInList = getCloneArray(accountList)
         Helper.sortListByGroupedList(accountInList, sOrdersGroupedByInAcc)
-        
+
         let sOrdersGroupedByOutAcc = await ServiceOrder.aggregate([
             {
                 $match: {
@@ -163,17 +163,18 @@ async function list(req, res, next) {
         return
     }
     let startDate = dateObject.startDate
-    try{
-        let list_serviceOrders= await ServiceOrder.find({ DateOrder: { $gte: startDate } })
-        .populate('AccountOut')
-        .populate('AccountIn')
-        .sort({ DateOrder: -1 })
+    try {
+        let list_serviceOrders = await ServiceOrder.find({
+            DateOrder: { $gte: startDate },
+        })
+            .populate('AccountOut')
+            .populate('AccountIn')
+            .sort({ DateOrder: -1 })
         res.render('serviceOrder_list', {
             title: 'Service Order List',
             serviceOrders_list: list_serviceOrders,
         })
-    }
-    catch (err) {
+    } catch (err) {
         return next(err)
     }
     // .exec(function (err, list_serviceOrders) {
@@ -199,7 +200,7 @@ async function update_get(req, res, next) {
 
 async function update_post(req, res, next) {
     let serviceOrder = createServiceOrderFromRequest(req, true)
-    
+
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         let objToShow = objectToShowForm(
@@ -215,7 +216,7 @@ async function update_post(req, res, next) {
             await ServiceOrder.findByIdAndUpdate(
                 req.params.id,
                 serviceOrder,
-                []
+                [],
             )
             res.redirect('/account/aggregatedList')
         } catch (err) {
@@ -226,8 +227,8 @@ async function update_post(req, res, next) {
 let update_post_array = [
     // validate fields
     body('fDate', 'Invalid date of order')
-    .optional({ checkFalsy: true })
-    .isISO8601(),
+        .optional({ checkFalsy: true })
+        .isISO8601(),
     // body('fTags', 'Description required').isLength({ min: 1 }).trim(),
     // Sanitize fields.
     body('fDate').toDate(),

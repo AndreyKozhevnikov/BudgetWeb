@@ -20,9 +20,9 @@ function create_get(req, res, next) {
 
 async function create_post(req, res, next) {
     const errors = validationResult(req)
-    
+
     var account = createAccountFromRequest(req, false)
-    
+
     if (!errors.isEmpty()) {
         res.render('account_form', {
             title: 'Create account(error)',
@@ -31,7 +31,7 @@ async function create_post(req, res, next) {
         })
         return
     } else {
-        try{
+        try {
             let found_acc = await Account.findOne({ Name: req.body.Name_frm })
             if (found_acc) {
                 res.redirect(found_acc.url)
@@ -45,10 +45,9 @@ async function create_post(req, res, next) {
                 )
                 res.redirect('/account/list')
             }
-        }catch (err) {
+        } catch (err) {
             return next(err)
         }
-        
     }
 }
 let create_post_array = [
@@ -59,8 +58,8 @@ let create_post_array = [
 ]
 
 async function list(req, res, next) {
-    try{
-        let list_account= await Account.find();
+    try {
+        let list_account = await Account.find()
         list_account.sort(function (a, b) {
             return a.OrderNumber - b.OrderNumber
         })
@@ -68,7 +67,6 @@ async function list(req, res, next) {
             title: 'Account List',
             list_account: list_account,
         })
-        
     } catch (err) {
         return next(err)
     }
@@ -85,7 +83,7 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         if (bNumber === null) bNumber = 999
         return aNumber - bNumber
     })
-    
+
     let sumObject = {
         commonSum: {},
         startSum: {},
@@ -94,13 +92,18 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         outputSum: {},
     }
     let list_groups
-    try{
+    try {
         list_groups = await AccountGroup.find()
     } catch (err) {
         return next(err)
     }
     let groupObject = {
-        groups: list_groups.map(group => ({name: group.Name,id: group._id,accounts:[],sum:0}))
+        groups: list_groups.map((group) => ({
+            name: group.Name,
+            id: group._id,
+            accounts: [],
+            sum: 0,
+        })),
     }
     accRes.accList.forEach((item) => {
         if (item.lastCheckDate.getFullYear() < 2000) {
@@ -112,12 +115,12 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         }
         item.sumPaymentsWithMB = item.sumPayments + item.sumOutSOrdersToMB
         item.sumInSOrdersCleanWithMB =
-        item.sumInSOrdersClean + item.sumInSOrdersFromMB
+            item.sumInSOrdersClean + item.sumInSOrdersFromMB
         item.result =
-        item.startSum +
-        item.sumInSOrders -
-        item.sumOutSOrders -
-        item.sumPayments
+            item.startSum +
+            item.sumInSOrders -
+            item.sumOutSOrders -
+            item.sumPayments
         let dateToAccShow = new Date()
         ;('')
         dateToAccShow.setDate(dateObject.today.getDate() - 31)
@@ -130,8 +133,8 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         if (
             !item.isuntouchable &&
             (dateObject.today.getTime() - item.lastCheckDate.getTime()) /
-            (1000 * 60 * 60 * 24) >
-            7
+                (1000 * 60 * 60 * 24) >
+                7
         ) {
             item.checkState = 'checkStateYellow'
         }
@@ -151,37 +154,39 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
                 sumObject.outputSum[currency] = 0
             }
             sumObject.commonSum[currency] =
-            sumObject.commonSum[currency] + item.result
+                sumObject.commonSum[currency] + item.result
             sumObject.startSum[currency] =
-            sumObject.startSum[currency] + item.startSum
+                sumObject.startSum[currency] + item.startSum
             sumObject.paymentsSum[currency] =
-            sumObject.paymentsSum[currency] + item.sumPaymentsWithMB
+                sumObject.paymentsSum[currency] + item.sumPaymentsWithMB
             sumObject.inputSum[currency] =
-            sumObject.inputSum[currency] + item.sumInSOrdersCleanWithMB
+                sumObject.inputSum[currency] + item.sumInSOrdersCleanWithMB
             sumObject.outputSum[currency] =
-            sumObject.outputSum[currency] + item.sumOutSOrdersClean
+                sumObject.outputSum[currency] + item.sumOutSOrdersClean
         }
-        if(item.group!=null){
-            let foundGroup = groupObject.groups.find(group => group.id.equals(item.group));
-            let itemResult=0
-            if(foundGroup.name.endsWith('USD')){
-                itemResult= item.result;
-            }else{
-               itemResult= Math.floor(item.result / 1000)
+        if (item.group != null) {
+            let foundGroup = groupObject.groups.find((group) =>
+                group.id.equals(item.group),
+            )
+            let itemResult = 0
+            if (foundGroup.name.endsWith('USD')) {
+                itemResult = item.result
+            } else {
+                itemResult = Math.floor(item.result / 1000)
             }
-            
-            if(foundGroup && itemResult !== 0){
+
+            if (foundGroup && itemResult !== 0) {
                 foundGroup.accounts.push({
                     name: item.name,
                     sum: itemResult,
                 })
-                foundGroup.sum += itemResult;
+                foundGroup.sum += itemResult
             }
         }
     })
     accRes.sumObject = sumObject
     accRes.groupObject = groupObject
-    
+
     if (!isCreateFirstMonth) {
         let ali = accRes.accList.find((el) => el.name === 'TinkoffAli')
         if (ali != null) {
@@ -192,10 +197,10 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         if (sberCredit != null) {
             let sberCreditres = sberCredit.result
             sberCredit.result =
-            sberCreditres + ' (' + (Number(sberCreditres) + 400000) + ')'
+                sberCreditres + ' (' + (Number(sberCreditres) + 400000) + ')'
         }
     }
-    
+
     return accRes
 }
 
@@ -213,7 +218,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth) {
         firstDateOfCurrentMonth,
     )
     let accListObject = {}
-    
+
     await iterateOverDataAndPopulateResultObjects(
         dataObject,
         accListObject,
@@ -235,7 +240,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth) {
     totalIncoming[Helper.Currencies.Rub] = 0
     totalExpense[Helper.Currencies.Dram] = 0
     totalExpense[Helper.Currencies.Rub] = 0
-    
+
     let start = async () => {
         await asyncForEach(accListObject.accList, async (accRecord) => {
             let currentCurrency = accRecord.currency
@@ -244,14 +249,14 @@ async function createStartMonthRecords(firstDateOfCurrentMonth) {
             }
             if (!accRecord.IsMoneyBox) {
                 totalSum[currentCurrency] =
-                totalSum[currentCurrency] + accRecord.result
+                    totalSum[currentCurrency] + accRecord.result
                 totalIncoming[currentCurrency] =
-                totalIncoming[currentCurrency] +
-                accRecord.sumInSOrdersCleanWithMB
+                    totalIncoming[currentCurrency] +
+                    accRecord.sumInSOrdersCleanWithMB
             }
-            
+
             totalExpense[currentCurrency] =
-            totalExpense[currentCurrency] + accRecord.sumPaymentsWithMB
+                totalExpense[currentCurrency] + accRecord.sumPaymentsWithMB
             await FixRecordController.createFixRecord(
                 FixRecordController.FRecordTypes.StartMonth,
                 firstDateOfCurrentMonth,
@@ -281,7 +286,7 @@ async function createStartMonthRecords(firstDateOfCurrentMonth) {
         firsDayOfPrevMonth.getMonth(),
         15,
     )
-    
+
     await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.TotalIncoming,
         dateForPrevMonths,
@@ -320,8 +325,8 @@ async function prepareDataToBuildAccountList(startDate, finishDate) {
             { DateOrder: { $lt: finishDate } },
         ],
     })
-    // .populate('PaymentAccount').populate('ParentTag');
-    .populate('ParentTag')
+        // .populate('PaymentAccount').populate('ParentTag');
+        .populate('ParentTag')
     dataObject.serviceOrderList = await ServiceOrder.find({
         $and: [
             { DateOrder: { $gte: startDate } },
@@ -337,37 +342,37 @@ async function prepareDataToBuildAccountList(startDate, finishDate) {
             { DateTime: { $lt: finishDate } },
         ],
     })
-    // .populate('Account')
-    .sort('DateTime')
+        // .populate('Account')
+        .sort('DateTime')
     dataObject.accountList = await Account.find()
     console.time('iterate')
     dataObject.orderList.forEach((order) => {
         let realAcc = dataObject.accountList.find((acc) =>
             acc._id.equals(order.PaymentAccount),
-    )
-    order.PaymentAccount = realAcc
-})
+        )
+        order.PaymentAccount = realAcc
+    })
 
-dataObject.serviceOrderList.forEach((sOrder) => {
-    let realAccIn = dataObject.accountList.find((acc) =>
-        acc._id.equals(sOrder.AccountIn),
-)
-sOrder.AccountIn = realAccIn
+    dataObject.serviceOrderList.forEach((sOrder) => {
+        let realAccIn = dataObject.accountList.find((acc) =>
+            acc._id.equals(sOrder.AccountIn),
+        )
+        sOrder.AccountIn = realAccIn
 
-let realAccOut = dataObject.accountList.find((acc) =>
-    acc._id.equals(sOrder.AccountOut),
-)
-sOrder.AccountOut = realAccOut
-})
+        let realAccOut = dataObject.accountList.find((acc) =>
+            acc._id.equals(sOrder.AccountOut),
+        )
+        sOrder.AccountOut = realAccOut
+    })
 
-dataObject.fixRecordsList.forEach((fRecord) => {
-    let realAcc = dataObject.accountList.find((acc) =>
-        acc._id.equals(fRecord.Account),
-)
-fRecord.Account = realAcc
-})
-console.timeEnd('iterate')
-return dataObject
+    dataObject.fixRecordsList.forEach((fRecord) => {
+        let realAcc = dataObject.accountList.find((acc) =>
+            acc._id.equals(fRecord.Account),
+        )
+        fRecord.Account = realAcc
+    })
+    console.timeEnd('iterate')
+    return dataObject
 }
 
 async function iterateOverDataAndPopulateResultObjects(
@@ -400,12 +405,12 @@ async function iterateOverDataAndPopulateResultObjects(
             _id: acc._id,
         }
     })
-    
+
     dataObject.serviceOrderList.forEach((sOrder) => {
         if (sOrder.AccountIn) {
             if (sOrder.AccountIn.IsMoneyBox) {
                 accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersToMB +=
-                sOrder.Value
+                    sOrder.Value
                 if (sOrder.AccountOut.Currency === Helper.Currencies.Dram) {
                     statObj.sumAllOrders += sOrder.Value
                 }
@@ -413,25 +418,25 @@ async function iterateOverDataAndPopulateResultObjects(
             accRes.accList[sOrder.AccountIn.Name].sumInSOrders += sOrder.Value
             if (sOrder.Type !== Helper.sOrderTypes.between) {
                 accRes.accList[sOrder.AccountIn.Name].sumInSOrdersClean +=
-                sOrder.Value
+                    sOrder.Value
             }
         }
         if (sOrder.AccountOut) {
             if (sOrder.AccountOut.IsMoneyBox) {
                 accRes.accList[sOrder.AccountIn.Name].sumInSOrdersFromMB +=
-                sOrder.Value
+                    sOrder.Value
             }
             accRes.accList[sOrder.AccountOut.Name].sumOutSOrders += sOrder.Value
             if (sOrder.Type !== Helper.sOrderTypes.between) {
                 accRes.accList[sOrder.AccountOut.Name].sumOutSOrdersClean +=
-                sOrder.Value
+                    sOrder.Value
             }
         }
     })
     dataObject.orderList.forEach((order) => {
         let orderAccount = order.PaymentAccount
         accRes.accList[orderAccount.Name].sumPayments += order.Value
-        
+
         if (order.PaymentAccount.Currency !== Helper.Currencies.Dram) {
             // dram theme
             return
@@ -461,25 +466,25 @@ async function iterateOverDataAndPopulateResultObjects(
             statObj.sumExcessOrders += order.Value
         }
         monthObjectConsumeOrderFunction(order)
-        
+
         statObj.sumAllOrders += order.Value
     })
     dataObject.fixRecordsList.forEach((fixRecord) => {
         if (fixRecord.Type === FixRecordController.FRecordTypes.StartMonth) {
             if (fixRecord.DateTime >= dateObject.startDateToCalculate) {
                 accRes.accList[fixRecord.Account.Name].startSum =
-                fixRecord.Value
+                    fixRecord.Value
                 accRes.accList[fixRecord.Account.Name].lastCheckDate =
-                fixRecord.DateTime
+                    fixRecord.DateTime
                 accRes.accList[fixRecord.Account.Name].lastCheckValue =
-                fixRecord.Value
+                    fixRecord.Value
             }
         }
         if (fixRecord.Type === FixRecordController.FRecordTypes.Check) {
             accRes.accList[fixRecord.Account.Name].lastCheckDate =
-            fixRecord.DateTime
+                fixRecord.DateTime
             accRes.accList[fixRecord.Account.Name].lastCheckValue =
-            fixRecord.Value
+                fixRecord.Value
         }
     })
 }
@@ -492,7 +497,7 @@ async function getDateObject(req) {
         dateData.startDateToCalculate = Helper.getFirstDateOfCurrentMonth()
         dateData.finishDateToCalculate = Helper.getTomorrow()
         let lastStartMonthRecordDate =
-        await FixRecordController.getTheLastFixRecordsDate()
+            await FixRecordController.getTheLastFixRecordsDate()
         if (lastStartMonthRecordDate < dateData.startDateToCalculate) {
             await createStartMonthRecords(dateData.startDateToCalculate)
         }
@@ -510,7 +515,7 @@ async function getDateObject(req) {
     dateData.lastMonthDate.setDate(dateData.lastMonthDate.getDate() - 1)
     dateData.dayCount = dateData.lastMonthDate.getDate()
     let currMonthName = Helper.getMonthName(dateData.startDateToCalculate)
-    
+
     let prevMonthStartDate = Helper.getFirstDateOfShifterMonth(
         dateData.startDateToCalculate,
         'prev',
@@ -526,18 +531,18 @@ async function getDateObject(req) {
 }
 function isDateInThisWeek(date) {
     let todayObj = Helper.getToday()
-    
+
     todayObj.setHours(0, 0, 0, 0)
-    
+
     const todayDate = todayObj.getDate()
     let todayDay = todayObj.getDay()
     if (todayDay === 0) {
         todayDay = 7
     }
-    
+
     // get first date of week
     const firstDayOfWeek = new Date(todayObj.setDate(todayDate - todayDay + 1))
-    
+
     // get last date of week
     const lastDayOfWeek = new Date(firstDayOfWeek)
     lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6)
@@ -610,7 +615,7 @@ async function aggregatedList(req, res, next) {
             })
             if (monthObject.thisMonthSpendGroups[order.ParentTag.Name]) {
                 monthObject.thisMonthSpendGroups[order.ParentTag.Name].Value +=
-                order.Value
+                    order.Value
             } else {
                 monthObject.thisMonthSpendGroups[order.ParentTag.Name] = {
                     Name: order.ParentTag.Name,
@@ -672,7 +677,7 @@ async function processStatisticObjectAndMonthDates(
     const normExcessPerDay = 2000
     const normAllPerDay = 5000
     const mortGagePayment = 0
-    
+
     processthisMonthDates(
         monthObject.thisMonthDates,
         normAllPerDay,
@@ -685,7 +690,7 @@ async function processStatisticObjectAndMonthDates(
     let desiredEatSumForMonth = normEatPerDay * monthDayCount
     let desiredFastFoodSumForMonth = normFastFoodPerDay * monthDayCount
     let desiredExcessSumForMonth = normExcessPerDay * monthDayCount
-    
+
     statObj.spendEat = statObj.sumEatOrders
     statObj.normEat = normEatPerDay * dateObject.dayCount
     statObj.normEatMonth = desiredEatSumForMonth
@@ -698,26 +703,26 @@ async function processStatisticObjectAndMonthDates(
     statObj.spendAll = statObj.sumAllOrders
     statObj.normAll = normAllPerDay * dateObject.dayCount + mortGagePayment
     statObj.normAllMonth = desiredAllSumForMonth
-    
+
     statObj.diffEat = statObj.normEat - statObj.spendEat
     statObj.diffEatMonth = statObj.normEatMonth - statObj.spendEat
     statObj.moneyLeftEat = Math.round(statObj.diffEatMonth / leftDayCount)
-    
+
     statObj.diffFastFood = statObj.normFastFood - statObj.spendFastFood
     statObj.diffFastFoodMonth =
-    statObj.normFastFoodMonth - statObj.spendFastFood
+        statObj.normFastFoodMonth - statObj.spendFastFood
     statObj.moneyLeftFastFood = Math.round(
         statObj.diffFastFoodMonth / leftDayCount,
     )
-    
+
     statObj.diffExcess = statObj.normExcess - statObj.spendExcess
     statObj.diffExcessMonth = statObj.normExcessMonth - statObj.spendExcess
     statObj.moneyLeftExcess = Math.round(statObj.diffExcessMonth / leftDayCount)
-    
+
     statObj.diffAll = statObj.normAll - statObj.spendAll
     statObj.diffAllMonth = statObj.normAllMonth - statObj.spendAll
     statObj.moneyLeftAll = Math.round(statObj.diffAllMonth / leftDayCount)
-    
+
     statObj.allColorAttribute = statObj.diffAll < 0
     statObj.eatColorAttribute = statObj.diffEat < 0
     statObj.fastFoodColorAttribute = statObj.diffFastFood < 0
@@ -727,15 +732,15 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
     let allResult = 0
     for (let dateData in thisMonthDates) {
         thisMonthDates[dateData].Diff =
-        normAllPerDay - thisMonthDates[dateData].Value
-        
+            normAllPerDay - thisMonthDates[dateData].Value
+
         if (new Date(dateData).getDate() === 1) {
             thisMonthDates[dateData].Diff =
-            thisMonthDates[dateData].Diff + mortGagePayment
+                thisMonthDates[dateData].Diff + mortGagePayment
         }
         allResult = allResult + thisMonthDates[dateData].Diff
         thisMonthDates[dateData].TempResult = allResult
-        
+
         thisMonthDates[dateData].orderList.sort((a, b) => {
             return b.value - a.value
         })
@@ -752,7 +757,7 @@ function processthisMonthDates(thisMonthDates, normAllPerDay, mortGagePayment) {
 function prepareEmptyMonthObject(dateObject, monthObject) {
     let arr = {}
     let dt = new Date(dateObject.startDateToCalculate)
-    
+
     while (dt <= dateObject.lastMonthDate) {
         let dateSt = moment(dt).format('DD MMM YY')
         let currDt = new Date(dt.getTime())
@@ -763,7 +768,7 @@ function prepareEmptyMonthObject(dateObject, monthObject) {
             getDateUrl: '/mixorders/?startDate=' + Helper.getUrlDateString(dt),
             orderList: [],
         }
-        
+
         if (dt.getDay() === 1) {
             let monDate = new Date()
             monDate.setTime(currDt.getTime() - 12 * 60 * 60 * 1000)
@@ -777,20 +782,20 @@ function prepareEmptyMonthObject(dateObject, monthObject) {
                 dashStyle: 'dash',
             })
         }
-        
+
         dt.setDate(dt.getDate() + 1)
     }
     monthObject.thisMonthDates = arr
 }
 
 async function update_get(req, res, next) {
-    try{
+    try {
         let result = await Account.findById(req.params.id)
         res.render('account_form', {
             title: 'Update Account',
             account_frm: result,
         })
-    }catch (err) {
+    } catch (err) {
         next(err)
     }
 }
@@ -799,7 +804,7 @@ async function createCheck(req, res, next) {
     let id = req.params.id
     let sum = req.params.sum
     let acc = await Account.findById(id)
-    
+
     await FixRecordController.createFixRecord(
         FixRecordController.FRecordTypes.Check,
         Helper.getToday(),
@@ -834,7 +839,7 @@ function createAccountFromRequest(req, isUpdate) {
 
 async function update_post(req, res, next) {
     let account = createAccountFromRequest(req, true)
-    
+
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         res.render('account_form', {
@@ -842,14 +847,10 @@ async function update_post(req, res, next) {
             account_frm: account,
         })
     } else {
-        try{
-            await Account.findByIdAndUpdate(
-                req.params.id,
-                account,
-                []
-            )
+        try {
+            await Account.findByIdAndUpdate(req.params.id, account, [])
             res.redirect('/account/aggregatedList')
-        }catch (err) {
+        } catch (err) {
             return next(err)
         }
     }

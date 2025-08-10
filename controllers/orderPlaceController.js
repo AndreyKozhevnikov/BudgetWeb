@@ -41,7 +41,9 @@ async function create_post(req, res, next) {
         return
     } else {
         try {
-            let found_entity = await OrderPlace.findOne({ Name: req.body.NameFromForm })
+            let found_entity = await OrderPlace.findOne({
+                Name: req.body.NameFromForm,
+            })
             if (found_entity) {
                 res.redirect(found_entity.url)
             } else {
@@ -102,11 +104,7 @@ async function update_post(req, res, next) {
         })
     } else {
         try {
-            await OrderPlace.findByIdAndUpdate(
-                req.params.id,
-                orderPlace,
-                []
-            )
+            await OrderPlace.findByIdAndUpdate(req.params.id, orderPlace, [])
             res.redirect('/orderplace/list')
         } catch (err) {
             return next(err)
