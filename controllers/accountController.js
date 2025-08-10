@@ -792,6 +792,7 @@ function createAccountFromRequest(req, isUpdate) {
         Currency: req.body.Currency_frm,
         IsMoneyBox: Boolean(req.body.IsMoneyBox_frm),
         HasMoneyBox: Boolean(req.body.HasMoneyBox_frm),
+        Group: req.body.GroupId_frm,
     })
     if (req.body.MoneyBoxId_frm) {
         account.MoneyBoxId = req.body.MoneyBoxId_frm

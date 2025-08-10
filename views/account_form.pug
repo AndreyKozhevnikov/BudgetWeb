@@ -31,6 +31,8 @@ block content
       input#txCurrency.form-control(type='text' placeholder='Enter a currency' name='Currency_frm' value=(undefined===account_frm ? '' : account_frm.Currency))
       label(for='txMoneyBoxId') MoneyBoxId:
       input#txMoneyBoxId.form-control(type='text' placeholder='Enter a MoneyBoxId' name='MoneyBoxId_frm' value=(undefined===account_frm ? '' : account_frm.MoneyBoxId))
+      label(for='txAccGroupId') AccGroupId:
+      input#txAccGroupId.form-control(type='text' placeholder='Enter a GroupId' name='GroupId_frm' value=(undefined===account_frm ? '' : account_frm.Group))
           
     button.btn.btn-primary(type='submit') Submit
   if errors 
