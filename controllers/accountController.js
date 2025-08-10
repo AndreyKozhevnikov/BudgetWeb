@@ -163,12 +163,19 @@ async function tuneAccountResultObject(accRes, dateObject, isCreateFirstMonth) {
         }
         if(item.group!=null){
             let foundGroup = groupObject.groups.find(group => group.id.equals(item.group));
-            if(foundGroup){
+            let itemResult=0
+            if(foundGroup.name.endsWith('USD')){
+                itemResult= item.result;
+            }else{
+               itemResult= Math.floor(item.result / 1000)
+            }
+            
+            if(foundGroup && itemResult !== 0){
                 foundGroup.accounts.push({
                     name: item.name,
-                    sum:item.result,
+                    sum: itemResult,
                 })
-                foundGroup.sum += item.result;
+                foundGroup.sum += itemResult;
             }
         }
     })
