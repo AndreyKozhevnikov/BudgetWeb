@@ -170,3 +170,5 @@ block wideContent
           ul(style="list-style: none; padding-left: 20px;")
             each account in group.accounts
               li #{account.name} - #{fN(account.sum)}
+          div.group-sum(style="font-weight: bold; padding-left: 20px; border-top: 1px solid #ccc; padding-top: 5px; margin-top: 5px; color: green;")
+            | Total: #{fN(group.sum)}
