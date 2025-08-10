@@ -10,9 +10,14 @@ block scripts
      let thisMonthMondays=!{JSON.stringify(monthObject.thisMonthMondays)}; 
      let thisMonthSpendGroups=!{JSON.stringify(monthObject.thisMonthSpendGroups)}; 
      let lastWeekSpendGroups=!{JSON.stringify(monthObject.lastWeekSpendGroups)}; 
+     
+     // Account Groups data for clipboard copy
+     let accountGroups = !{JSON.stringify(accListObject.groupObject.groups)};
 
    script(src='/javascripts/account_dates_chart.js')     
    script(src='/javascripts/account_pie_chart.js')
+   script(src='/javascripts/copy_data_clipboard.js')
+
 block content
   div(style='display:flex; align-items: center;')
     a(href='/account/aggregatedList/?startDate=' + dateObject.prevMonthStartDate,style='width:33%') Prev
@@ -155,5 +160,13 @@ block wideContent
   div(style="display: table-row")
     div#thisMonthPieChartContainer(style="width: 600px; display: table-cell;")                   
     div#lastWeekPieChartContainer(style="width: 600px;display: table-cell;")
-  div#GroupAccounts(style="background: red;")
-    pre !{JSON.stringify(accListObject.groupObject, null, 2)}
+  div#GroupAccounts
+    h3 Account Groups
+    button#copyGroupsBtn(type="button", style="margin-bottom: 15px; padding: 8px 16px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer;") Copy Groups to Clipboard
+    each group in accListObject.groupObject.groups
+      if group.accounts.length > 0
+        div.group-container(style="margin-bottom: 20px;")
+          h4 #{group.name}
+          ul(style="list-style: none; padding-left: 20px;")
+            each account in group.accounts
+              li #{account.name} - #{fN(account.sum)}

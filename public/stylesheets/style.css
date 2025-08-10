@@ -126,3 +126,25 @@ a.withoutWrap {
 .checkStateRed {
     background-color: rgb(241, 134, 134);
 }
+
+Account Groups Styling
+.group-container {
+    margin-bottom: 20px;
+    border-left: 3px solid #4285f4;
+    padding-left: 15px;
+}
+
+.group-container h4 {
+    margin: 0 0 10px 0;
+    color: #4285f4;
+    font-weight: bold;
+}
+
+.group-container ul {
+    margin: 0;
+}
+
+.group-container li {
+    margin-bottom: 5px;
+    color: #333;
+}
