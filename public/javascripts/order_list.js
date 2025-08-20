@@ -75,7 +75,7 @@ window.onload = function () {
                     a.style.wordWrap = 'break-word'
                     container[0].appendChild(a)
                 },
-                hidingPriority: 0, // Always visible
+                hidingPriority: 10, // Always visible
             },
             {
                 dataField: 'ParentTag.Name',
