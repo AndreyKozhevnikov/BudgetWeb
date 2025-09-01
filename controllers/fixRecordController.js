@@ -82,18 +82,19 @@ function deleteStartMonthRecords(req, res, next) {
     }
     deleteCurrMonthStartRecords(req, res, next)
 }
-function deleteCurrMonthStartRecords(req, res, next) {
-    let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth()
-    FixRecord.remove(
-        { DateTime: { $gte: currMonthFirstDate } },
-        function (err) {
-            if (err) {
-                next(err)
-            } else {
-                res.end('success')
-            }
-        },
-    )
+async function deleteCurrMonthStartRecords(req, res, next) {
+    try {
+        let currMonthFirstDate = Helper.getFirstDateOfCurrentMonth()
+        const result = await FixRecord.deleteMany({
+            DateTime: { $gte: currMonthFirstDate },
+        })
+        res.json({
+            message: 'Records deleted successfully',
+            deletedCount: result.deletedCount,
+        })
+    } catch (error) {
+        next(error)
+    }
 }
 
 async function createTotalIncoming(req, res, next) {
