@@ -156,6 +156,18 @@ async function populateLists() {
     }
 }
 
+async function listFromDate(startDate) {
+    var sOrders = await ServiceOrder.find({
+        DateOrder: { $gte: startDate },
+        Type: { $eq: Helper.sOrderTypes.in },
+    })
+        .populate('AccountOut')
+        .populate('AccountIn')
+        .sort({ DateOrder: -1 })
+
+    return sOrders
+}
+
 async function list(req, res, next) {
     let dateObject = Helper.getDateObjectFromUrl(req)
     if (!dateObject.hasDateParameter) {
@@ -275,3 +287,4 @@ exports.populateLists = populateLists
 exports.getList = getList
 exports.getAccountOrders = getAccountOrders
 exports.deleteTypes = deleteTypes
+exports.listFromDate = listFromDate

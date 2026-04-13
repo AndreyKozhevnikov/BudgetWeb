@@ -188,5 +188,21 @@ function getMixListFromFixRecords(fixRecordsList) {
     return mixOrders
 }
 
+async function lastMixlist(req, res, next) {
+    let startDate = await fixRecordController.getLastReportDate(req)
+    let orders = await orderController.listFromDate(startDate)
+    let sOrders = await serviceOrderController.listFromDate(startDate)
+
+    createAndShowMixOrdersList(
+        orders,
+        sOrders,
+        [],
+        res,
+        'MixOrder From Last Report',
+        null,
+    )
+}
+
 exports.listByAcc = listByAcc
 exports.listByDate = listByDate
+exports.lastMixlist = lastMixlist

@@ -1,61 +1,60 @@
 extends layout
 
 block content
-  p 
+  p
     a(class='mainLink' href='/account/aggregatedList') Accounts aggregatedList
-  p 
+  p
     a(class='mainLink' href='/serviceOrder/create') Create SOrder
-  p 
-    a(class='mainLink' href='/serviceOrder/list/true') SOrder list    
-  p 
+  p
+    a(class='mainLink' href='/serviceOrder/list/true') SOrder list
+  p
     a(class='mainLink' href='/fullBackup') fullBackup
-  p 
+  p
     form#uploadForm(action="/restore" enctype="multipart/form-data" method="post")
       input(type="file" name="file")
       a(class='mainLink' onclick='parentNode.submit();') Restore
-  p 
+  p
      a(class='mainLink' href='/deleteall') DeleteOrdersAndTags
-  p 
+  p
     a(class='mainLink' href='/order/list/true') All orders
-  p 
+  p
     a(class='mainLink' href='/serviceOrder/updatelists')  SOrder UpdateLists
-  p 
+  p
     a(class='mainLink' href='/updateLists') Update Lists
-  p 
+  p
     a(class='mainLink' href='/mixOrders') Mix orders
   p
-    a(class='mainLink' href='/order/populatePaymentAccount') Populate PaymentAccount properties'    
+    a(class='mainLink' href='/order/populatePaymentAccount') Populate PaymentAccount properties'
   p
-    a(class='mainLink' href='/fixRecord/deleteStartMonthRecords') Delete 'Start Month Records'    
+    a(class='mainLink' href='/fixRecord/deleteStartMonthRecords') Delete 'Start Month Records'
   //- p
-  //-   a(class='mainLink' href='/fixrecord/createTotalSums') fixrecords createTotalSums '    
+  //-   a(class='mainLink' href='/fixrecord/createTotalSums') fixrecords createTotalSums '
   //- p
-  //-   a(class='mainLink' href='/fixrecord/createTotalIncoming') Create  'TotalIncoming and expenses' fix records for prev months 
+  //-   a(class='mainLink' href='/fixrecord/createTotalIncoming') Create  'TotalIncoming and expenses' fix records for prev months
   p
     a(class='mainLink' href='/fixrecord/showTotalSumsChart') Show 'TotalSum' chart
-  p 
-    a(class='mainLink' href='/account/create') Account create    
   p
-    a(class='mainLink' href='/orderPlace/create') Create Place    
+    a(class='mainLink' href='/account/create') Account create
   p
-    a(class='mainLink' href='/tag/create') Create ParentTag        
+    a(class='mainLink' href='/orderPlace/create') Create Place
+  p
+    a(class='mainLink' href='/tag/create') Create ParentTag
   p
     a(class='mainLink' href='/createOrderObjects') Create Objects
   p
-    a(class='mainLink' href='/test') 'Test'         
+    a(class='mainLink' href='/test') 'Test'
   p
     a(class='mainLink' href='/orderPlace/list') 'PlacesList'
-  p 
-    a(class='mainLink' href='/account/list') Plain account list                      
-        
-  p 
-    a(class='mainLink' href='/fixRecord/list') Fix Record List       
-  p 
-    a(class='mainLink' href='/createReportDate') Create report date               
-  p 
-    a(class='mainLink' href='/order/last_list') Order From Last Report            
-  //- p
-  //-   a(class='mainLink' href='/fixrecord/removeTotals') 'removeTotals' 
+  p
+    a(class='mainLink' href='/account/list') Plain account list
 
-  
-  
+  p
+    a(class='mainLink' href='/fixRecord/list') Fix Record List
+  p
+    a(class='mainLink' href='/createReportDate') Create report date
+  p
+    a(class='mainLink' href='/mixOrders/last_mixlist') MixOrder From Last Report
+  //- p
+  //-   a(class='mainLink' href='/fixrecord/removeTotals') 'removeTotals'
+
+
