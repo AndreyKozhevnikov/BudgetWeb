@@ -10,3 +10,5 @@ mongodump --uri="<you uri>" --out="c:\temp\real"
 bsondump --bsonFile "c:\temp\real\budgetwebdb\orders.bson" --outFile="c:\temp\real\budgetwebdb\orders.json"
 
 mongorestore "c:\temp\realbw2025-04-03" --uri="mongodb://localhost:27017"
+
+ssh -A root@194.87.111.186
