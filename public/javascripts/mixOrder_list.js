@@ -14,6 +14,29 @@ window.onload = function () {
             enabled: true,
             allowExportSelectedData: true,
         },
+        onExporting: function (e) {
+            var workbook = new ExcelJS.Workbook()
+            var worksheet = workbook.addWorksheet('Main sheet')
+            DevExpress.excelExporter
+                .exportDataGrid({
+                    worksheet: worksheet,
+                    component: e.component,
+                    customizeCell: function (options) {
+                        options.excelCell.font = { name: 'Arial', size: 12 }
+                        options.excelCell.alignment = { horizontal: 'left' }
+                    },
+                })
+                .then(function () {
+                    workbook.xlsx.writeBuffer().then(function (buffer) {
+                        saveAs(
+                            new Blob([buffer], {
+                                type: 'application/octet-stream',
+                            }),
+                            'DataGrid.xlsx',
+                        )
+                    })
+                })
+        },
         rowAlternationEnabled: true,
         showRowLines: true,
         showColumnLines: true,
@@ -97,6 +120,9 @@ window.onload = function () {
             },
             {
                 dataField: 'viewType',
+            },
+            {
+                dataField: 'currency',
             },
         ],
         wordWrapEnabled: true,

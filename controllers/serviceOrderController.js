@@ -159,7 +159,7 @@ async function populateLists() {
 async function listFromDate(startDate) {
     var sOrders = await ServiceOrder.find({
         DateOrder: { $gte: startDate },
-        Type: { $eq: Helper.sOrderTypes.in },
+        Type: { $ne: Helper.sOrderTypes.between },
     })
         .populate('AccountOut')
         .populate('AccountIn')

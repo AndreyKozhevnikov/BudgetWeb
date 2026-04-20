@@ -112,6 +112,7 @@ function getMixListFromOrders(orderList) {
             tags: order.Tags,
             isExcess: order.IsExcess,
             value: order.Value,
+            currency: order.PaymentAccount.Currency,
         }
         if (order.Place) {
             mixRecord.place = order.Place.Name
@@ -141,11 +142,13 @@ function getMixListFromSOrders(sOrderList, accId) {
             case Helper.sOrderTypes.in:
                 mixRecord.viewType = 'In'
                 mixRecord.viewData = sOrder.Description
+                mixRecord.currency = sOrder.AccountIn.Currency
                 break
             case Helper.sOrderTypes.out:
                 mixRecord.viewType = 'Out'
                 mixRecord.viewData = sOrder.Description
                 mixRecord.accountOut = sOrder.AccountOut.Name
+                mixRecord.currency = sOrder.AccountOut.Currency
                 break
             case Helper.sOrderTypes.between:
                 if (sOrder.AccountIn.id === accId) {
@@ -160,6 +163,7 @@ function getMixListFromSOrders(sOrderList, accId) {
                 }
 
                 mixRecord.accountOut = sOrder.AccountOut.Name
+                mixRecord.currency = sOrder.AccountOut.Currency
                 break
         }
         mixRecord.entity = sOrder
