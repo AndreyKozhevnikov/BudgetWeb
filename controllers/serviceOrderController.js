@@ -157,6 +157,7 @@ async function populateLists() {
 }
 
 async function listFromDate(startDate) {
+    startDate = new Date(new Date(startDate).setHours(0, 0, 0, 0))
     var sOrders = await ServiceOrder.find({
         DateOrder: { $gte: startDate },
         Type: { $ne: Helper.sOrderTypes.between },
