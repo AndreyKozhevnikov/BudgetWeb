@@ -589,7 +589,6 @@ function sortGroups(orderGroups) {
     return objSorted
 }
 async function aggregatedList(req, res, next) {
-    console.time('aggregatedList')
     let dateObject = await getDateObject(req)
     let dataObject = await prepareDataToBuildAccountList(
         dateObject.startDateToCalculate,
@@ -658,7 +657,6 @@ async function aggregatedList(req, res, next) {
         monthObject,
         statisticObject,
     )
-    console.timeEnd('aggregatedList')
     res.render('account_list_aggregate', {
         dateObject: dateObject,
         accListObject: accountResultObject,

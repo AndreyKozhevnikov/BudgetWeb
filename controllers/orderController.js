@@ -371,6 +371,7 @@ async function populateAdditionalLists(myCallBack, params) {
         ])
     } catch (err) {
         console.log('error' + err)
+        return
     }
     tagList = results[0]
     accountList = results[1]
