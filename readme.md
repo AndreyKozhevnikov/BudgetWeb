@@ -84,12 +84,25 @@ pm2 logs budgetweb
 
 ## Docker (local, no auth)
 
+Build the image and start the container:
+
+```bash
 docker compose build
 docker compose up
+```
+
+Or without compose:
+
+```bash
+docker build -t budgetweb .
+docker run -p 4000:3000 --env-file .env -e NODE_ENV=development budgetweb
+```
+
+App is served at:
 
 http://localhost:4000/account/aggregatedList
 
-Uses NODE_ENV=development (auth bypassed). Secrets loaded from .env; MongoDB stays on Atlas.
+`docker-compose.yml` sets `NODE_ENV=development` (Azure AD auth bypassed), `CANCREATEUSER=TRUE`, and `CANDELETEENTITIES=TRUE`. Other secrets (`MONGODB_URI`, `DX_LICENSE_KEY`, etc.) are loaded from the local `.env` via `env_file` — MongoDB stays on Atlas (cloud).
 
 http://localhost:3000/account/aggregatedList
 
